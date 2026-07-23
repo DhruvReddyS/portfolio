@@ -915,6 +915,88 @@ a {
   width: 2rem;
   height: 2px;
   background: rgba(255, 255, 255, 0.16);
+  transform-origin: center;
+}
+
+.projects-viewport {
+  perspective: 1800px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(85, 106, 42, 0.15), transparent 30rem),
+    #050605;
+}
+
+.projects-viewport::before {
+  inset: -18%;
+  opacity: 0.75;
+  background:
+    repeating-radial-gradient(
+      ellipse at center,
+      transparent 0 72px,
+      rgba(189, 247, 60, 0.07) 73px 74px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 82px,
+      rgba(255, 255, 255, 0.055) 83px 84px
+    );
+  background-size: auto;
+  mask-image: radial-gradient(ellipse at center, black 18%, rgba(0, 0, 0, 0.74) 60%, transparent 88%);
+}
+
+.projects-viewport::after {
+  position: absolute;
+  z-index: 0;
+  right: -18%;
+  bottom: -44%;
+  left: -18%;
+  height: 72%;
+  background:
+    linear-gradient(rgba(189, 247, 60, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(189, 247, 60, 0.08) 1px, transparent 1px);
+  background-size: 72px 72px;
+  content: "";
+  mask-image: linear-gradient(to bottom, transparent, black 28%, transparent 94%);
+  transform: perspective(700px) rotateX(64deg);
+  transform-origin: center top;
+}
+
+.projects-viewport .project-stage {
+  z-index: 3;
+}
+
+.projects-viewport .project-card {
+  top: 23%;
+  width: min(1000px, 72vw);
+  height: min(570px, 59vh);
+  border-color: rgba(189, 247, 60, 0.18);
+  border-radius: 1.35rem;
+  backface-visibility: visible;
+  box-shadow:
+    0 60px 130px rgba(0, 0, 0, 0.78),
+    0 0 0 1px rgba(255, 255, 255, 0.045),
+    0 0 55px rgba(189, 247, 60, 0.055);
+  -webkit-box-reflect: below 20px linear-gradient(transparent 67%, rgba(255, 255, 255, 0.11));
+}
+
+.projects-viewport .project-card::before {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(112deg, transparent 34%, rgba(255, 255, 255, 0.16) 49%, transparent 62%);
+  content: "";
+  opacity: 0.22;
+  pointer-events: none;
+  transform: translateX(-70%);
+  transition: transform 700ms ease;
+}
+
+.projects-viewport .project-card:hover::before {
+  transform: translateX(70%);
+}
+
+.projects-viewport .flight-header {
+  text-shadow: 0 2px 18px #050605;
 }
 
 .experience-flight {
@@ -1024,6 +1106,164 @@ a {
   font-family: var(--font-mono), monospace;
   font-size: 0.62rem;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Scrolling work sheets with sticky detail panel */
+.work-sheets-section {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+  gap: clamp(2.5rem, 6vw, 8rem);
+  align-items: start;
+  overflow: clip;
+  padding: 10rem 4vw 12rem;
+  border-top: 1px solid var(--line);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    radial-gradient(circle at 30% 28%, rgba(189, 247, 60, 0.08), transparent 34rem),
+    #090b09;
+  background-size: 72px 72px, 72px 72px, auto, auto;
+}
+
+.work-sheets {
+  display: grid;
+  gap: 18vh;
+  perspective: 1500px;
+}
+
+.work-sheet {
+  position: relative;
+  width: 100%;
+  height: min(72vh, 760px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1.3rem;
+  background: #111310;
+  box-shadow: 0 55px 120px rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  transform: rotateY(9deg) rotateZ(-1.8deg) scale(0.96);
+  transform-origin: left center;
+  transition:
+    border-color 320ms ease,
+    filter 320ms ease,
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.work-sheet:nth-child(even) {
+  transform: rotateY(7deg) rotateZ(1.6deg) translateX(3vw) scale(0.96);
+}
+
+.work-sheet.is-active {
+  border-color: rgba(189, 247, 60, 0.48);
+  filter: saturate(1.08);
+  transform: rotateY(3deg) rotateZ(-0.4deg) scale(1);
+}
+
+.work-sheet:nth-child(even).is-active {
+  transform: rotateY(3deg) rotateZ(0.4deg) translateX(3vw) scale(1);
+}
+
+.work-sheet::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 56%, rgba(5, 6, 5, 0.34)),
+    linear-gradient(transparent 66%, rgba(5, 6, 5, 0.55));
+  content: "";
+}
+
+.work-sheet img {
+  object-fit: cover;
+}
+
+.work-sheet > span {
+  position: absolute;
+  z-index: 2;
+  top: 1.2rem;
+  left: 1.2rem;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid rgba(189, 247, 60, 0.32);
+  border-radius: 50%;
+  background: rgba(8, 9, 8, 0.66);
+  color: var(--lime);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  backdrop-filter: blur(12px);
+}
+
+.work-sheet-details {
+  position: sticky;
+  z-index: 5;
+  top: 17vh;
+  align-self: start;
+  min-height: 66vh;
+  padding: clamp(2rem, 4vw, 4.5rem);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 2rem;
+  background: rgba(11, 13, 10, 0.86);
+  box-shadow: 0 40px 110px rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(22px);
+}
+
+.work-detail-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  margin: 2.2rem 0;
+  border: 1px solid rgba(189, 247, 60, 0.3);
+  border-radius: 50%;
+  color: var(--lime);
+}
+
+.work-sheet-details h2 {
+  margin: 0.8rem 0;
+  font-size: clamp(2.8rem, 5vw, 5.6rem);
+  font-weight: 520;
+  letter-spacing: -0.075em;
+  line-height: 0.88;
+}
+
+.work-sheet-details h3 {
+  margin: 0 0 1.8rem;
+  color: rgba(243, 241, 234, 0.48);
+  font-size: 0.88rem;
+  font-weight: 450;
+}
+
+.work-sheet-details > p:not(.eyebrow, .experience-date) {
+  margin: 0;
+  color: rgba(243, 241, 234, 0.6);
+  line-height: 1.68;
+}
+
+.work-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.8rem;
+}
+
+.work-detail-actions a,
+.work-detail-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.72rem 0.9rem;
+  border: 1px solid rgba(189, 247, 60, 0.26);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lime);
+  cursor: pointer;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
@@ -2056,6 +2296,65 @@ a {
   filter: drop-shadow(0 0 36px rgba(189, 247, 60, 0.14));
 }
 
+/* Full animated footer composition */
+.footer-wrap {
+  position: relative;
+  height: 92vh;
+  min-height: 720px;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  background: #070807;
+}
+
+.footer-contact {
+  position: absolute;
+  z-index: 5;
+  top: 11vh;
+  left: 50%;
+  display: grid;
+  width: min(720px, 90vw);
+  justify-items: center;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.footer-contact > p {
+  margin: 0 0 1rem;
+  color: rgba(243, 241, 234, 0.48);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.footer-contact > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: clamp(1.1rem, 2.5vw, 2rem);
+  letter-spacing: -0.035em;
+}
+
+.footer-contact > a:hover {
+  color: var(--lime);
+}
+
+.footer-contact > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 2rem;
+  color: rgba(243, 241, 234, 0.45);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+}
+
+.footer-contact > div a:hover {
+  color: var(--lime);
+}
+
 /* Portfolio companion */
 .portfolio-pet {
   position: fixed;
@@ -2724,6 +3023,62 @@ a {
     position: fixed;
     right: 0.7rem;
     bottom: 6.2rem;
+  }
+
+  .projects-viewport .project-card {
+    width: 88vw;
+    height: 70vh;
+    -webkit-box-reflect: below 12px linear-gradient(transparent 76%, rgba(255, 255, 255, 0.08));
+  }
+
+  .work-sheets-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 7rem 1.2rem 5rem;
+  }
+
+  .work-sheet-details {
+    z-index: 12;
+    top: 4.5rem;
+    order: -1;
+    min-height: 0;
+    padding: 1.5rem;
+    border-radius: 1.4rem;
+  }
+
+  .work-sheet-details h2 {
+    font-size: 2.8rem;
+  }
+
+  .work-detail-icon {
+    display: none;
+  }
+
+  .work-sheet-details > p:not(.eyebrow, .experience-date) {
+    display: none;
+  }
+
+  .work-sheets {
+    gap: 3rem;
+  }
+
+  .work-sheet,
+  .work-sheet:nth-child(even),
+  .work-sheet.is-active,
+  .work-sheet:nth-child(even).is-active {
+    height: 58vh;
+    min-height: 430px;
+    transform: none;
+  }
+
+  .footer-wrap {
+    height: 78vh;
+    min-height: 620px;
+  }
+
+  .footer-contact {
+    top: 8vh;
   }
 
   .work-orbit-section {

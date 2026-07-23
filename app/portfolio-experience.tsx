@@ -13,8 +13,6 @@ import {
   FileCheck2,
   FileText,
   GraduationCap,
-  Handshake,
-  Layers3,
   Mail,
   Map,
   Sparkles,
@@ -26,6 +24,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TypingKeyboard } from "@/components/ui/typing-keyboard";
 import { ImageScatter } from "@/components/ui/image-scatter";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
+import { AnimatedFooter } from "@/components/ui/animated-footer";
 import { CreepyButton } from "@/components/ui/creepy-button";
 import { CylinderCarousel } from "@/components/ui/cylinder-carousel";
 import { PerspectiveGrid } from "@/components/ui/perspective-grid";
@@ -147,6 +146,8 @@ const experience = [
     metricLabel: "less manual lead handling",
     image: "/assets/healthcare-3d.png",
     icon: Building2,
+    link: "https://github.com/DhruvReddyS",
+    linkLabel: "GitHub profile",
   },
   {
     date: "JUN — JUL 2025",
@@ -158,6 +159,8 @@ const experience = [
     metricLabel: "data points processed",
     image: "/assets/ml-groundwater-3d.png",
     icon: BrainCircuit,
+    link: "https://otbi.in/",
+    linkLabel: "Visit OTBI",
   },
   {
     date: "FOUNDER · ONGOING",
@@ -169,6 +172,8 @@ const experience = [
     metricLabel: "platforms delivered",
     image: "/assets/byusforu-logo.png",
     icon: Sparkles,
+    link: "https://freelance.byus4u.in/",
+    linkLabel: "Visit ByUsForU",
   },
   {
     date: "PRESIDENT · 2024—25",
@@ -180,6 +185,8 @@ const experience = [
     metricLabel: "members led",
     image: "/assets/data-dynamo-win.png",
     icon: Trophy,
+    link: "https://www.linkedin.com/in/sripathi-dhruv-reddy",
+    linkLabel: "View leadership",
   },
 ];
 
@@ -222,6 +229,9 @@ export default function PortfolioExperience() {
   const [entered, setEntered] = useState(false);
   const [activeProject, setActiveProject] = useState<(typeof projects)[number] | null>(null);
   const [activeExperience, setActiveExperience] = useState<(typeof experience)[number] | null>(null);
+  const [activeWorkIndex, setActiveWorkIndex] = useState(0);
+  const currentExperience = experience[activeWorkIndex];
+  const CurrentExperienceIcon = currentExperience.icon;
 
   const scatterData = useMemo(
     () => [
@@ -366,54 +376,56 @@ export default function PortfolioExperience() {
         .to({}, { duration: 0.8 });
 
       const projectCards = gsap.utils.toArray<HTMLElement>(".project-card");
-      const projectTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".projects-flight",
-          start: "top top",
-          end: `+=${projectCards.length * 115}%`,
-          pin: ".projects-viewport",
-          scrub: 1,
-          anticipatePin: 1,
-        },
+      const projectProgress = gsap.utils.toArray<HTMLElement>(".flight-progress i");
+      const placeProjectCards = (progress: number) => {
+        const travel = progress * (projectCards.length - 1);
+        const radius = Math.min(window.innerWidth * 0.48, 760);
+
+        projectCards.forEach((card, index) => {
+          const phase = index - travel;
+          const angle = phase * 0.72;
+          const closeness = Math.max(0, 1 - Math.abs(phase) / 3.8);
+          gsap.set(card, {
+            x: Math.sin(angle) * radius,
+            y: phase * 82,
+            z: (Math.cos(angle) - 1) * 920,
+            rotateY: -Math.sin(angle) * 58,
+            rotateX: phase * -2.2,
+            scale: 0.7 + closeness * 0.3,
+            autoAlpha: Math.max(0.08, closeness),
+            zIndex: Math.round(100 - Math.abs(phase) * 10),
+            pointerEvents: Math.abs(phase) < 1.85 ? "auto" : "none",
+          });
+        });
+
+        projectProgress.forEach((bar, index) => {
+          const distance = Math.abs(index - travel);
+          gsap.set(bar, {
+            backgroundColor: distance < 0.52 ? "#bdf73c" : "rgba(255,255,255,.16)",
+            scaleX: distance < 0.52 ? 1.45 : 1,
+          });
+        });
+      };
+
+      placeProjectCards(0);
+      ScrollTrigger.create({
+        trigger: ".projects-flight",
+        start: "top top",
+        end: `+=${projectCards.length * 125}%`,
+        pin: ".projects-viewport",
+        scrub: 0.75,
+        anticipatePin: 1,
+        onUpdate: (self) => placeProjectCards(self.progress),
       });
 
-      projectCards.forEach((card, index) => {
-        const direction = index % 2 === 0 ? -1 : 1;
-        projectTimeline
-          .fromTo(
-            card,
-            {
-              autoAlpha: 0,
-              z: -1500,
-              y: 320,
-              x: direction * 240,
-              rotateY: direction * -28,
-              rotateX: 18,
-              scale: 0.55,
-            },
-            {
-              autoAlpha: 1,
-              z: 0,
-              y: 0,
-              x: 0,
-              rotateY: direction * 3,
-              rotateX: 0,
-              scale: 1,
-              duration: 1,
-              ease: "power2.out",
-            },
-          )
-          .to(card, {
-            autoAlpha: 0,
-            z: 850,
-            y: -520,
-            x: direction * -180,
-            rotateY: direction * 22,
-            rotateX: -14,
-            scale: 1.28,
-            duration: 0.75,
-            ease: "power2.in",
-          });
+      gsap.utils.toArray<HTMLElement>(".work-sheet").forEach((sheet, index) => {
+        ScrollTrigger.create({
+          trigger: sheet,
+          start: "top 52%",
+          end: "bottom 52%",
+          onEnter: () => setActiveWorkIndex(index),
+          onEnterBack: () => setActiveWorkIndex(index),
+        });
       });
 
       gsap.from(".achievement-image", {
@@ -576,41 +588,41 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section id="experience" className="work-orbit-section">
-        <div className="work-orbit-heading">
-          <p className="eyebrow">EXPERIENCE / FIELD NOTES</p>
-          <h2>A circular record<br />of work in the world.</h2>
-          <p>Choose any chapter to open the full story.</p>
+      <section id="experience" className="work-sheets-section">
+        <div className="work-sheets">
+          {experience.map((item, index) => (
+            <button
+              className={`work-sheet ${index === activeWorkIndex ? "is-active" : ""}`}
+              type="button"
+              key={item.company}
+              onClick={() => setActiveWorkIndex(index)}
+              aria-label={`Show ${item.role} at ${item.company}`}
+            >
+              <Image src={item.image} alt="" fill sizes="(max-width: 900px) 100vw, 58vw" />
+              <span>{String(index + 1).padStart(2, "0")}</span>
+            </button>
+          ))}
         </div>
-        <div className="work-orbit">
-          <div className="orbit-ring orbit-ring-one" aria-hidden="true" />
-          <div className="orbit-ring orbit-ring-two" aria-hidden="true" />
-          <div className="work-orbit-core">
-            <Layers3 size={28} />
-            <strong>04</strong>
-            <span>chapters</span>
+        <aside className="work-sheet-details">
+          <p className="eyebrow">EXPERIENCE / {String(activeWorkIndex + 1).padStart(2, "0")}</p>
+          <div className="work-detail-icon"><CurrentExperienceIcon size={23} /></div>
+          <p className="experience-date">{currentExperience.date}</p>
+          <h2>{currentExperience.role}</h2>
+          <h3>{currentExperience.company}</h3>
+          <p>{currentExperience.summary}</p>
+          <div className="experience-metric">
+            <strong>{currentExperience.metric}</strong>
+            <span>{currentExperience.metricLabel}</span>
           </div>
-          {experience.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                className="radial-work-card"
-                type="button"
-                key={item.company}
-                onClick={() => setActiveExperience(item)}
-              >
-                <Image src={item.image} alt="" fill sizes="260px" />
-                <span className="radial-work-shade" />
-                <span className="radial-work-icon"><Icon size={18} /></span>
-                <span className="radial-work-copy">
-                  <small>{item.date}</small>
-                  <strong>{item.role}</strong>
-                  <em>{item.company}</em>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+          <div className="work-detail-actions">
+            <a href={currentExperience.link} target="_blank" rel="noreferrer">
+              {currentExperience.linkLabel} <ArrowUpRight size={15} />
+            </a>
+            <button type="button" onClick={() => setActiveExperience(currentExperience)}>
+              Full notes
+            </button>
+          </div>
+        </aside>
       </section>
 
       <section className="cylinder-showcase">
@@ -770,11 +782,32 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <footer className="handshake-footer">
-        <a href="mailto:dhruvreddysripathi2006@gmail.com" aria-label="Start a conversation with Dhruv">
-          <Handshake strokeWidth={1.05} />
-        </a>
-      </footer>
+      <section className="footer-wrap">
+        <AnimatedFooter
+          headingLines={["LET’S", "BUILD"]}
+          leftImage="/assets/dhruv-hero.png"
+          rightImage="/assets/ml-groundwater-3d.png"
+          background="#070807"
+          textColor="#f3f1ea"
+          charColor="#536814"
+          hoverColor="#bdf73c"
+          hoverCharColor="#070807"
+          columns={64}
+          cellSize={18}
+          fontSize={15}
+        />
+        <div className="footer-contact">
+          <p>Have an ambitious build in mind?</p>
+          <a href="mailto:dhruvreddysripathi2006@gmail.com">
+            dhruvreddysripathi2006@gmail.com <ArrowUpRight size={18} />
+          </a>
+          <div>
+            <a href="https://github.com/DhruvReddyS" target="_blank" rel="noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/sripathi-dhruv-reddy" target="_blank" rel="noreferrer">LinkedIn</a>
+            <span>Hyderabad · India</span>
+          </div>
+        </div>
+      </section>
 
       <PortfolioPet visible={entered} />
 
