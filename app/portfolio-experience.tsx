@@ -24,6 +24,29 @@ import { MusicPlayer } from "@/components/ui/music-player";
 import { ImageScatter } from "@/components/ui/image-scatter";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
 import { AnimatedFooter } from "@/components/ui/animated-footer";
+import { CreepyButton } from "@/components/ui/creepy-button";
+import { CylinderCarousel } from "@/components/ui/cylinder-carousel";
+import { StaggeredGrid, type BentoItem } from "@/components/ui/staggered-grid";
+import { PerspectiveGrid } from "@/components/ui/perspective-grid";
+import {
+  SiCss,
+  SiFirebase,
+  SiFlask,
+  SiGit,
+  SiGithub,
+  SiHtml5,
+  SiJavascript,
+  SiMongodb,
+  SiMysql,
+  SiNodedotjs,
+  SiPython,
+  SiReact,
+  SiRedis,
+  SiSqlite,
+  SiTailwindcss,
+  SiTypescript,
+  SiVuedotjs,
+} from "react-icons/si";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -161,6 +184,61 @@ const capabilities = [
   { icon: BrainCircuit, label: "Applied AI", note: "RAG · NLP · LLM workflows" },
   { icon: Database, label: "Data engineering", note: "Pipelines · SQL · Redis" },
   { icon: Map, label: "Machine learning", note: "Prediction · interpolation · viz" },
+];
+
+const skillIcons = [
+  { label: "React", icon: <SiReact />, color: "#61DAFB" },
+  { label: "Vue.js", icon: <SiVuedotjs />, color: "#42B883" },
+  { label: "Node.js", icon: <SiNodedotjs />, color: "#5FA04E" },
+  { label: "Flask", icon: <SiFlask />, color: "#F3F1EA" },
+  { label: "Python", icon: <SiPython />, color: "#3776AB" },
+  { label: "TypeScript", icon: <SiTypescript />, color: "#3178C6" },
+  { label: "JavaScript", icon: <SiJavascript />, color: "#F7DF1E" },
+  { label: "MongoDB", icon: <SiMongodb />, color: "#47A248" },
+  { label: "Firebase", icon: <SiFirebase />, color: "#FFCA28" },
+  { label: "Redis", icon: <SiRedis />, color: "#FF4438" },
+  { label: "MySQL", icon: <SiMysql />, color: "#4479A1" },
+  { label: "SQLite", icon: <SiSqlite />, color: "#5AA9E6" },
+  { label: "Tailwind CSS", icon: <SiTailwindcss />, color: "#06B6D4" },
+  { label: "HTML5", icon: <SiHtml5 />, color: "#E34F26" },
+  { label: "CSS3", icon: <SiCss />, color: "#663399" },
+  { label: "Git", icon: <SiGit />, color: "#F05032" },
+  { label: "GitHub", icon: <SiGithub />, color: "#F3F1EA" },
+];
+
+const skillBentoItems: BentoItem[] = [
+  {
+    id: "web",
+    title: "Web Engineering",
+    subtitle: "Interfaces + APIs",
+    description: "React, Vue, Node, Flask, TypeScript",
+    icon: <SiReact size={24} color="#61DAFB" />,
+    image: "/assets/healthcare-3d.png",
+  },
+  {
+    id: "ai",
+    title: "AI & Machine Learning",
+    subtitle: "Useful intelligence",
+    description: "RAG, NLP, prediction, scientific computing",
+    icon: <BrainCircuit size={24} color="#BDF73C" />,
+    image: "/assets/rag-3d.png",
+  },
+  {
+    id: "data",
+    title: "Data Systems",
+    subtitle: "Reliable foundations",
+    description: "MongoDB, Redis, SQL, Firebase",
+    icon: <SiMongodb size={24} color="#47A248" />,
+    image: "/assets/ml-groundwater-3d.png",
+  },
+  {
+    id: "ship",
+    title: "Delivery",
+    subtitle: "From zero to live",
+    description: "Git, APIs, automation, cloud deployment",
+    icon: <SiGit size={24} color="#F05032" />,
+    image: "/assets/data-dynamo-win.png",
+  },
 ];
 
 export default function PortfolioExperience() {
@@ -522,6 +600,33 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
+      <section className="cylinder-showcase">
+        <div className="cylinder-copy">
+          <p className="eyebrow">THE PROJECT ORBIT</p>
+          <h2>Seven builds.<br /><span>Always in motion.</span></h2>
+          <p>
+            A rotating field of platforms, research, client work, and experiments—
+            each one pushing the next build further.
+          </p>
+        </div>
+        <div className="cylinder-stage">
+          <CylinderCarousel
+            images={[
+              { src: "/assets/healthcare-3d.png", alt: "Healthcare platform visualization" },
+              { src: "/assets/rag-3d.png", alt: "Retrieval augmented generation visualization" },
+              { src: "/assets/ml-groundwater-3d.png", alt: "Groundwater machine learning visualization" },
+              { src: "/assets/data-dynamo-win.png", alt: "Data Dynamo hackathon win" },
+              { src: "/assets/dhruv-hero.png", alt: "Dhruv Reddy portrait" },
+              { src: "/assets/byusforu-logo.png", alt: "ByUsForU studio" },
+              { src: "/assets/rag-3d.png", alt: "Tender NLP visualization" },
+            ]}
+            cardWidth={210}
+            animationDuration={34}
+            cardClassName="cylinder-card"
+          />
+        </div>
+      </section>
+
       <section id="expertise" className="expertise">
         <div className="section-heading">
           <p className="eyebrow">DOMAINS OF EXPERTISE</p>
@@ -541,6 +646,57 @@ export default function PortfolioExperience() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="skills-lab">
+        <div className="skills-heading">
+          <p className="eyebrow">THE ACTUAL TOOLKIT</p>
+          <h2>Correct tools.<br /><span>Correct colors. Zero filler.</span></h2>
+          <p>
+            The languages, frameworks, databases, and delivery tools I use across
+            production web systems, RAG pipelines, and machine-learning work.
+          </p>
+        </div>
+        <StaggeredGrid
+          images={[
+            "/assets/healthcare-3d.png",
+            "/assets/rag-3d.png",
+            "/assets/ml-groundwater-3d.png",
+            "/assets/data-dynamo-win.png",
+            "/assets/byusforu-logo.png",
+          ]}
+          bentoItems={skillBentoItems}
+          skillIcons={skillIcons}
+          centerText="STACK"
+          showFooter={false}
+          className="skills-staggered"
+        />
+        <div className="skill-key" aria-label="Technology color key">
+          {skillIcons.map((skill) => (
+            <div key={skill.label}>
+              <span style={{ color: skill.color }}>{skill.icon}</span>
+              <strong>{skill.label}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="perspective-cta">
+        <PerspectiveGrid gridSize={34} fadeRadius={74} className="perspective-field" />
+        <div className="perspective-copy">
+          <p className="eyebrow">NEXT GRID / YOUR IDEA</p>
+          <h2>There’s room here<br />for one more <span>ambitious build.</span></h2>
+          <p>Bring the difficult brief. I’ll bring the systems thinking.</p>
+          <CreepyButton
+            className="contact-creepy"
+            coverClassName="creepy-cover"
+            onClick={() => {
+              window.location.href = "mailto:dhruvreddysripathi2006@gmail.com";
+            }}
+          >
+            START A CONVERSATION
+          </CreepyButton>
         </div>
       </section>
 

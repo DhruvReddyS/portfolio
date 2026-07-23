@@ -868,6 +868,87 @@ a {
   text-transform: uppercase;
 }
 
+/* Cylinder project orbit */
+.cylinder-showcase {
+  position: relative;
+  display: grid;
+  min-height: 105vh;
+  grid-template-columns: 0.72fr 1.28fr;
+  align-items: center;
+  gap: 2vw;
+  overflow: hidden;
+  padding: 8rem 4vw;
+  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 72% 48%, rgba(189, 247, 60, 0.12), transparent 25rem),
+    #090a09;
+}
+
+.cylinder-showcase::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.2;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 70px 70px;
+  mask-image: radial-gradient(circle at 70% 50%, black, transparent 72%);
+}
+
+.cylinder-copy {
+  position: relative;
+  z-index: 4;
+  max-width: 560px;
+}
+
+.cylinder-copy h2 {
+  margin: 1.4rem 0 1.8rem;
+  font-size: clamp(3.2rem, 6vw, 7rem);
+  font-weight: 530;
+  letter-spacing: -0.075em;
+  line-height: 0.86;
+}
+
+.cylinder-copy h2 span {
+  color: var(--lime);
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.cylinder-copy > p:not(.eyebrow) {
+  max-width: 500px;
+  color: rgba(243, 241, 234, 0.57);
+  line-height: 1.65;
+}
+
+.cylinder-stage {
+  position: relative;
+  z-index: 2;
+  height: min(78vh, 780px);
+  min-height: 620px;
+}
+
+.cylinder-stage::after {
+  position: absolute;
+  right: 10%;
+  bottom: 7%;
+  left: 10%;
+  height: 12%;
+  border-radius: 50%;
+  background: rgba(189, 247, 60, 0.16);
+  content: "";
+  filter: blur(60px);
+}
+
+.cylinder-card {
+  height: auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #131512;
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.65);
+}
+
 /* Expertise scatter */
 .expertise {
   min-height: 135vh;
@@ -966,6 +1047,173 @@ a {
   font-family: var(--font-mono), monospace;
   font-size: 0.6rem;
   letter-spacing: 0.04em;
+}
+
+/* Staggered skills field */
+.skills-lab {
+  position: relative;
+  overflow: hidden;
+  padding: 10rem 0 8rem;
+  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 50% 45%, rgba(189, 247, 60, 0.08), transparent 30rem),
+    #080908;
+}
+
+.skills-heading {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  max-width: 1500px;
+  grid-template-columns: 0.55fr 1.2fr 0.65fr;
+  align-items: end;
+  gap: 3vw;
+  margin: 0 auto 1rem;
+  padding: 0 4vw;
+}
+
+.skills-heading h2 {
+  margin: 0;
+  font-size: clamp(3rem, 6.4vw, 7.3rem);
+  font-weight: 530;
+  letter-spacing: -0.075em;
+  line-height: 0.86;
+}
+
+.skills-heading h2 span {
+  color: var(--lime);
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.skills-heading > p:last-child {
+  margin: 0;
+  color: rgba(243, 241, 234, 0.54);
+  line-height: 1.6;
+}
+
+.skills-staggered {
+  width: 112%;
+  margin-left: -6%;
+}
+
+.skills-staggered .grid--full {
+  min-height: 900px;
+}
+
+.skills-staggered .grid__item-img {
+  background: #111310 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.skills-staggered .bento-container {
+  min-height: 160px;
+}
+
+.skill-key {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  max-width: 1180px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+  margin: -3rem auto 0;
+  padding: 0 1.2rem;
+}
+
+.skill-key > div {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.62rem 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(10px);
+}
+
+.skill-key span {
+  display: grid;
+  width: 1.1rem;
+  height: 1.1rem;
+  place-items: center;
+  font-size: 1rem;
+}
+
+.skill-key strong {
+  color: rgba(243, 241, 234, 0.72);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* Perspective-grid transition */
+.perspective-cta {
+  position: relative;
+  display: grid;
+  min-height: 92vh;
+  place-items: center;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  background: #000;
+}
+
+.perspective-field {
+  position: absolute !important;
+  inset: 0;
+}
+
+.perspective-field .tile:hover {
+  border-color: var(--lime);
+  background: rgba(189, 247, 60, 0.16);
+  box-shadow: 0 0 20px rgba(189, 247, 60, 0.24);
+}
+
+.perspective-copy {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  width: min(1000px, 90vw);
+  justify-items: center;
+  text-align: center;
+}
+
+.perspective-copy h2 {
+  margin: 1.4rem 0 1.8rem;
+  font-size: clamp(3.2rem, 7.2vw, 8.4rem);
+  font-weight: 540;
+  letter-spacing: -0.08em;
+  line-height: 0.83;
+}
+
+.perspective-copy h2 span {
+  color: var(--lime);
+  font-family: Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.perspective-copy > p:not(.eyebrow) {
+  margin: 0 0 2.2rem;
+  color: rgba(243, 241, 234, 0.52);
+}
+
+.contact-creepy {
+  min-width: 17rem !important;
+  border-radius: 999px !important;
+  background: #020302 !important;
+  font-size: 0.72rem;
+}
+
+.creepy-cover {
+  border-radius: 999px !important;
+  background: var(--lime) !important;
+  color: #080908 !important;
+  box-shadow: inset 0 0 0 2px #080908 !important;
+  letter-spacing: 0.12em !important;
 }
 
 /* Achievement */
@@ -1368,6 +1616,29 @@ a {
     display: grid;
   }
 
+  .cylinder-showcase {
+    grid-template-columns: 1fr;
+    padding-top: 8rem;
+  }
+
+  .cylinder-stage {
+    height: 70vh;
+  }
+
+  .skills-heading {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .skills-heading > p:last-child {
+    max-width: 650px;
+  }
+
+  .skills-staggered {
+    width: 1250px;
+    margin-left: calc((100vw - 1250px) / 2);
+  }
+
   .capability-row {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1487,6 +1758,48 @@ a {
   .expertise,
   .education {
     padding: 7rem 1.2rem 4rem;
+  }
+
+  .cylinder-showcase {
+    padding: 7rem 1.2rem 3rem;
+  }
+
+  .cylinder-copy h2 {
+    font-size: 4rem;
+  }
+
+  .cylinder-stage {
+    height: 62vh;
+    min-height: 520px;
+    margin-inline: -1.2rem;
+    transform: scale(0.82);
+  }
+
+  .skills-lab {
+    padding: 7rem 0 5rem;
+  }
+
+  .skills-heading {
+    padding-inline: 1.2rem;
+  }
+
+  .skills-heading h2 {
+    font-size: 4rem;
+  }
+
+  .skills-staggered {
+    width: 1050px;
+    margin-left: calc((100vw - 1050px) / 2);
+    transform: scale(0.86);
+    transform-origin: center top;
+  }
+
+  .skill-key {
+    margin-top: -12rem;
+  }
+
+  .perspective-copy h2 {
+    font-size: 4.2rem;
   }
 
   .scatter-frame {
