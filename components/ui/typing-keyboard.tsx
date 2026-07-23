@@ -8,6 +8,8 @@ import { cn } from "@/lib/utils";
 export interface TypingKeyboardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Text to auto-type in a loop */
   autoTypeText?: string;
+  /** Restart after the full message. Defaults to true. */
+  loop?: boolean;
   /** [min, max] ms delay between keystrokes */
   typingSpeed?: [number, number];
   /** Overall scale factor */
@@ -50,6 +52,7 @@ const KC_MAP: Record<number, number> = {
 export function TypingKeyboard({
   className,
   autoTypeText = "Draco. Fast, private, and beautiful web browser. Built with love by one stubborn developer.       ",
+  loop = true,
   typingSpeed = [40, 120],
   scale = 0.8,
   accentColor = "#3b82f6",
@@ -92,6 +95,7 @@ export function TypingKeyboard({
 
       idx++;
       if (idx >= autoTypeText.length) {
+        if (!loop) return;
         timer = setTimeout(() => {
           if (!alive) return;
           screen.innerHTML = "";
@@ -106,7 +110,7 @@ export function TypingKeyboard({
 
     timer = setTimeout(typeNext, 1500);
     return () => { alive = false; clearTimeout(timer); };
-  }, [autoTypeText, typingSpeed]);
+  }, [autoTypeText, loop, typingSpeed]);
 
   return (
     <div className={cn("tk-container", className)} {...props}>

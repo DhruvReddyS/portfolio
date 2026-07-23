@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ArrowDown,
@@ -243,6 +243,8 @@ const skillBentoItems: BentoItem[] = [
 
 export default function PortfolioExperience() {
   const rootRef = useRef<HTMLElement>(null);
+  const [introReady, setIntroReady] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   const scatterData = useMemo(
     () => [
@@ -274,6 +276,23 @@ export default function PortfolioExperience() {
     [],
   );
 
+  useEffect(() => {
+    const readyTimer = window.setTimeout(() => setIntroReady(true), 10_200);
+    return () => window.clearTimeout(readyTimer);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("intro-locked", !entered);
+    return () => document.documentElement.classList.remove("intro-locked");
+  }, [entered]);
+
+  const enterPortfolio = () => {
+    setEntered(true);
+    window.setTimeout(() => {
+      document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" });
+    }, 120);
+  };
+
   useLayoutEffect(() => {
     if (!rootRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
@@ -303,39 +322,55 @@ export default function PortfolioExperience() {
         },
       });
 
-      gsap.utils.toArray<HTMLElement>(".story-line").forEach((line) => {
-        gsap.fromTo(
-          line,
-          { opacity: 0.12, y: 90 },
-          {
-            opacity: 1,
-            y: 0,
-            scrollTrigger: {
-              trigger: line,
-              start: "top 82%",
-              end: "top 42%",
-              scrub: true,
-            },
-          },
-        );
+      gsap.set(".identity-beat", { autoAlpha: 0, y: 70 });
+      const identityTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".story",
+          start: "top top",
+          end: "+=360%",
+          pin: ".story-sticky",
+          scrub: 1,
+          anticipatePin: 1,
+        },
       });
 
-      gsap.fromTo(
-        ".hero-portrait",
-        { rotateY: -16, rotateX: 8, y: 120, scale: 0.84 },
-        {
-          rotateY: 4,
-          rotateX: -2,
-          y: -30,
-          scale: 1,
-          scrollTrigger: {
-            trigger: ".hero",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
+      identityTimeline
+        .fromTo(
+          ".identity-portrait",
+          { autoAlpha: 0, scale: 0.42, z: -900, rotateY: -34, rotateX: 12 },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            z: 0,
+            rotateY: 0,
+            rotateX: 0,
+            duration: 1.2,
+            ease: "expo.out",
           },
-        },
-      );
+        )
+        .fromTo(
+          ".identity-name",
+          { autoAlpha: 0, y: 120, letterSpacing: "0.08em" },
+          { autoAlpha: 1, y: 0, letterSpacing: "-0.08em", duration: 1 },
+          0.15,
+        )
+        .to(".identity-beat-1", { autoAlpha: 1, y: 0, duration: 0.7 }, 0.55)
+        .to(".identity-beat-1", { autoAlpha: 0, y: -70, duration: 0.55 }, 1.75)
+        .to(
+          ".identity-portrait",
+          { xPercent: 32, scale: 0.82, rotateY: 8, duration: 0.9 },
+          1.75,
+        )
+        .to(".identity-beat-2", { autoAlpha: 1, y: 0, duration: 0.7 }, 1.85)
+        .to(".identity-beat-2", { autoAlpha: 0, y: -70, duration: 0.55 }, 3.05)
+        .to(
+          ".identity-name",
+          { opacity: 0.09, scale: 1.15, y: -30, duration: 0.8 },
+          3.05,
+        )
+        .to(".identity-beat-3", { autoAlpha: 1, y: 0, duration: 0.75 }, 3.12)
+        .to(".identity-facts", { autoAlpha: 1, y: 0, duration: 0.7 }, 3.35)
+        .to({}, { duration: 0.8 });
 
       const projectCards = gsap.utils.toArray<HTMLElement>(".project-card");
       const projectTimeline = gsap.timeline({
@@ -452,74 +487,73 @@ export default function PortfolioExperience() {
     <main ref={rootRef} className="portfolio-shell">
       <NotchNavbar />
 
-      <section id="home" className="intro">
+      <section id="home" className={`intro ${entered ? "intro-entered" : ""}`}>
         <div className="intro-stage">
           <div className="keyboard-wrap">
             <TypingKeyboard
-              autoTypeText="Hi, I’m Dhruv. I build full-stack products, applied AI systems, and data experiences that turn difficult ideas into useful things.       "
+              autoTypeText="Hi, I’m Dhruv Reddy. I build full-stack products, applied AI systems, and data experiences. Ready to enter?       "
               typingSpeed={[36, 78]}
               scale={0.88}
-              accentColor="#bdf73c"
-              secondaryAccent="#f7b955"
+              loop={false}
+              accentColor="#3b82f6"
+              secondaryAccent="#a855f7"
             />
           </div>
+          <div className={`intro-action ${introReady ? "is-ready" : ""}`}>
+            <button type="button" onClick={enterPortfolio}>
+              <span>ENTER PORTFOLIO</span>
+              <ArrowDown size={16} />
+            </button>
+          </div>
         </div>
       </section>
 
-      <section className="story">
-        <p className="eyebrow">THE THROUGH-LINE</p>
-        <h2 className="story-line">I don’t just ship screens.</h2>
-        <h2 className="story-line muted">I engineer the system behind them.</h2>
-        <h2 className="story-line">Code. Data. Intelligence.</h2>
-        <h2 className="story-line accent">Built to move people forward.</h2>
-      </section>
-
-      <section id="about" className="hero">
-        <div className="hero-grid" aria-hidden="true" />
-        <div className="hero-type" aria-hidden="true">
-          DHRUV
-        </div>
-        <div className="hero-copy">
-          <p className="eyebrow">FULL-STACK × APPLIED AI</p>
-          <h2>
-            Engineering ideas
-            <br />
-            into <span>impact.</span>
-          </h2>
-          <p className="hero-summary">
-            I’m Dhruv Reddy—a CSIT engineer building production-grade web platforms,
-            intelligent retrieval systems, and data products. Fast iteration, careful
-            architecture, measurable outcomes.
-          </p>
-          <div className="hero-actions">
-            <a href="#projects">
-              Explore selected work <ArrowDown size={16} />
-            </a>
-            <a href="mailto:dhruvreddysripathi2006@gmail.com" className="text-link">
-              Let’s build something <ArrowUpRight size={16} />
-            </a>
-          </div>
-          <div className="hero-stats">
-            <div><strong>9.43</strong><span>CGPA</span></div>
-            <div><strong>10×</strong><span>AI-augmented delivery</span></div>
-            <div><strong>5+</strong><span>client platforms</span></div>
-          </div>
-        </div>
-        <div className="portrait-stage">
-          <div className="portrait-orbit orbit-one" />
-          <div className="portrait-orbit orbit-two" />
-          <div className="hero-portrait">
+      <section id="about" className="story">
+        <div className="story-sticky">
+          <div className="identity-grid" aria-hidden="true" />
+          <h2 className="identity-name" aria-label="Dhruv Reddy">DHRUV<br />REDDY</h2>
+          <div className="identity-portrait">
             <Image
               src="/assets/dhruv-hero.png"
               alt="Illustrated portrait of Dhruv Reddy"
               fill
-              sizes="(max-width: 900px) 90vw, 46vw"
+              sizes="(max-width: 900px) 82vw, 42vw"
               priority
             />
           </div>
-          <div className="portrait-tag">
-            <span>Currently</span>
-            pursuing IITM Diploma in Data Science
+
+          <article className="identity-beat identity-beat-1">
+            <p className="eyebrow">01 / HELLO</p>
+            <h3>Dhruv Reddy.</h3>
+            <p>Full-stack engineer and applied AI builder from Hyderabad, India.</p>
+          </article>
+
+          <article className="identity-beat identity-beat-2">
+            <p className="eyebrow">02 / WHAT I BUILD</p>
+            <h3>Systems behind<br />the <span>screen.</span></h3>
+            <p>
+              Production web platforms, retrieval-augmented intelligence, and
+              data products engineered for real users and measurable outcomes.
+            </p>
+          </article>
+
+          <article className="identity-beat identity-beat-3">
+            <p className="eyebrow">03 / CURRENTLY</p>
+            <h3>Learning and<br /><span>shipping.</span></h3>
+            <p>
+              B.E. CSIT at MVSR. IIT Madras Foundation and Programming Diploma
+              complete. Currently pursuing the Diploma in Data Science.
+            </p>
+            <div className="identity-facts">
+              <div><strong>9.43</strong><span>CGPA</span></div>
+              <div><strong>85%+</strong><span>ML accuracy</span></div>
+              <div><strong>5+</strong><span>client platforms</span></div>
+            </div>
+          </article>
+
+          <div className="identity-scroll-cue">
+            <span>Scroll to know me</span>
+            <ArrowDown size={15} />
           </div>
         </div>
       </section>
