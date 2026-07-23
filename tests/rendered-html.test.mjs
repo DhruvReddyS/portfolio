@@ -2,10 +2,8 @@ import assert from "node:assert/strict";
 import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
-const developmentPreviewMeta =
-  /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
-const templateRoot = new URL("../", import.meta.url);
-const previewRoot = new URL("../app/_sites-preview/", import.meta.url);
+const projectRoot = new URL("../", import.meta.url);
+const clientRoot = new URL("../dist/client/", import.meta.url);
 
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -13,8 +11,13 @@ async function render() {
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
-      headers: { accept: "text/html" },
+    new Request("https://portfolio.test/", {
+      headers: {
+        accept: "text/html",
+        host: "portfolio.test",
+        "x-forwarded-host": "portfolio.test",
+        "x-forwarded-proto": "https",
+      },
     }),
     {
       ASSETS: {
@@ -28,64 +31,61 @@ async function render() {
   );
 }
 
-test("server-renders the starter loading skeleton", async () => {
+test("server-renders the complete portfolio experience", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, developmentPreviewMeta);
-  assert.match(html, /<title>Your site is taking shape<\/title>/i);
-  assert.match(html, /Building your site/);
-  assert.match(html, /Your site is taking shape/);
   assert.match(
     html,
-    /Your first version will appear here automatically when it’s ready\./,
+    /<title>Dhruv Reddy — Full-stack &amp; AI Engineer · Dhruv Reddy<\/title>/i,
   );
-  assert.doesNotMatch(html, /Codex/);
-  assert.match(html, /react-loading-skeleton/);
-  assert.match(html, /role="status"/);
+  assert.match(html, /ENTER PORTFOLIO/);
+  assert.match(html, /A 3D flight through the work\./);
+  assert.match(html, /Open details for CodeSync/);
+  assert.match(html, /AI Research Intern &amp; Team Lead/);
+  assert.match(
+    html,
+    /Correct tools\.[\s\S]{0,200}Correct colors\.[\s\S]{0,200}Zero filler\./,
+  );
+  assert.match(html, /Ask Dhruv’s portfolio companion/);
+  assert.match(html, /LET’S/);
+  assert.match(html, /BUILD/);
+  assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
-test("keeps the loading skeleton scoped and disposable", async () => {
-  const [preview, css, page, layout, packageJson, files] = await Promise.all([
-    readFile(new URL("SkeletonPreview.tsx", previewRoot), "utf8"),
-    readFile(new URL("preview.css", previewRoot), "utf8"),
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-    readdir(previewRoot),
-  ]);
-
-  assert.deepEqual(files.sort(), ["SkeletonPreview.tsx", "preview.css"]);
-  assert.match(preview, /from "react-loading-skeleton"/);
-  assert.match(preview, /baseColor="#eceae7"/);
-  assert.match(preview, /highlightColor="#f9f8f6"/);
-  assert.match(preview, /duration=\{2\.8\}/);
-  assert.match(preview, /sites-skeleton-search-placeholder/);
-  assert.match(packageJson, /"react-loading-skeleton": "3\.5\.0"/);
-
-  const shellIndex = preview.indexOf('className="sites-skeleton-shell"');
-  const statusIndex = preview.indexOf('className="sites-skeleton-status"');
-  assert.ok(shellIndex >= 0 && statusIndex > shellIndex);
-  assert.match(css, /position:\s*fixed/);
-  assert.match(css, /inset:\s*0/);
-  assert.match(css, /opacity:\s*0\.52/);
-  assert.match(css, /prefers-reduced-motion:\s*reduce/);
-  assert.doesNotMatch(css, /#020617|canvas|pets|progress/i);
-  assert.doesNotMatch(
-    preview,
-    /loading-spinner|status-mark|status-progress|canvas|cookie|random/i,
+test("build emits the portfolio client module and required public assets", async () => {
+  const response = await render();
+  const html = await response.text();
+  const moduleMatch = html.match(
+    /href="(\/assets\/portfolio-experience-[^"]+\.js)"/,
   );
 
-  assert.match(page, /export const metadata:\s*Metadata/);
-  assert.match(page, /"codex-preview": "development"/);
-  assert.match(page, /<SkeletonPreview \/>/);
-  assert.match(layout, /title:\s*"Starter Project"/);
-  assert.doesNotMatch(layout, /codex-preview|_sites-preview|themeColor|\bViewport\b/);
-  assert.doesNotMatch(css, /(^|\s)(html|body)\s*\{/m);
+  assert.ok(moduleMatch, "portfolio client module preload is present");
+  await access(new URL(`.${moduleMatch[1]}`, clientRoot));
 
-  await assert.rejects(
-    access(new URL("public/_sites-preview", templateRoot)),
+  const requiredAssets = [
+    "dhruv-hero.png",
+    "healthcare-3d.png",
+    "rag-3d.png",
+    "ml-groundwater-3d.png",
+    "data-dynamo-win.png",
+    "byusforu-logo.png",
+    "dhruv-reddy-resume.pdf",
+    "iitm-foundation-certificate.pdf",
+    "iitm-programming-certificate.pdf",
+  ];
+  const emittedAssets = await readdir(new URL("assets/", clientRoot));
+  for (const asset of requiredAssets) {
+    assert.ok(emittedAssets.includes(asset), `emits ${asset}`);
+  }
+
+  const source = await readFile(
+    new URL("app/portfolio-experience.tsx", projectRoot),
+    "utf8",
   );
+  assert.match(source, /setActiveProject\(project\)/);
+  assert.match(source, /role="dialog"/);
+  assert.match(source, /aria-label=\{`Open details for \$\{project\.name\}`\}/);
 });
