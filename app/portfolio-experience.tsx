@@ -11,12 +11,15 @@ import {
   Code2,
   Database,
   FileCheck2,
+  FileText,
   GraduationCap,
   Handshake,
   Layers3,
+  Mail,
   Map,
   Sparkles,
   Trophy,
+  X,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -25,7 +28,6 @@ import { ImageScatter } from "@/components/ui/image-scatter";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
 import { CreepyButton } from "@/components/ui/creepy-button";
 import { CylinderCarousel } from "@/components/ui/cylinder-carousel";
-import { StaggeredGrid, type BentoItem } from "@/components/ui/staggered-grid";
 import { PerspectiveGrid } from "@/components/ui/perspective-grid";
 import { PortfolioPet } from "@/components/portfolio-pet";
 import {
@@ -36,6 +38,7 @@ import {
   SiGithub,
   SiHtml5,
   SiJavascript,
+  SiLeetcode,
   SiMongodb,
   SiMysql,
   SiNodedotjs,
@@ -47,6 +50,7 @@ import {
   SiTypescript,
   SiVuedotjs,
 } from "react-icons/si";
+import { FaLinkedinIn } from "react-icons/fa";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -206,45 +210,18 @@ const skillIcons = [
   { label: "GitHub", icon: <SiGithub />, color: "#F3F1EA" },
 ];
 
-const skillBentoItems: BentoItem[] = [
-  {
-    id: "web",
-    title: "Web Engineering",
-    subtitle: "Interfaces + APIs",
-    description: "React, Vue, Node, Flask, TypeScript",
-    icon: <SiReact size={24} color="#61DAFB" />,
-    image: "/assets/healthcare-3d.png",
-  },
-  {
-    id: "ai",
-    title: "AI & Machine Learning",
-    subtitle: "Useful intelligence",
-    description: "RAG, NLP, prediction, scientific computing",
-    icon: <BrainCircuit size={24} color="#BDF73C" />,
-    image: "/assets/rag-3d.png",
-  },
-  {
-    id: "data",
-    title: "Data Systems",
-    subtitle: "Reliable foundations",
-    description: "MongoDB, Redis, SQL, Firebase",
-    icon: <SiMongodb size={24} color="#47A248" />,
-    image: "/assets/ml-groundwater-3d.png",
-  },
-  {
-    id: "ship",
-    title: "Delivery",
-    subtitle: "From zero to live",
-    description: "Git, APIs, automation, cloud deployment",
-    icon: <SiGit size={24} color="#F05032" />,
-    image: "/assets/data-dynamo-win.png",
-  },
-];
+const projectLinks: Record<string, string> = {
+  CodeSync: "https://codesync.byus4u.in/",
+  "Healthcare OS": "https://hms.byus4u.in/",
+  Ascend: "https://ascend.byus4u.in/",
+};
 
 export default function PortfolioExperience() {
   const rootRef = useRef<HTMLElement>(null);
   const [introReady, setIntroReady] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [activeProject, setActiveProject] = useState<(typeof projects)[number] | null>(null);
+  const [activeExperience, setActiveExperience] = useState<(typeof experience)[number] | null>(null);
 
   const scatterData = useMemo(
     () => [
@@ -285,6 +262,22 @@ export default function PortfolioExperience() {
     document.documentElement.classList.toggle("intro-locked", !entered);
     return () => document.documentElement.classList.remove("intro-locked");
   }, [entered]);
+
+  useEffect(() => {
+    const modalOpen = Boolean(activeProject || activeExperience);
+    document.documentElement.classList.toggle("modal-locked", modalOpen);
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveProject(null);
+        setActiveExperience(null);
+      }
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.documentElement.classList.remove("modal-locked");
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [activeProject, activeExperience]);
 
   const enterPortfolio = () => {
     setEntered(true);
@@ -423,51 +416,6 @@ export default function PortfolioExperience() {
           });
       });
 
-      const workCards = gsap.utils.toArray<HTMLElement>(".experience-card");
-      const workTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".experience-flight",
-          start: "top top",
-          end: `+=${workCards.length * 135}%`,
-          pin: ".experience-viewport",
-          scrub: 1,
-          anticipatePin: 1,
-        },
-      });
-
-      workCards.forEach((card, index) => {
-        const direction = index % 2 === 0 ? -1 : 1;
-        workTimeline
-          .fromTo(
-            card,
-            {
-              autoAlpha: 0,
-              z: -1300,
-              x: direction * 620,
-              rotateY: direction * -42,
-              scale: 0.62,
-            },
-            {
-              autoAlpha: 1,
-              z: 0,
-              x: 0,
-              rotateY: direction * 4,
-              scale: 1,
-              duration: 1.1,
-              ease: "expo.out",
-            },
-          )
-          .to(card, {
-            autoAlpha: 0,
-            z: 700,
-            x: direction * -420,
-            rotateY: direction * 34,
-            scale: 1.18,
-            duration: 0.8,
-            ease: "power2.in",
-          });
-      });
-
       gsap.from(".achievement-image", {
         clipPath: "inset(48% 0 48% 0 round 28px)",
         scale: 1.18,
@@ -526,6 +474,23 @@ export default function PortfolioExperience() {
             <p className="eyebrow">01 / HELLO</p>
             <h3>Dhruv Reddy.</h3>
             <p>Full-stack engineer and applied AI builder from Hyderabad, India.</p>
+            <nav className="hero-socials" aria-label="Dhruv’s profiles">
+              <a href="https://github.com/DhruvReddyS" target="_blank" rel="noreferrer" aria-label="GitHub">
+                <SiGithub />
+              </a>
+              <a href="https://www.linkedin.com/in/sripathi-dhruv-reddy" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                <FaLinkedinIn />
+              </a>
+              <a href="https://leetcode.com/u/DhruvReddyS/" target="_blank" rel="noreferrer" aria-label="LeetCode">
+                <SiLeetcode />
+              </a>
+              <a href="mailto:dhruvreddysripathi2006@gmail.com" aria-label="Email Dhruv">
+                <Mail />
+              </a>
+              <a href="/assets/dhruv-reddy-resume.pdf" target="_blank" aria-label="Open resume">
+                <FileText />
+              </a>
+            </nav>
           </article>
 
           <article className="identity-beat identity-beat-2">
@@ -570,7 +535,20 @@ export default function PortfolioExperience() {
 
           <div className="project-stage">
             {projects.map((project) => (
-              <article className={`project-card accent-${project.accent}`} key={project.name}>
+              <article
+                className={`project-card accent-${project.accent}`}
+                key={project.name}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open details for ${project.name}`}
+                onClick={() => setActiveProject(project)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setActiveProject(project);
+                  }
+                }}
+              >
                 <div className="project-visual">
                   <Image src={project.image} alt="" fill sizes="80vw" />
                   <div className="project-number">{project.number}</div>
@@ -586,6 +564,7 @@ export default function PortfolioExperience() {
                       {project.tech.map((item) => <span key={item}>{item}</span>)}
                     </div>
                     <strong>{project.impact}</strong>
+                    <span className="project-open">Open case study <ArrowUpRight size={14} /></span>
                   </div>
                 </div>
               </article>
@@ -597,39 +576,40 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section id="experience" className="experience-flight">
-        <div className="experience-viewport">
-          <div className="flight-header">
-            <div>
-              <p className="eyebrow">EXPERIENCE / FIELD NOTES</p>
-              <h2>Where the work met the world.</h2>
-            </div>
-            <p>Depth in motion <Layers3 size={14} /></p>
+      <section id="experience" className="work-orbit-section">
+        <div className="work-orbit-heading">
+          <p className="eyebrow">EXPERIENCE / FIELD NOTES</p>
+          <h2>A circular record<br />of work in the world.</h2>
+          <p>Choose any chapter to open the full story.</p>
+        </div>
+        <div className="work-orbit">
+          <div className="orbit-ring orbit-ring-one" aria-hidden="true" />
+          <div className="orbit-ring orbit-ring-two" aria-hidden="true" />
+          <div className="work-orbit-core">
+            <Layers3 size={28} />
+            <strong>04</strong>
+            <span>chapters</span>
           </div>
-
-          <div className="experience-stage">
-            {experience.map((item) => {
-              const Icon = item.icon;
-              return (
-                <article className="experience-card" key={item.company}>
-                  <div className="experience-media">
-                    <Image src={item.image} alt="" fill sizes="55vw" />
-                    <span><Icon size={20} /></span>
-                  </div>
-                  <div className="experience-copy">
-                    <p className="experience-date">{item.date}</p>
-                    <h3>{item.role}</h3>
-                    <h4>{item.company}</h4>
-                    <p>{item.summary}</p>
-                    <div className="experience-metric">
-                      <strong>{item.metric}</strong>
-                      <span>{item.metricLabel}</span>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+          {experience.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                className="radial-work-card"
+                type="button"
+                key={item.company}
+                onClick={() => setActiveExperience(item)}
+              >
+                <Image src={item.image} alt="" fill sizes="260px" />
+                <span className="radial-work-shade" />
+                <span className="radial-work-icon"><Icon size={18} /></span>
+                <span className="radial-work-copy">
+                  <small>{item.date}</small>
+                  <strong>{item.role}</strong>
+                  <em>{item.company}</em>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </section>
 
@@ -691,26 +671,16 @@ export default function PortfolioExperience() {
             production web systems, RAG pipelines, and machine-learning work.
           </p>
         </div>
-        <StaggeredGrid
-          images={[
-            "/assets/healthcare-3d.png",
-            "/assets/rag-3d.png",
-            "/assets/ml-groundwater-3d.png",
-            "/assets/data-dynamo-win.png",
-            "/assets/byusforu-logo.png",
-          ]}
-          bentoItems={skillBentoItems}
-          skillIcons={skillIcons}
-          centerText="STACK"
-          showFooter={false}
-          className="skills-staggered"
-        />
-        <div className="skill-key" aria-label="Technology color key">
+        <div className="skill-icon-field" aria-label="Technology toolkit">
           {skillIcons.map((skill) => (
-            <div key={skill.label}>
-              <span style={{ color: skill.color }}>{skill.icon}</span>
-              <strong>{skill.label}</strong>
-            </div>
+            <span
+              key={skill.label}
+              style={{ color: skill.color }}
+              title={skill.label}
+              aria-label={skill.label}
+            >
+              {skill.icon}
+            </span>
           ))}
         </div>
       </section>
@@ -807,6 +777,67 @@ export default function PortfolioExperience() {
       </footer>
 
       <PortfolioPet visible={entered} />
+
+      {activeProject && (
+        <div className="detail-modal" role="dialog" aria-modal="true" aria-label={`${activeProject.name} project details`} onClick={() => setActiveProject(null)}>
+          <article onClick={(event) => event.stopPropagation()}>
+            <button className="detail-modal-close" type="button" onClick={() => setActiveProject(null)} aria-label="Close project details">
+              <X size={18} />
+            </button>
+            <div className="detail-modal-media">
+              <Image src={activeProject.image} alt="" fill sizes="(max-width: 900px) 100vw, 48vw" />
+              <span>{activeProject.number}</span>
+            </div>
+            <div className="detail-modal-copy">
+              <p className="eyebrow">{activeProject.type}</p>
+              <h2>{activeProject.name}</h2>
+              <p>{activeProject.description}</p>
+              <div className="detail-impact">
+                <span>Outcome</span>
+                <strong>{activeProject.impact}</strong>
+              </div>
+              <div className="tech-list">
+                {activeProject.tech.map((item) => <span key={item}>{item}</span>)}
+              </div>
+              {projectLinks[activeProject.name] && (
+                <a href={projectLinks[activeProject.name]} target="_blank" rel="noreferrer">
+                  Open live project <ArrowUpRight size={16} />
+                </a>
+              )}
+            </div>
+          </article>
+        </div>
+      )}
+
+      {activeExperience && (
+        <div className="detail-modal" role="dialog" aria-modal="true" aria-label={`${activeExperience.role} experience details`} onClick={() => setActiveExperience(null)}>
+          <article onClick={(event) => event.stopPropagation()}>
+            <button className="detail-modal-close" type="button" onClick={() => setActiveExperience(null)} aria-label="Close experience details">
+              <X size={18} />
+            </button>
+            <div className="detail-modal-media">
+              <Image src={activeExperience.image} alt="" fill sizes="(max-width: 900px) 100vw, 48vw" />
+              <span>{(() => {
+                const ExperienceIcon = activeExperience.icon;
+                return <ExperienceIcon size={19} />;
+              })()}</span>
+            </div>
+            <div className="detail-modal-copy">
+              <p className="eyebrow">{activeExperience.date}</p>
+              <h2>{activeExperience.role}</h2>
+              <h3>{activeExperience.company}</h3>
+              <p>{activeExperience.summary}</p>
+              <div className="detail-impact">
+                <span>{activeExperience.metricLabel}</span>
+                <strong>{activeExperience.metric}</strong>
+              </div>
+              <a href="mailto:dhruvreddysripathi2006@gmail.com">
+                Discuss this experience <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </article>
+        </div>
+      )}
     </main>
   );
 }
