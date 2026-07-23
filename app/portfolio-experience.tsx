@@ -12,6 +12,7 @@ import {
   Database,
   FileCheck2,
   GraduationCap,
+  Handshake,
   Layers3,
   Map,
   Sparkles,
@@ -20,14 +21,13 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TypingKeyboard } from "@/components/ui/typing-keyboard";
-import { MusicPlayer } from "@/components/ui/music-player";
 import { ImageScatter } from "@/components/ui/image-scatter";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
-import { AnimatedFooter } from "@/components/ui/animated-footer";
 import { CreepyButton } from "@/components/ui/creepy-button";
 import { CylinderCarousel } from "@/components/ui/cylinder-carousel";
 import { StaggeredGrid, type BentoItem } from "@/components/ui/staggered-grid";
 import { PerspectiveGrid } from "@/components/ui/perspective-grid";
+import { PortfolioPet } from "@/components/portfolio-pet";
 import {
   SiCss,
   SiFirebase,
@@ -495,8 +495,8 @@ export default function PortfolioExperience() {
               typingSpeed={[36, 78]}
               scale={0.88}
               loop={false}
-              accentColor="#3b82f6"
-              secondaryAccent="#a855f7"
+              accentColor="#bdf73c"
+              secondaryAccent="#f7b955"
             />
           </div>
           <div className={`intro-action ${introReady ? "is-ready" : ""}`}>
@@ -800,49 +800,13 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section className="footer-wrap">
-        <AnimatedFooter
-          headingLines={["LET’S", "BUILD"]}
-          leftImage="/assets/dhruv-hero.png"
-          rightImage="/assets/ml-groundwater-3d.png"
-          background="#070707"
-          textColor="#f4f3ed"
-          charColor="#4a5a22"
-          hoverColor="#bdf73c"
-          hoverCharColor="#070707"
-          columns={64}
-          cellSize={18}
-          fontSize={15}
-        />
-        <div className="footer-contact">
-          <p>Have an ambitious build in mind?</p>
-          <a href="mailto:dhruvreddysripathi2006@gmail.com">
-            dhruvreddysripathi2006@gmail.com <ArrowUpRight size={18} />
-          </a>
-          <div>
-            <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
-            <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
-            <span>Hyderabad · India</span>
-          </div>
-        </div>
-      </section>
+      <footer className="handshake-footer">
+        <a href="mailto:dhruvreddysripathi2006@gmail.com" aria-label="Start a conversation with Dhruv">
+          <Handshake strokeWidth={1.05} />
+        </a>
+      </footer>
 
-      <aside className="music-dock" aria-label="Portfolio soundtrack">
-        <MusicPlayer
-          tracks={[
-            {
-              title: "Deep Work",
-              artist: "Dhruv’s portfolio loop",
-              src: "/assets/focus-loop.wav",
-              artwork: "/assets/dhruv-hero.png",
-            },
-          ]}
-          avatar="/assets/dhruv-hero.png"
-          accentColor="#bdf73c"
-          loop
-          defaultCollapsed
-        />
-      </aside>
+      <PortfolioPet visible={entered} />
     </main>
   );
 }
