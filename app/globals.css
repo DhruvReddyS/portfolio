@@ -61,6 +61,11 @@ a {
     var(--ink);
 }
 
+.portfolio-shell > header {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .eyebrow {
   margin: 0;
   color: var(--lime);
@@ -216,7 +221,7 @@ a {
 /* Keyboard intro */
 .intro {
   position: relative;
-  height: 190vh;
+  height: 165vh;
 }
 
 .intro-stage {
@@ -230,98 +235,15 @@ a {
   transform-origin: center;
 }
 
-.intro-stage::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  opacity: 0.2;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(circle at center, black, transparent 73%);
-}
-
-.intro-meta {
-  position: absolute;
-  top: 5.3rem;
-  right: 3.5vw;
-  left: 3.5vw;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  color: rgba(243, 241, 234, 0.4);
-  font-family: var(--font-mono), monospace;
-  font-size: 0.64rem;
-  letter-spacing: 0.16em;
-}
-
-.intro-copy {
-  position: absolute;
-  z-index: 3;
-  top: 18%;
-  left: 5vw;
-  max-width: 580px;
-  pointer-events: none;
-}
-
-.intro-copy p {
-  margin: 0 0 0.45rem;
-  color: var(--muted);
-  font-family: var(--font-mono), monospace;
-  font-size: clamp(0.75rem, 1vw, 0.9rem);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.intro-copy h1 {
-  margin: 0;
-  font-size: clamp(2.6rem, 6vw, 6.5rem);
-  font-weight: 540;
-  letter-spacing: -0.07em;
-  line-height: 0.86;
-}
-
-.intro-copy em {
-  color: var(--lime);
-  font-family: Georgia, serif;
-  font-weight: 400;
-}
-
 .keyboard-wrap {
   position: absolute;
   z-index: 1;
-  top: 47%;
+  top: 50%;
   left: 50%;
   width: min(900px, 92vw);
   height: 640px;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 40px 70px rgba(0, 0, 0, 0.7));
-}
-
-.scroll-cue {
-  position: absolute;
-  z-index: 3;
-  right: 3.5vw;
-  bottom: 2.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  color: rgba(243, 241, 234, 0.55);
-  font-family: var(--font-mono), monospace;
-  font-size: 0.66rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.scroll-cue svg {
-  color: var(--lime);
-  animation: nudge 1.6s ease-in-out infinite;
-}
-
-@keyframes nudge {
-  0%, 100% { transform: translateY(-2px); }
-  50% { transform: translateY(5px); }
 }
 
 /* Scroll story */
@@ -1530,15 +1452,10 @@ a {
     clip-path: path("M0 64 C22 64 22 39 40 39 V0 H0 Z");
   }
 
-  .intro-copy {
-    top: 18%;
-    right: 5vw;
-  }
-
   .keyboard-wrap {
-    top: 55%;
+    top: 50%;
     width: 1100px;
-    transform: translate(-50%, -50%) scale(0.72);
+    transform: translate(-50%, -50%) scale(0.78);
   }
 
   .hero {
@@ -1671,18 +1588,9 @@ a {
 }
 
 @media (max-width: 620px) {
-  .intro-meta {
-    top: 4.5rem;
-    font-size: 0.52rem;
-  }
-
-  .intro-copy h1 {
-    font-size: 3.2rem;
-  }
-
   .keyboard-wrap {
-    top: 58%;
-    transform: translate(-50%, -50%) scale(0.55);
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.61);
   }
 
   .story {
@@ -1845,6 +1753,11 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .portfolio-shell > header {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   *,

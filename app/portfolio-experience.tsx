@@ -281,14 +281,25 @@ export default function PortfolioExperience() {
 
     const context = gsap.context(() => {
       gsap.to(".intro-stage", {
-        scale: 0.72,
+        scale: 0.5,
         opacity: 0,
-        filter: "blur(18px)",
+        filter: "blur(22px)",
         scrollTrigger: {
           trigger: ".intro",
-          start: "top top",
+          start: "38% top",
           end: "bottom top",
           scrub: 0.8,
+        },
+      });
+
+      gsap.to(".portfolio-shell > header", {
+        opacity: 1,
+        pointerEvents: "auto",
+        scrollTrigger: {
+          trigger: ".story",
+          start: "top bottom",
+          end: "top 70%",
+          scrub: true,
         },
       });
 
@@ -443,26 +454,14 @@ export default function PortfolioExperience() {
 
       <section id="home" className="intro">
         <div className="intro-stage">
-          <div className="intro-meta">
-            <span>PORTFOLIO / 2026</span>
-            <span>HYDERABAD, INDIA</span>
-          </div>
-          <div className="intro-copy">
-            <p>First, an idea.</p>
-            <h1>Then I make it <em>real.</em></h1>
-          </div>
           <div className="keyboard-wrap">
             <TypingKeyboard
-              autoTypeText="Hi, I’m Dhruv — full-stack engineer, AI builder, and obsessive shipper. I turn difficult ideas into useful products.       "
-              typingSpeed={[32, 82]}
-              scale={0.76}
+              autoTypeText="Hi, I’m Dhruv. I build full-stack products, applied AI systems, and data experiences that turn difficult ideas into useful things.       "
+              typingSpeed={[36, 78]}
+              scale={0.88}
               accentColor="#bdf73c"
               secondaryAccent="#f7b955"
             />
-          </div>
-          <div className="scroll-cue">
-            <ArrowDown size={16} />
-            <span>Scroll to enter</span>
           </div>
         </div>
       </section>
