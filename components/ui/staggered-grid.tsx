@@ -1,5 +1,6 @@
 'use client'
-import React, { useEffect, useRef, useState, useId } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import imagesLoaded from 'imagesloaded'
@@ -69,7 +70,7 @@ export function StaggeredGrid({
 
         // Wait for background images to load
         // Note: we target both regular images and bento images if possible
-        const imgLoad = imagesLoaded(document.querySelectorAll('.grid__item-img'), { background: true }, handleLoad)
+        imagesLoaded(document.querySelectorAll('.grid__item-img'), { background: true }, handleLoad)
 
         return () => {
             // Cleanup
@@ -109,7 +110,7 @@ export function StaggeredGrid({
             const middleColumnIndex = Math.floor(numColumns / 2)
 
             const columns: Element[][] = Array.from({ length: numColumns }, () => [])
-            gridFullItems.forEach((item: any) => {
+            gridFullItems.forEach((item: Element) => {
                 const colAttr = item.getAttribute('data-col');
                 // Use data-col if available, fallback to a safe index calculation
                 const columnIndex = colAttr !== null ? parseInt(colAttr, 10) : 0;
@@ -168,7 +169,7 @@ export function StaggeredGrid({
                 }, 0)
             }
         }
-    }, [isLoaded])
+    }, [isLoaded, scroller])
 
     // Prepare grid items: fill up to the end of Row 3 (21 slots)
     // This perfectly balances the 3rd row with 2 cards on each side of the bento container.
@@ -239,9 +240,11 @@ export function StaggeredGrid({
                                                         <div className="absolute inset-0 bg-zinc-900 overflow-hidden z-0 group/img">
                                                             {bentoItem.image && (
                                                                 <>
-                                                                    <img
+                                                                    <Image
                                                                         src={bentoItem.image}
                                                                         alt={bentoItem.title}
+                                                                        fill
+                                                                        sizes="(max-width: 900px) 54vw, 32vw"
                                                                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 opacity-90 group-hover/img:opacity-100"
                                                                     />
                                                                     {/* Text Protection Gradient - Shadow peaking from bottom */}

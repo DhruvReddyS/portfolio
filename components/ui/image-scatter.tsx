@@ -2,13 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
-
-// Register ScrollTrigger
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 export interface ScatterSet {
   heading: string;
@@ -21,9 +15,7 @@ export interface ImageScatterProps extends React.HTMLAttributes<HTMLDivElement> 
   cardHeight?: number;
   animationDuration?: number;
   animationOverlap?: number;
-  animationOverlap?: number;
   headingFadeDuration?: number;
-  scroller?: string | Element | null;
 }
 
 export function ImageScatter({
@@ -33,7 +25,6 @@ export function ImageScatter({
   animationDuration = 0.75,
   animationOverlap = 0.5,
   headingFadeDuration = 0.5,
-  scroller,
   className,
   ...props
 }: ImageScatterProps) {
@@ -47,14 +38,14 @@ export function ImageScatter({
     const gallery = galleryRef.current;
     const galleryHeading = headingRef.current;
 
-    let viewport = {
+    const viewport = {
       centerX: containerRef.current.clientWidth / 2,
       centerY: containerRef.current.clientHeight / 2,
       rangeMin: Math.min(containerRef.current.clientWidth, containerRef.current.clientHeight) * 0.35,
       rangeMax: Math.min(containerRef.current.clientWidth, containerRef.current.clientHeight) * 0.7,
     };
 
-    let state = {
+    const state = {
       activeCards: [] as { element: HTMLDivElement; centerX: number; centerY: number }[],
       currentSection: 0,
       isAnimating: false,
@@ -208,12 +199,6 @@ export function ImageScatter({
       return tl;
     }
 
-    function getSectionIndex(progress: number) {
-      const totalSections = data.length;
-      const sectionProgress = Math.min(progress * totalSections, totalSections - 0.01);
-      return Math.floor(sectionProgress);
-    }
-
     function reinitialize() {
       state.activeCards.forEach(({ element }) => element.remove());
       updateViewport();
@@ -224,8 +209,6 @@ export function ImageScatter({
     state.activeCards = createCards(0);
     galleryHeading.textContent = data[0]?.heading || "";
     gsap.set(galleryHeading, { opacity: 1 });
-
-    let intervalId: NodeJS.Timeout;
 
     function nextSection() {
       if (state.isAnimating) return;
@@ -245,7 +228,7 @@ export function ImageScatter({
       });
     }
 
-    intervalId = setInterval(nextSection, 3000); // Auto-play every 3s
+    const intervalId = window.setInterval(nextSection, 3000);
 
     const handleResize = () => {
       reinitialize();

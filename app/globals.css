@@ -2607,6 +2607,359 @@ a {
   }
 }
 
+/* Signature type treatments — each section gets its own visual gesture */
+.effect-marker,
+.effect-orbit-word,
+.effect-underline,
+.effect-signal,
+.effect-stamp {
+  position: relative;
+  z-index: 0;
+  display: inline-block;
+  isolation: isolate;
+}
+
+.effect-marker::before {
+  position: absolute;
+  z-index: -1;
+  right: -0.08em;
+  bottom: 0.04em;
+  left: -0.08em;
+  height: 0.34em;
+  background: var(--lime);
+  content: "";
+  opacity: 0.78;
+  transform: rotate(-1.2deg) skewX(-10deg);
+  transform-origin: left center;
+  animation: marker-sweep 1.1s 0.25s both cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.effect-marker-amber::before {
+  top: 52%;
+  right: -0.04em;
+  bottom: auto;
+  left: -0.04em;
+  height: 0.12em;
+  background:
+    linear-gradient(90deg, var(--amber) 0 32%, transparent 32% 36%, var(--amber) 36% 100%);
+  opacity: 0.95;
+  transform: rotate(0.8deg);
+}
+
+.effect-orbit-word::after {
+  position: absolute;
+  z-index: -1;
+  inset: -0.18em -0.28em -0.08em;
+  border: 0.045em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  content: "";
+  opacity: 0.48;
+  transform: rotate(-5deg) scaleX(1.05);
+}
+
+.effect-orbit-word::before {
+  position: absolute;
+  top: -0.08em;
+  right: -0.2em;
+  width: 0.12em;
+  height: 0.12em;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 0.055em rgba(247, 185, 85, 0.22);
+  content: "";
+  animation: orbit-pulse 2.8s ease-in-out infinite;
+}
+
+.effect-underline::after {
+  position: absolute;
+  right: -0.05em;
+  bottom: -0.08em;
+  left: -0.05em;
+  height: 0.08em;
+  background:
+    linear-gradient(90deg, transparent, currentColor 8% 42%, var(--amber) 46% 58%, currentColor 62% 92%, transparent);
+  content: "";
+  clip-path: polygon(0 44%, 18% 20%, 34% 56%, 51% 16%, 68% 62%, 84% 24%, 100% 48%, 100% 100%, 0 100%);
+  transform-origin: left center;
+}
+
+.effect-signal::after {
+  position: absolute;
+  right: 0;
+  bottom: -0.12em;
+  left: 0;
+  height: 0.12em;
+  background:
+    repeating-linear-gradient(90deg, var(--lime) 0 0.42em, transparent 0.42em 0.58em);
+  content: "";
+  filter: drop-shadow(0 0 0.12em rgba(189, 247, 60, 0.55));
+  transform: skewX(-18deg);
+}
+
+.effect-stamp {
+  padding: 0.02em 0.12em 0.06em;
+  color: var(--lime);
+}
+
+.effect-stamp::after {
+  position: absolute;
+  z-index: -1;
+  inset: -0.02em -0.04em;
+  border: 0.025em solid var(--lime);
+  border-radius: 0.08em;
+  content: "";
+  opacity: 0.55;
+  transform: rotate(-1.8deg);
+}
+
+@keyframes marker-sweep {
+  from {
+    transform: rotate(-1.2deg) skewX(-10deg) scaleX(0);
+  }
+  to {
+    transform: rotate(-1.2deg) skewX(-10deg) scaleX(1);
+  }
+}
+
+@keyframes orbit-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+/* Fine interaction layer */
+.nav-links a,
+.footer-contact a,
+.certificate-links a,
+.studio > a,
+.work-detail-actions a,
+.detail-modal-copy > a {
+  background-image: linear-gradient(var(--lime), var(--lime));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  transition:
+    color 180ms ease,
+    background-size 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-links a:hover,
+.footer-contact a:hover,
+.certificate-links a:hover,
+.studio > a:hover,
+.work-detail-actions a:hover,
+.detail-modal-copy > a:hover {
+  background-size: 100% 1px;
+}
+
+.project-card {
+  transition:
+    border-color 300ms ease,
+    box-shadow 500ms ease;
+}
+
+.project-card:hover {
+  border-color: rgba(189, 247, 60, 0.52);
+  box-shadow:
+    0 70px 150px rgba(0, 0, 0, 0.78),
+    0 0 0 1px rgba(189, 247, 60, 0.1),
+    0 0 72px rgba(189, 247, 60, 0.1);
+}
+
+.work-sheet {
+  transition:
+    border-color 300ms ease,
+    filter 450ms ease,
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.work-sheet:hover {
+  border-color: rgba(247, 185, 85, 0.48);
+  filter: saturate(1.12) contrast(1.04);
+}
+
+.skill-icon-field > span {
+  transition:
+    filter 250ms ease,
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-icon-field > span:hover {
+  filter: drop-shadow(0 0 18px currentColor);
+  transform: translateY(-12px) rotate(-7deg) scale(1.18);
+}
+
+.skill-icon-field > span:nth-child(3n):hover {
+  transform: translateY(-10px) rotate(8deg) scale(1.2);
+}
+
+.education-card {
+  transition:
+    border-color 260ms ease,
+    box-shadow 500ms ease,
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.education-card:hover {
+  border-color: rgba(83, 104, 20, 0.52);
+  box-shadow: 0 34px 80px rgba(45, 48, 34, 0.16);
+  transform: translateY(-12px);
+}
+
+.education-card.featured:hover,
+.education-card.studio:hover {
+  border-color: rgba(189, 247, 60, 0.5);
+  box-shadow: 0 36px 90px rgba(0, 0, 0, 0.28);
+}
+
+.achievement-facts span {
+  transition:
+    border-color 220ms ease,
+    color 220ms ease,
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.achievement-facts span:hover {
+  border-color: var(--amber);
+  color: var(--amber);
+  transform: translateY(-4px) rotate(-1deg);
+}
+
+/* Pixel — an original, non-human portfolio companion */
+.pet-character {
+  width: 126px;
+  height: 126px;
+  overflow: visible;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  isolation: isolate;
+}
+
+.pet-character::before {
+  position: absolute;
+  z-index: -2;
+  inset: 17%;
+  border: 1px solid rgba(189, 247, 60, 0.34);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(189, 247, 60, 0.14), transparent 68%);
+  box-shadow:
+    0 0 40px rgba(189, 247, 60, 0.12),
+    inset 0 0 24px rgba(247, 185, 85, 0.08);
+  content: "";
+  animation: pixel-core 3.2s ease-in-out infinite;
+}
+
+.pet-character::after {
+  position: absolute;
+  z-index: -1;
+  inset: 11%;
+  border: 1px dashed rgba(247, 185, 85, 0.35);
+  border-radius: 50%;
+  content: "";
+  animation: pixel-ring 9s linear infinite;
+}
+
+.pet-character-image {
+  object-fit: contain;
+  filter:
+    drop-shadow(0 20px 22px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 12px rgba(189, 247, 60, 0.16));
+  transition:
+    filter 320ms ease,
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pet-character:hover .pet-character-image {
+  filter:
+    drop-shadow(0 24px 24px rgba(0, 0, 0, 0.62))
+    drop-shadow(0 0 20px rgba(189, 247, 60, 0.34));
+  transform: rotate(-7deg) scale(1.1);
+}
+
+.pet-character > span {
+  right: 8px;
+  bottom: 12px;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #0a0c09;
+}
+
+.pet-nudge {
+  position: relative;
+  margin-bottom: 1.2rem;
+  padding: 0.72rem 0.88rem;
+  border-radius: 0.85rem 0.85rem 0.2rem 0.85rem;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.32);
+}
+
+.pet-nudge b {
+  color: var(--lime);
+  font-weight: 750;
+  letter-spacing: 0.11em;
+}
+
+.pet-chat {
+  border-color: rgba(189, 247, 60, 0.3);
+  background:
+    linear-gradient(145deg, rgba(189, 247, 60, 0.04), transparent 38%),
+    rgba(8, 10, 8, 0.965);
+  box-shadow:
+    0 34px 100px rgba(0, 0, 0, 0.72),
+    0 0 0 1px rgba(247, 185, 85, 0.05);
+  animation: pixel-chat-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.pet-chat-avatar {
+  width: 48px;
+  height: 48px;
+  overflow: visible;
+  border: 1px solid rgba(189, 247, 60, 0.25);
+  background: radial-gradient(circle, rgba(189, 247, 60, 0.16), transparent 68%);
+}
+
+.pet-chat-avatar img {
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.55));
+}
+
+@keyframes pixel-core {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: scale(0.88);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes pixel-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pixel-chat-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Mobile + reduced motion */
 @media (max-width: 960px) {
   .nav-links {
@@ -3011,8 +3364,8 @@ a {
   }
 
   .pet-character {
-    width: 72px;
-    height: 84px;
+    width: 88px;
+    height: 88px;
   }
 
   .pet-nudge {

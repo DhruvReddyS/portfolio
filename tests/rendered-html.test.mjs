@@ -42,7 +42,7 @@ test("server-renders the complete portfolio experience", async () => {
     /<title>Dhruv Reddy — Full-stack &amp; AI Engineer · Dhruv Reddy<\/title>/i,
   );
   assert.match(html, /ENTER PORTFOLIO/);
-  assert.match(html, /A 3D flight through the work\./);
+  assert.match(html, /A 3D flight through the[\s\S]{0,160}work\./);
   assert.match(html, /Open details for CodeSync/);
   assert.match(html, /AI Research Intern &amp; Team Lead/);
   assert.match(
@@ -50,6 +50,7 @@ test("server-renders the complete portfolio experience", async () => {
     /Correct tools\.[\s\S]{0,200}Correct colors\.[\s\S]{0,200}Zero filler\./,
   );
   assert.match(html, /Ask Dhruv’s portfolio companion/);
+  assert.match(html, /pixel-mascot\.png/);
   assert.match(html, /LET’S/);
   assert.match(html, /BUILD/);
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
@@ -67,6 +68,7 @@ test("build emits the portfolio client module and required public assets", async
 
   const requiredAssets = [
     "dhruv-hero.png",
+    "pixel-mascot.png",
     "healthcare-3d.png",
     "rag-3d.png",
     "ml-groundwater-3d.png",
@@ -88,4 +90,12 @@ test("build emits the portfolio client module and required public assets", async
   assert.match(source, /setActiveProject\(project\)/);
   assert.match(source, /role="dialog"/);
   assert.match(source, /aria-label=\{`Open details for \$\{project\.name\}`\}/);
+
+  const keyboard = await readFile(
+    new URL("components/ui/typing-keyboard.tsx", projectRoot),
+    "utf8",
+  );
+  assert.match(keyboard, /loop = false/);
+  assert.match(keyboard, /screen\.textContent = ""/);
+  assert.match(keyboard, /onTypingCompleteRef\.current\?\.\(\)/);
 });

@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface TypingKeyboardProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Text to auto-type in a loop */
+  /** Text to auto-type */
   autoTypeText?: string;
-  /** Restart after the full message. Defaults to true. */
+  /** Restart after the full message. Defaults to false. */
   loop?: boolean;
+  /** Called once after the full message has been typed. */
+  onTypingComplete?: () => void;
   /** [min, max] ms delay between keystrokes */
   typingSpeed?: [number, number];
   /** Overall scale factor */
@@ -51,8 +53,9 @@ const KC_MAP: Record<number, number> = {
 
 export function TypingKeyboard({
   className,
-  autoTypeText = "Draco. Fast, private, and beautiful web browser. Built with love by one stubborn developer.       ",
-  loop = true,
+  autoTypeText = "Draco. Fast, private, and beautiful web browser. Built with love by one stubborn developer.",
+  loop = false,
+  onTypingComplete,
   typingSpeed = [40, 120],
   scale = 0.8,
   accentColor = "#3b82f6",
@@ -62,6 +65,13 @@ export function TypingKeyboard({
   const mainRef = useRef<HTMLDivElement>(null);
   const kbRef = useRef<HTMLDivElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
+  const onTypingCompleteRef = useRef(onTypingComplete);
+  const minTypingDelay = typingSpeed[0];
+  const maxTypingDelay = typingSpeed[1];
+
+  useEffect(() => {
+    onTypingCompleteRef.current = onTypingComplete;
+  }, [onTypingComplete]);
 
   useEffect(() => {
     const kb = kbRef.current;
@@ -75,13 +85,22 @@ export function TypingKeyboard({
     let alive = true;
     let idx = 0;
     let timer: ReturnType<typeof setTimeout>;
+    const keyTimers = new Set<ReturnType<typeof setTimeout>>();
+
+    // React Strict Mode intentionally remounts effects in development. Resetting
+    // here guarantees the sentence is rendered once instead of being appended.
+    screen.textContent = "";
 
     const pressKey = (kc: number) => {
       const domIdx = KC_MAP[kc];
       const el = allKeys[domIdx];
       if (el) {
         el.classList.add("tk-key--down");
-        setTimeout(() => el.classList.remove("tk-key--down"), 80);
+        const keyTimer = setTimeout(() => {
+          el.classList.remove("tk-key--down");
+          keyTimers.delete(keyTimer);
+        }, 80);
+        keyTimers.add(keyTimer);
       }
     };
 
@@ -91,26 +110,31 @@ export function TypingKeyboard({
       const kc = char === " " ? 32 : char.toUpperCase().charCodeAt(0);
 
       pressKey(kc);
-      screen.innerHTML += char === " " ? " " : char;
+      screen.textContent += char;
 
       idx++;
       if (idx >= autoTypeText.length) {
+        onTypingCompleteRef.current?.();
         if (!loop) return;
         timer = setTimeout(() => {
           if (!alive) return;
-          screen.innerHTML = "";
+          screen.textContent = "";
           idx = 0;
           timer = setTimeout(typeNext, 1000);
         }, 2000);
       } else {
-        const delay = typingSpeed[0] + Math.random() * (typingSpeed[1] - typingSpeed[0]);
+        const delay = minTypingDelay + Math.random() * (maxTypingDelay - minTypingDelay);
         timer = setTimeout(typeNext, delay);
       }
     };
 
     timer = setTimeout(typeNext, 1500);
-    return () => { alive = false; clearTimeout(timer); };
-  }, [autoTypeText, loop, typingSpeed]);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+      keyTimers.forEach(clearTimeout);
+    };
+  }, [autoTypeText, loop, minTypingDelay, maxTypingDelay]);
 
   return (
     <div className={cn("tk-container", className)} {...props}>
@@ -254,7 +278,7 @@ export function TypingKeyboard({
 
       <div className="tk-main tk-flex" ref={mainRef}>
         <div className="tk-keyboard tk-flex" ref={kbRef}>
-          <div className="tk-screen tk-flex" ref={screenRef} />
+          <div className="tk-screen tk-flex" ref={screenRef} aria-live="polite" />
 
           <div className="tk-keyboard__front tk-face" />
           <div className="tk-keyboard__back tk-face" />

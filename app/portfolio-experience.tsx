@@ -264,11 +264,6 @@ export default function PortfolioExperience() {
   );
 
   useEffect(() => {
-    const readyTimer = window.setTimeout(() => setIntroReady(true), 10_200);
-    return () => window.clearTimeout(readyTimer);
-  }, []);
-
-  useEffect(() => {
     document.documentElement.classList.toggle("intro-locked", !entered);
     return () => document.documentElement.classList.remove("intro-locked");
   }, [entered]);
@@ -438,6 +433,84 @@ export default function PortfolioExperience() {
           scrub: 1,
         },
       });
+
+      gsap.from(".cylinder-copy > *", {
+        y: 70,
+        rotateX: -18,
+        autoAlpha: 0,
+        stagger: 0.12,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".cylinder-showcase",
+          start: "top 72%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".expertise .section-heading", {
+        clipPath: "inset(0 100% 0 0)",
+        duration: 1.2,
+        ease: "expo.inOut",
+        scrollTrigger: {
+          trigger: ".expertise",
+          start: "top 70%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".skills-heading h2", {
+        letterSpacing: "0.02em",
+        filter: "blur(12px)",
+        autoAlpha: 0,
+        duration: 1.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".skills-lab",
+          start: "top 68%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".perspective-copy", {
+        scale: 0.72,
+        rotateZ: -2.5,
+        autoAlpha: 0,
+        duration: 1.25,
+        ease: "back.out(1.35)",
+        scrollTrigger: {
+          trigger: ".perspective-cta",
+          start: "top 66%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".achievement-copy > *", {
+        x: -80,
+        autoAlpha: 0,
+        stagger: 0.11,
+        duration: 0.85,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: ".achievement",
+          start: "top 64%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".education-card", {
+        y: (index) => (index % 2 === 0 ? 110 : -70),
+        rotate: (index) => (index - 1) * 2.4,
+        autoAlpha: 0,
+        stagger: 0.14,
+        duration: 1.05,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".education-grid",
+          start: "top 78%",
+          toggleActions: "play none none reverse",
+        },
+      });
     }, rootRef);
 
     return () => context.revert();
@@ -451,10 +524,11 @@ export default function PortfolioExperience() {
         <div className="intro-stage">
           <div className="keyboard-wrap">
             <TypingKeyboard
-              autoTypeText="Hi, I’m Dhruv Reddy. I build full-stack products, applied AI systems, and data experiences. Ready to enter?       "
+              autoTypeText="Hi, I’m Dhruv Reddy. I build full-stack products, applied AI systems, and data experiences. Ready to enter?"
               typingSpeed={[36, 78]}
               scale={0.88}
               loop={false}
+              onTypingComplete={() => setIntroReady(true)}
               accentColor="#bdf73c"
               secondaryAccent="#f7b955"
             />
@@ -507,7 +581,7 @@ export default function PortfolioExperience() {
 
           <article className="identity-beat identity-beat-2">
             <p className="eyebrow">02 / WHAT I BUILD</p>
-            <h3>Systems behind<br />the <span>screen.</span></h3>
+            <h3>Systems behind<br />the <span className="effect-orbit-word">screen.</span></h3>
             <p>
               Production web platforms, retrieval-augmented intelligence, and
               data products engineered for real users and measurable outcomes.
@@ -540,7 +614,7 @@ export default function PortfolioExperience() {
           <div className="flight-header">
             <div>
               <p className="eyebrow">SELECTED PROJECTS / 01—07</p>
-              <h2>A 3D flight through the work.</h2>
+              <h2>A 3D flight through the <span className="effect-marker">work.</span></h2>
             </div>
             <p>Keep scrolling <ArrowDown size={14} /></p>
           </div>
@@ -628,7 +702,7 @@ export default function PortfolioExperience() {
       <section className="cylinder-showcase">
         <div className="cylinder-copy">
           <p className="eyebrow">THE PROJECT ORBIT</p>
-          <h2>Seven builds.<br /><span>Always in motion.</span></h2>
+          <h2>Seven builds.<br /><span className="effect-underline">Always in motion.</span></h2>
           <p>
             A rotating field of platforms, research, client work, and experiments—
             each one pushing the next build further.
@@ -655,7 +729,7 @@ export default function PortfolioExperience() {
       <section id="expertise" className="expertise">
         <div className="section-heading">
           <p className="eyebrow">DOMAINS OF EXPERTISE</p>
-          <h2>Wide range. One standard: <span>ship it well.</span></h2>
+          <h2>Wide range. One standard: <span className="effect-orbit-word">ship it well.</span></h2>
         </div>
         <div className="scatter-frame">
           <ImageScatter data={scatterData} cardWidth={230} cardHeight={280} />
@@ -677,7 +751,7 @@ export default function PortfolioExperience() {
       <section className="skills-lab">
         <div className="skills-heading">
           <p className="eyebrow">THE ACTUAL TOOLKIT</p>
-          <h2>Correct tools.<br /><span>Correct colors. Zero filler.</span></h2>
+          <h2>Correct tools.<br /><span className="effect-marker effect-marker-amber">Correct colors. Zero filler.</span></h2>
           <p>
             The languages, frameworks, databases, and delivery tools I use across
             production web systems, RAG pipelines, and machine-learning work.
@@ -701,7 +775,7 @@ export default function PortfolioExperience() {
         <PerspectiveGrid gridSize={34} fadeRadius={74} className="perspective-field" />
         <div className="perspective-copy">
           <p className="eyebrow">NEXT GRID / YOUR IDEA</p>
-          <h2>There’s room here<br />for one more <span>ambitious build.</span></h2>
+          <h2>There’s room here<br />for one more <span className="effect-signal">ambitious build.</span></h2>
           <p>Bring the difficult brief. I’ll bring the systems thinking.</p>
           <CreepyButton
             className="contact-creepy"
@@ -719,7 +793,7 @@ export default function PortfolioExperience() {
         <div className="achievement-copy">
           <p className="eyebrow">NATIONAL HACKATHON WINNER</p>
           <div className="achievement-kicker"><Trophy size={18} /> DATA DYNAMO 2.0</div>
-          <h2>24 hours.<br />65+ teams.<br /><span>One winning build.</span></h2>
+          <h2>24 hours.<br />65+ teams.<br /><span className="effect-stamp">One winning build.</span></h2>
           <p>
             Built CodeSync as a smart-campus competitive programming evaluation platform
             among 300+ participants—then took the national win.
@@ -743,7 +817,7 @@ export default function PortfolioExperience() {
       <section className="education">
         <div className="section-heading">
           <p className="eyebrow">LEARNING, FORMALIZED</p>
-          <h2>Two tracks. <span>One compounding journey.</span></h2>
+          <h2>Two tracks. <span className="effect-underline">One compounding journey.</span></h2>
         </div>
         <div className="education-grid">
           <article className="education-card featured">

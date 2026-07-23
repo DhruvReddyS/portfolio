@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowUpRight, MessageCircle, Send, X } from "lucide-react";
+import { ArrowUpRight, Sparkles, Send, X } from "lucide-react";
 
 type ChatMessage = {
   from: "pet" | "user";
@@ -74,7 +74,7 @@ export function PortfolioPet({ visible }: { visible: boolean }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       from: "pet",
-      text: "Hey! I’m Dhruv’s portfolio companion. Ask me anything about him.",
+      text: "Hey, I’m Pixel—Dhruv’s tiny build companion. Ask me anything about his work.",
     },
   ]);
   const logRef = useRef<HTMLDivElement>(null);
@@ -116,11 +116,11 @@ export function PortfolioPet({ visible }: { visible: boolean }) {
         <section className="pet-chat" role="dialog" aria-label="Ask about Dhruv">
           <header>
             <div className="pet-chat-avatar">
-              <Image src="/assets/dhruv-hero.png" alt="" fill sizes="42px" />
+              <Image src="/assets/pixel-mascot.png" alt="" fill sizes="48px" />
             </div>
             <div>
-              <strong>Dhruv’s companion</strong>
-              <span><i /> Portfolio guide</span>
+              <strong>Pixel</strong>
+              <span><i /> Build companion online</span>
             </div>
             <button type="button" onClick={() => setOpen(false)} aria-label="Close chat">
               <X size={17} />
@@ -163,7 +163,7 @@ export function PortfolioPet({ visible }: { visible: boolean }) {
         </section>
       )}
 
-      {!open && <span className="pet-nudge">Ask me about Dhruv</span>}
+      {!open && <span className="pet-nudge"><b>PIXEL</b> · ask me about Dhruv</span>}
       <button
         className="pet-character"
         type="button"
@@ -172,13 +172,13 @@ export function PortfolioPet({ visible }: { visible: boolean }) {
         aria-expanded={open}
       >
         <Image
-          src="/assets/dhruv-hero.png"
+          src="/assets/pixel-mascot.png"
           alt=""
           fill
-          sizes="96px"
+          sizes="132px"
           className="pet-character-image"
         />
-        <span><MessageCircle size={14} /></span>
+        <span><Sparkles size={14} /></span>
       </button>
     </aside>
   );

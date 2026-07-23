@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 
 interface PerspectiveGridProps {
@@ -21,12 +21,6 @@ export function PerspectiveGrid({
     showOverlay = true,
     fadeRadius = 80,
 }: PerspectiveGridProps) {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     // Memoize tiles array to prevent unnecessary re-renders
     const tiles = useMemo(() => Array.from({ length: gridSize * gridSize }), [gridSize]);
 
@@ -55,8 +49,7 @@ export function PerspectiveGrid({
                 }}
             >
                 {/* Tiles */}
-                {mounted &&
-                    tiles.map((_, i) => (
+                {tiles.map((_, i) => (
                         <div
                             key={i}
                             className="tile min-h-[1px] min-w-[1px] border border-gray-300 dark:border-gray-700 bg-transparent transition-colors duration-[1500ms] hover:duration-0"
