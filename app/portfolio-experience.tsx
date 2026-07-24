@@ -1046,7 +1046,7 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section className="achievement">
+      <section id="achievement" className="achievement">
         <div className="achievement-copy">
           <p className="eyebrow">NATIONAL HACKATHON WINNER</p>
           <div className="achievement-kicker"><Trophy size={18} /> DATA DYNAMO 2.0</div>
@@ -1071,7 +1071,7 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section className="education">
+      <section id="education" className="education">
         <div className="section-heading">
           <p className="eyebrow">LEARNING, FORMALIZED</p>
           <h2>Two tracks. <span className="effect-underline">One compounding journey.</span></h2>

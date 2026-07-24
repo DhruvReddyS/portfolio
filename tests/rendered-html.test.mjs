@@ -49,7 +49,7 @@ test("server-renders the complete portfolio experience", async () => {
     html,
     /Correct tools\.[\s\S]{0,200}Correct colors\.[\s\S]{0,200}Zero filler\./,
   );
-  assert.match(html, /Ask Dhruv’s portfolio companion/);
+  assert.match(html, /Meet Pixel, Dhruv’s portfolio guide/);
   assert.match(html, /pixel-mascot\.png/);
   assert.match(html, /LET’S/);
   assert.match(html, /BUILD/);
@@ -90,6 +90,15 @@ test("build emits the portfolio client module and required public assets", async
   assert.match(source, /setActiveProject\(project\)/);
   assert.match(source, /role="dialog"/);
   assert.match(source, /aria-label=\{`Open details for \$\{project\.name\}`\}/);
+
+  const pixel = await readFile(
+    new URL("components/portfolio-pet.tsx", projectRoot),
+    "utf8",
+  );
+  assert.match(pixel, /Hi, I’m/);
+  assert.match(pixel, /8 SIGNALS LOADED/);
+  assert.match(pixel, /Meet your portfolio guide/);
+  assert.match(pixel, /setTimeout\(enterChat, 3200\)/);
 
   const keyboard = await readFile(
     new URL("components/ui/typing-keyboard.tsx", projectRoot),
