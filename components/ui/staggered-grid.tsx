@@ -312,7 +312,6 @@ export function StaggeredGrid({
 
                                             {/* Text Reveal */}
                                             <div className="text-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 delay-75">
-                                                <span className="block text-[10px] font-medium text-white/90 uppercase tracking-wider mb-0.5">Build with</span>
                                                 <span className="block text-sm font-bold text-white tracking-tight">{skill?.label || "Technology"}</span>
                                             </div>
                                         </div>

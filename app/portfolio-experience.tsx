@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ArrowDown,
@@ -8,6 +8,7 @@ import {
   Award,
   BrainCircuit,
   Building2,
+  CheckCircle2,
   Code2,
   Database,
   FileCheck2,
@@ -15,19 +16,23 @@ import {
   GraduationCap,
   Mail,
   Map,
+  Layers3,
+  ScanSearch,
   Sparkles,
   Trophy,
+  Workflow,
+  Zap,
   X,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TypingKeyboard } from "@/components/ui/typing-keyboard";
-import { ImageScatter } from "@/components/ui/image-scatter";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
 import { AnimatedFooter } from "@/components/ui/animated-footer";
 import { CreepyButton } from "@/components/ui/creepy-button";
 import { CylinderCarousel } from "@/components/ui/cylinder-carousel";
 import { PerspectiveGrid } from "@/components/ui/perspective-grid";
+import { StaggeredGrid } from "@/components/ui/staggered-grid";
 import { PortfolioPet } from "@/components/portfolio-pet";
 import {
   SiCss,
@@ -148,6 +153,13 @@ const experience = [
     icon: Building2,
     link: "https://github.com/DhruvReddyS",
     linkLabel: "GitHub profile",
+    focus: "Product engineering",
+    stack: ["React", "REST APIs", "Lead workflows", "Responsive UI"],
+    bullets: [
+      "Built production interfaces for luxury property discovery.",
+      "Connected lead capture to automated follow-up workflows.",
+      "Owned implementation from UI decisions through deployment.",
+    ],
   },
   {
     date: "JUN — JUL 2025",
@@ -161,6 +173,13 @@ const experience = [
     icon: BrainCircuit,
     link: "https://otbi.in/",
     linkLabel: "Visit OTBI",
+    focus: "AI research leadership",
+    stack: ["Python", "SciPy", "Pandas", "Interpolation"],
+    bullets: [
+      "Led a three-person applied research team.",
+      "Designed preprocessing and Gaussian smoothing pipelines.",
+      "Turned scientific outputs into readable automated reports.",
+    ],
   },
   {
     date: "FOUNDER · ONGOING",
@@ -174,6 +193,13 @@ const experience = [
     icon: Sparkles,
     link: "https://freelance.byus4u.in/",
     linkLabel: "Visit ByUsForU",
+    focus: "Founder & delivery",
+    stack: ["Strategy", "Full-stack", "Cloud", "Client delivery"],
+    bullets: [
+      "Translated ambiguous business needs into product roadmaps.",
+      "Designed and shipped complete customer-facing platforms.",
+      "Handled technical ownership after launch.",
+    ],
   },
   {
     date: "PRESIDENT · 2024—25",
@@ -187,14 +213,89 @@ const experience = [
     icon: Trophy,
     link: "https://www.linkedin.com/in/sripathi-dhruv-reddy",
     linkLabel: "View leadership",
+    focus: "Community systems",
+    stack: ["Leadership", "Mentoring", "Events", "DevLoop"],
+    bullets: [
+      "Coordinated 25+ members across technical programs.",
+      "Ran coding contests and hands-on development sessions.",
+      "Built repeatable learning formats instead of one-off events.",
+    ],
   },
 ];
 
-const capabilities = [
-  { icon: Code2, label: "Full-stack systems", note: "React · Vue · Node · Flask" },
-  { icon: BrainCircuit, label: "Applied AI", note: "RAG · NLP · LLM workflows" },
-  { icon: Database, label: "Data engineering", note: "Pipelines · SQL · Redis" },
-  { icon: Map, label: "Machine learning", note: "Prediction · interpolation · viz" },
+const domains = [
+  {
+    number: "01",
+    title: "Full-stack product systems",
+    kicker: "Interfaces to infrastructure",
+    description:
+      "Role-aware products with thoughtful interaction design, dependable APIs, background work, caching, and deployment considered as one system.",
+    image: "/assets/healthcare-3d.png",
+    icon: Layers3,
+    metric: "5+",
+    metricLabel: "production platforms",
+    tech: ["React", "Vue", "Node.js", "Flask"],
+  },
+  {
+    number: "02",
+    title: "Applied AI & RAG",
+    kicker: "Answers with evidence",
+    description:
+      "Retrieval systems that keep conclusions grounded in the source—chunking, embeddings, semantic search, context assembly, and cited responses.",
+    image: "/assets/rag-3d.png",
+    icon: BrainCircuit,
+    metric: "4",
+    metricLabel: "intelligence workflows",
+    tech: ["LLMs", "Embeddings", "Vector DB", "RAG"],
+  },
+  {
+    number: "03",
+    title: "Document intelligence",
+    kicker: "Dense documents → decisions",
+    description:
+      "NLP pipelines for legal and tender corpora that surface requirements, clauses, qualification signals, and traceable summaries.",
+    image: "/assets/rag-3d.png",
+    icon: ScanSearch,
+    metric: "2×",
+    metricLabel: "domain-specific engines",
+    tech: ["NLP", "Semantic search", "Extraction", "Citations"],
+  },
+  {
+    number: "04",
+    title: "Data systems",
+    kicker: "Pipelines that stay readable",
+    description:
+      "Clean schemas, repeatable transformations, fast query paths, caching, and reporting layers designed for real operational use.",
+    image: "/assets/data-dynamo-win.png",
+    icon: Database,
+    metric: "10K+",
+    metricLabel: "records processed",
+    tech: ["SQL", "MongoDB", "Redis", "Firebase"],
+  },
+  {
+    number: "05",
+    title: "Machine learning",
+    kicker: "Scientific prediction",
+    description:
+      "Practical ML and numerical workflows combining interpolation, Gaussian smoothing, evaluation, and visual explanation.",
+    image: "/assets/ml-groundwater-3d.png",
+    icon: Map,
+    metric: "85%+",
+    metricLabel: "prediction accuracy",
+    tech: ["Python", "SciPy", "Pandas", "NumPy"],
+  },
+  {
+    number: "06",
+    title: "Product delivery",
+    kicker: "From brief to shipped",
+    description:
+      "The connective work around the code: product framing, scope control, client communication, iteration, deployment, and ownership after launch.",
+    image: "/assets/byusforu-logo.png",
+    icon: Workflow,
+    metric: "End-to-end",
+    metricLabel: "technical ownership",
+    tech: ["Discovery", "Architecture", "Delivery", "Iteration"],
+  },
 ];
 
 const skillIcons = [
@@ -217,6 +318,41 @@ const skillIcons = [
   { label: "GitHub", icon: <SiGithub />, color: "#F3F1EA" },
 ];
 
+const skillBentoItems = [
+  {
+    id: "web",
+    title: "Web systems",
+    subtitle: "Production interfaces",
+    description: "Responsive, accessible product surfaces connected to dependable APIs.",
+    icon: <Code2 />,
+    image: "/assets/healthcare-3d.png",
+  },
+  {
+    id: "ai",
+    title: "AI workflows",
+    subtitle: "Grounded intelligence",
+    description: "RAG, NLP, vector retrieval, and model-assisted product features.",
+    icon: <BrainCircuit />,
+    image: "/assets/rag-3d.png",
+  },
+  {
+    id: "data",
+    title: "Data engines",
+    subtitle: "Useful pipelines",
+    description: "Structured storage, transformation, caching, analysis, and reporting.",
+    icon: <Database />,
+    image: "/assets/ml-groundwater-3d.png",
+  },
+  {
+    id: "ship",
+    title: "Delivery",
+    subtitle: "Ideas to production",
+    description: "Architecture, iteration, deployment, and long-term technical ownership.",
+    icon: <Zap />,
+    image: "/assets/data-dynamo-win.png",
+  },
+];
+
 const projectLinks: Record<string, string> = {
   CodeSync: "https://codesync.byus4u.in/",
   "Healthcare OS": "https://hms.byus4u.in/",
@@ -230,38 +366,9 @@ export default function PortfolioExperience() {
   const [activeProject, setActiveProject] = useState<(typeof projects)[number] | null>(null);
   const [activeExperience, setActiveExperience] = useState<(typeof experience)[number] | null>(null);
   const [activeWorkIndex, setActiveWorkIndex] = useState(0);
-  const currentExperience = experience[activeWorkIndex];
-  const CurrentExperienceIcon = currentExperience.icon;
-
-  const scatterData = useMemo(
-    () => [
-      {
-        heading: "FULL-STACK SYSTEMS",
-        images: [
-          "/assets/healthcare-3d.png",
-          "/assets/data-dynamo-win.png",
-          "/assets/byusforu-logo.png",
-        ],
-      },
-      {
-        heading: "APPLIED AI / RAG",
-        images: [
-          "/assets/rag-3d.png",
-          "/assets/ml-groundwater-3d.png",
-          "/assets/dhruv-hero.png",
-        ],
-      },
-      {
-        heading: "DATA + MACHINE LEARNING",
-        images: [
-          "/assets/ml-groundwater-3d.png",
-          "/assets/data-dynamo-win.png",
-          "/assets/healthcare-3d.png",
-        ],
-      },
-    ],
-    [],
-  );
+  const [activeDomainIndex, setActiveDomainIndex] = useState(0);
+  const activeDomain = domains[activeDomainIndex];
+  const ActiveDomainIcon = activeDomain.icon;
 
   useEffect(() => {
     document.documentElement.classList.toggle("intro-locked", !entered);
@@ -413,13 +520,50 @@ export default function PortfolioExperience() {
         onUpdate: (self) => placeProjectCards(self.progress),
       });
 
-      gsap.utils.toArray<HTMLElement>(".work-sheet").forEach((sheet, index) => {
+      const experienceScenes = gsap.utils.toArray<HTMLElement>(".experience-scene");
+      const placeExperienceScenes = (progress: number) => {
+        const travel = progress * (experienceScenes.length - 1);
+        const nextIndex = Math.round(travel);
+        setActiveWorkIndex((current) => (current === nextIndex ? current : nextIndex));
+
+        experienceScenes.forEach((scene, index) => {
+          const phase = index - travel;
+          const distance = Math.abs(phase);
+          const closeness = Math.max(0, 1 - distance);
+          gsap.set(scene, {
+            xPercent: -50,
+            yPercent: -50,
+            x: phase * Math.min(window.innerWidth * 0.62, 960),
+            y: distance * 44,
+            z: distance * -720,
+            rotateY: phase * -18,
+            rotateZ: phase * 1.6,
+            scale: 0.82 + closeness * 0.18,
+            autoAlpha: Math.max(0, 1 - distance * 0.72),
+            zIndex: Math.round(100 - distance * 10),
+            pointerEvents: distance < 0.52 ? "auto" : "none",
+          });
+        });
+      };
+
+      placeExperienceScenes(0);
+      ScrollTrigger.create({
+        trigger: ".experience-cinema",
+        start: "top top",
+        end: `+=${experienceScenes.length * 125}%`,
+        pin: ".experience-cinema-sticky",
+        scrub: 0.9,
+        anticipatePin: 1,
+        onUpdate: (self) => placeExperienceScenes(self.progress),
+      });
+
+      gsap.utils.toArray<HTMLElement>(".domain-card").forEach((card, index) => {
         ScrollTrigger.create({
-          trigger: sheet,
-          start: "top 52%",
-          end: "bottom 52%",
-          onEnter: () => setActiveWorkIndex(index),
-          onEnterBack: () => setActiveWorkIndex(index),
+          trigger: card,
+          start: "top 58%",
+          end: "bottom 42%",
+          onEnter: () => setActiveDomainIndex(index),
+          onEnterBack: () => setActiveDomainIndex(index),
         });
       });
 
@@ -448,12 +592,12 @@ export default function PortfolioExperience() {
         },
       });
 
-      gsap.from(".expertise .section-heading", {
+      gsap.from(".domain-story-heading", {
         clipPath: "inset(0 100% 0 0)",
         duration: 1.2,
         ease: "expo.inOut",
         scrollTrigger: {
-          trigger: ".expertise",
+          trigger: ".domain-story",
           start: "top 70%",
           toggleActions: "play none none reverse",
         },
@@ -662,41 +806,89 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section id="experience" className="work-sheets-section">
-        <div className="work-sheets">
-          {experience.map((item, index) => (
-            <button
-              className={`work-sheet ${index === activeWorkIndex ? "is-active" : ""}`}
-              type="button"
-              key={item.company}
-              onClick={() => setActiveWorkIndex(index)}
-              aria-label={`Show ${item.role} at ${item.company}`}
-            >
-              <Image src={item.image} alt="" fill sizes="(max-width: 900px) 100vw, 58vw" />
-              <span>{String(index + 1).padStart(2, "0")}</span>
-            </button>
-          ))}
+      <section id="experience" className="experience-cinema">
+        <div className="experience-cinema-sticky">
+          <header className="experience-cinema-header">
+            <div>
+              <p className="eyebrow">WORK EXPERIENCE / 01—04</p>
+              <h2>Built in the <span className="effect-signal">real world.</span></h2>
+            </div>
+            <p>
+              <span>{String(activeWorkIndex + 1).padStart(2, "0")}</span>
+              Scroll to move through the timeline
+            </p>
+          </header>
+
+          <div className="experience-cinema-stage">
+            {experience.map((item, index) => {
+              const ExperienceIcon = item.icon;
+              return (
+                <article className="experience-scene" key={item.company}>
+                  <div className="experience-scene-media">
+                    <Image
+                      src={item.image}
+                      alt=""
+                      fill
+                      sizes="(max-width: 900px) 100vw, 52vw"
+                    />
+                    <div className="experience-media-hud">
+                      <span>CASE / {String(index + 1).padStart(2, "0")}</span>
+                      <span>DELIVERED</span>
+                    </div>
+                    <div className="experience-company-mark">
+                      <ExperienceIcon size={25} />
+                      <span>{item.focus}</span>
+                    </div>
+                  </div>
+
+                  <div className="experience-scene-copy">
+                    <div className="experience-scene-meta">
+                      <span>{item.date}</span>
+                      <i />
+                      <span>{item.company}</span>
+                    </div>
+                    <h3>{item.role}</h3>
+                    <p>{item.summary}</p>
+
+                    <ul>
+                      {item.bullets.map((bullet) => (
+                        <li key={bullet}><CheckCircle2 size={15} /> {bullet}</li>
+                      ))}
+                    </ul>
+
+                    <div className="experience-scene-bottom">
+                      <div className="experience-scene-metric">
+                        <strong>{item.metric}</strong>
+                        <span>{item.metricLabel}</span>
+                      </div>
+                      <div className="experience-stack">
+                        {item.stack.map((technology) => <span key={technology}>{technology}</span>)}
+                      </div>
+                    </div>
+
+                    <div className="experience-scene-actions">
+                      <a href={item.link} target="_blank" rel="noreferrer">
+                        {item.linkLabel} <ArrowUpRight size={15} />
+                      </a>
+                      <button type="button" onClick={() => setActiveExperience(item)}>
+                        Open full notes
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="experience-timeline" aria-hidden="true">
+            {experience.map((item, index) => (
+              <div className={index <= activeWorkIndex ? "is-active" : ""} key={item.company}>
+                <i />
+                <span>{item.company.split("·")[0].trim()}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <aside className="work-sheet-details">
-          <p className="eyebrow">EXPERIENCE / {String(activeWorkIndex + 1).padStart(2, "0")}</p>
-          <div className="work-detail-icon"><CurrentExperienceIcon size={23} /></div>
-          <p className="experience-date">{currentExperience.date}</p>
-          <h2>{currentExperience.role}</h2>
-          <h3>{currentExperience.company}</h3>
-          <p>{currentExperience.summary}</p>
-          <div className="experience-metric">
-            <strong>{currentExperience.metric}</strong>
-            <span>{currentExperience.metricLabel}</span>
-          </div>
-          <div className="work-detail-actions">
-            <a href={currentExperience.link} target="_blank" rel="noreferrer">
-              {currentExperience.linkLabel} <ArrowUpRight size={15} />
-            </a>
-            <button type="button" onClick={() => setActiveExperience(currentExperience)}>
-              Full notes
-            </button>
-          </div>
-        </aside>
       </section>
 
       <section className="cylinder-showcase">
@@ -726,25 +918,80 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section id="expertise" className="expertise">
-        <div className="section-heading">
-          <p className="eyebrow">DOMAINS OF EXPERTISE</p>
-          <h2>Wide range. One standard: <span className="effect-orbit-word">ship it well.</span></h2>
+      <section id="expertise" className="domain-story">
+        <div className="domain-story-heading">
+          <p className="eyebrow">DOMAINS OF EXPERTISE / 01—06</p>
+          <h2>
+            Six ways I turn complexity into{" "}
+            <span className="effect-orbit-word">working software.</span>
+          </h2>
+          <p>
+            Scroll the cards. The story, evidence, and toolkit change with every
+            domain—without making you hunt for the important part.
+          </p>
         </div>
-        <div className="scatter-frame">
-          <ImageScatter data={scatterData} cardWidth={230} cardHeight={280} />
-        </div>
-        <div className="capability-row">
-          {capabilities.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div key={item.label}>
-                <Icon size={20} />
-                <strong>{item.label}</strong>
-                <span>{item.note}</span>
-              </div>
-            );
-          })}
+
+        <div className="domain-story-layout">
+          <aside className="domain-story-copy" aria-live="polite">
+            <div className="domain-copy-index">
+              <span>{activeDomain.number}</span>
+              <ActiveDomainIcon size={24} />
+            </div>
+            <p className="domain-kicker">{activeDomain.kicker}</p>
+            <h3>{activeDomain.title}</h3>
+            <p>{activeDomain.description}</p>
+
+            <div className="domain-evidence">
+              <strong>{activeDomain.metric}</strong>
+              <span>{activeDomain.metricLabel}</span>
+            </div>
+
+            <div className="domain-tech">
+              {activeDomain.tech.map((technology) => (
+                <span key={technology}>{technology}</span>
+              ))}
+            </div>
+
+            <div className="domain-progress" aria-hidden="true">
+              {domains.map((domain, index) => (
+                <i
+                  className={index <= activeDomainIndex ? "is-active" : ""}
+                  key={domain.number}
+                />
+              ))}
+            </div>
+          </aside>
+
+          <div className="domain-card-rail">
+            {domains.map((domain, index) => {
+              const DomainIcon = domain.icon;
+              return (
+                <button
+                  className={`domain-card ${index === activeDomainIndex ? "is-active" : ""}`}
+                  type="button"
+                  key={domain.number}
+                  onClick={() => setActiveDomainIndex(index)}
+                  aria-label={`Show ${domain.title}`}
+                >
+                  <Image
+                    src={domain.image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 900px) 92vw, 48vw"
+                  />
+                  <div className="domain-card-top">
+                    <span>{domain.number}</span>
+                    <DomainIcon size={22} />
+                  </div>
+                  <div className="domain-card-label">
+                    <p>{domain.kicker}</p>
+                    <h3>{domain.title}</h3>
+                    <span>{domain.metric} · {domain.metricLabel}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 
@@ -757,16 +1004,26 @@ export default function PortfolioExperience() {
             production web systems, RAG pipelines, and machine-learning work.
           </p>
         </div>
-        <div className="skill-icon-field" aria-label="Technology toolkit">
+        <StaggeredGrid
+          className="skills-staggered"
+          images={[
+            "/assets/healthcare-3d.png",
+            "/assets/rag-3d.png",
+            "/assets/ml-groundwater-3d.png",
+            "/assets/data-dynamo-win.png",
+            "/assets/byusforu-logo.png",
+          ]}
+          bentoItems={skillBentoItems}
+          skillIcons={skillIcons}
+          centerText="THE STACK"
+          showFooter={false}
+        />
+        <div className="skill-key" aria-label="Technology toolkit">
           {skillIcons.map((skill) => (
-            <span
-              key={skill.label}
-              style={{ color: skill.color }}
-              title={skill.label}
-              aria-label={skill.label}
-            >
-              {skill.icon}
-            </span>
+            <div key={skill.label}>
+              <span style={{ color: skill.color }}>{skill.icon}</span>
+              <strong>{skill.label}</strong>
+            </div>
           ))}
         </div>
       </section>
