@@ -4,30 +4,36 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ArrowDown,
-  ArrowRight,
   ArrowUpRight,
   Award,
   BrainCircuit,
-  Check,
+  Building2,
+  CheckCircle2,
   Code2,
   Database,
-  Download,
   FileCheck2,
-  Globe2,
+  FileText,
   GraduationCap,
-  Layers3,
   Mail,
   Map,
-  Orbit,
+  Layers3,
   ScanSearch,
   Sparkles,
   Trophy,
   Workflow,
-  X,
   Zap,
+  X,
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { TypingKeyboard } from "@/components/ui/typing-keyboard";
+import { NotchNavbar } from "@/components/ui/notch-navbar";
+import { AnimatedFooter } from "@/components/ui/animated-footer";
+import { CreepyButton } from "@/components/ui/creepy-button";
+import { CylinderCarousel } from "@/components/ui/cylinder-carousel";
+import { PerspectiveGrid } from "@/components/ui/perspective-grid";
+import { StaggeredGrid } from "@/components/ui/staggered-grid";
+import { PortfolioPet } from "@/components/portfolio-pet";
 import {
   SiCss,
   SiFirebase,
@@ -49,196 +55,246 @@ import {
   SiVuedotjs,
 } from "react-icons/si";
 import { FaLinkedinIn } from "react-icons/fa";
-import { TypingKeyboard } from "@/components/ui/typing-keyboard";
-import { NotchNavbar } from "@/components/ui/notch-navbar";
-import { StaggeredGrid } from "@/components/ui/staggered-grid";
-import { PerspectiveGrid } from "@/components/ui/perspective-grid";
-import { CreepyButton } from "@/components/ui/creepy-button";
-import { AnimatedFooter } from "@/components/ui/animated-footer";
-import { PortfolioPet } from "@/components/portfolio-pet";
 
-if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 const projects = [
   {
     number: "01",
     name: "CodeSync",
-    eyebrow: "Competitive programming intelligence",
+    type: "Competitive programming intelligence",
     description:
-      "A unified intelligence layer across coding platforms and GitHub—contest tracking, peer benchmarking, AI guidance, code workflows, and career signals in one system.",
+      "Unified analytics across 5+ coding platforms and GitHub, with contest tracking, peer benchmarking, an AI copilot, code editor, and ATS-ready career tools.",
     impact: "200+ learners",
-    tech: ["React", "Node.js", "Firebase", "MongoDB"],
+    tech: ["React", "Node.js", "Firebase", "MongoDB", "REST"],
     image: "/assets/data-dynamo-win.png",
-    color: "#bdf73c",
-    link: "https://codesync.byus4u.in/",
+    accent: "lime",
   },
   {
     number: "02",
     name: "Healthcare OS",
-    eyebrow: "Multi-role care operations",
+    type: "Multi-role care operations",
     description:
-      "A complete clinic operating system for patients, doctors, and admins with appointments, treatment records, secure workflows, background jobs, caching, and reporting.",
+      "A full-stack clinic platform for patients, doctors, and admins—appointments, treatments, secure JWT workflows, background jobs, caching, and reports.",
     impact: "40% faster response",
-    tech: ["Flask", "Vue", "Redis", "Celery"],
+    tech: ["Flask", "Vue.js", "Redis", "Celery", "SQLAlchemy"],
     image: "/assets/healthcare-3d.png",
-    color: "#f7b955",
-    link: "https://hms.byus4u.in/",
+    accent: "silver",
   },
   {
     number: "03",
     name: "QuizMaster",
-    eyebrow: "Adaptive learning platform",
+    type: "Adaptive learning platform",
     description:
-      "A focused evaluation environment with question-bank operations, timed attempts, performance analytics, and role-based content administration.",
+      "A focused quiz and evaluation system with question-bank workflows, timed attempts, performance analytics, and role-based content administration.",
     impact: "Learning, measured",
-    tech: ["Python", "Flask", "SQLite", "Jinja"],
+    tech: ["Python", "Flask", "SQLite", "Jinja", "Bootstrap"],
     image: "/assets/healthcare-3d.png",
-    color: "#d7ff7b",
+    accent: "amber",
   },
   {
     number: "04",
     name: "Legal RAG",
-    eyebrow: "Cited legal intelligence",
+    type: "Cited legal intelligence",
     description:
-      "Retrieval-augmented legal research that grounds every answer in source documents, surfaces clauses, preserves context, and keeps conclusions traceable.",
+      "Retrieval-augmented legal research that grounds answers in source documents, surfaces clauses, preserves context, and keeps every conclusion traceable.",
     impact: "Answers with evidence",
-    tech: ["Python", "LLMs", "Embeddings", "RAG"],
+    tech: ["Python", "LLMs", "Embeddings", "Vector DB", "RAG"],
     image: "/assets/rag-3d.png",
-    color: "#bdf73c",
+    accent: "lime",
   },
   {
     number: "05",
     name: "Tender NLP",
-    eyebrow: "Document intelligence",
+    type: "Document intelligence with RAG",
     description:
-      "An NLP engine for dense tender documents—semantic retrieval, requirement extraction, qualification checks, and evidence-backed summaries.",
-    impact: "Docs → decisions",
-    tech: ["NLP", "RAG", "Vector search", "APIs"],
+      "An NLP pipeline for dense tender documents—semantic retrieval, requirement extraction, qualification checks, and fast evidence-backed summaries.",
+    impact: "Dense docs → decisions",
+    tech: ["NLP", "RAG", "Python", "Vector Search", "APIs"],
     image: "/assets/rag-3d.png",
-    color: "#f7b955",
+    accent: "silver",
   },
   {
     number: "06",
     name: "Groundwater ML",
-    eyebrow: "Scientific prediction & mapping",
+    type: "Scientific prediction & mapping",
     description:
-      "Processed 10,000+ readings through interpolation, Gaussian smoothing, and scientific visualization to predict groundwater conditions with 85%+ accuracy.",
+      "Processed 10,000+ readings using interpolation, Gaussian smoothing, and scientific visualization to predict and map groundwater with 85%+ accuracy.",
     impact: "85%+ accuracy",
-    tech: ["Python", "SciPy", "Pandas", "NumPy"],
+    tech: ["Python", "SciPy", "Pandas", "NumPy", "Matplotlib"],
     image: "/assets/ml-groundwater-3d.png",
-    color: "#c7e6d1",
+    accent: "earth",
   },
   {
     number: "07",
     name: "Ascend",
-    eyebrow: "Modular learning system",
+    type: "Modular learning system",
     description:
-      "A course-creation platform with structured modules, draft publishing, validation, and Cloudinary media delivery tuned for speed.",
-    impact: "70% fewer errors",
+      "A course creation platform with structured modules, draft publishing, validation, and Cloudinary media delivery tuned for sub-two-second asset loads.",
+    impact: "70% fewer form errors",
     tech: ["Flask", "MongoDB", "Cloudinary", "JavaScript"],
     image: "/assets/ml-groundwater-3d.png",
-    color: "#f7b955",
-    link: "https://ascend.byus4u.in/",
+    accent: "amber",
   },
 ];
 
 const experience = [
   {
-    number: "01",
-    period: "DEC 2025 — FEB 2026",
+    date: "DEC 2025 — FEB 2026",
     role: "Full-stack Developer Intern",
     company: "Axon Development · Texas, USA",
-    description:
-      "Owned WestBrookHomes from responsive interface decisions through API-driven lead workflows and deployment.",
-    result: "60%",
-    resultLabel: "less manual lead handling",
-    icon: Globe2,
+    summary:
+      "Owned the full lifecycle of WestBrookHomes’ luxury real-estate platform—from responsive React interfaces to API-driven lead workflows.",
+    metric: "60%",
+    metricLabel: "less manual lead handling",
     image: "/assets/healthcare-3d.png",
-    bullets: ["Production React interfaces", "Automated lead follow-up", "End-to-end delivery"],
+    icon: Building2,
+    link: "https://github.com/DhruvReddyS",
+    linkLabel: "GitHub profile",
+    focus: "Product engineering",
+    stack: ["React", "REST APIs", "Lead workflows", "Responsive UI"],
+    bullets: [
+      "Built production interfaces for luxury property discovery.",
+      "Connected lead capture to automated follow-up workflows.",
+      "Owned implementation from UI decisions through deployment.",
+    ],
   },
   {
-    number: "02",
-    period: "JUN — JUL 2025",
+    date: "JUN — JUL 2025",
     role: "AI Research Intern & Team Lead",
     company: "OTBI · Osmania University",
-    description:
-      "Led a three-person research team building a scientific groundwater prediction, mapping, and reporting system.",
-    result: "10K+",
-    resultLabel: "data points processed",
-    icon: BrainCircuit,
+    summary:
+      "Led a three-person team building an AI groundwater prediction and mapping system, with scientific preprocessing, smoothing, interpolation, and automated reporting.",
+    metric: "10K+",
+    metricLabel: "data points processed",
     image: "/assets/ml-groundwater-3d.png",
-    bullets: ["Research team leadership", "Gaussian smoothing pipelines", "Automated scientific reports"],
+    icon: BrainCircuit,
+    link: "https://otbi.in/",
+    linkLabel: "Visit OTBI",
+    focus: "AI research leadership",
+    stack: ["Python", "SciPy", "Pandas", "Interpolation"],
+    bullets: [
+      "Led a three-person applied research team.",
+      "Designed preprocessing and Gaussian smoothing pipelines.",
+      "Turned scientific outputs into readable automated reports.",
+    ],
   },
   {
-    number: "03",
-    period: "FOUNDER · ONGOING",
+    date: "FOUNDER · ONGOING",
     role: "Independent Digital Studio",
     company: "ByUsForU",
-    description:
-      "Turned ambiguous client needs into product strategy, full-stack platforms, launches, and long-term technical ownership.",
-    result: "5+",
-    resultLabel: "platforms delivered",
-    icon: Sparkles,
+    summary:
+      "Founded a compact freelance studio delivering strategic platforms and digital experiences for growing businesses—shipped with speed and full technical ownership.",
+    metric: "5+",
+    metricLabel: "platforms delivered",
     image: "/assets/byusforu-logo.png",
-    bullets: ["Product discovery", "Full-stack execution", "Post-launch ownership"],
+    icon: Sparkles,
+    link: "https://freelance.byus4u.in/",
+    linkLabel: "Visit ByUsForU",
+    focus: "Founder & delivery",
+    stack: ["Strategy", "Full-stack", "Cloud", "Client delivery"],
+    bullets: [
+      "Translated ambiguous business needs into product roadmaps.",
+      "Designed and shipped complete customer-facing platforms.",
+      "Handled technical ownership after launch.",
+    ],
   },
   {
-    number: "04",
-    period: "PRESIDENT · 2024—25",
+    date: "PRESIDENT · 2024—25",
     role: "Tech Community Leadership",
-    company: "ASTRA · MVSR",
-    description:
-      "Led technical programming for a 25+ member community, including events, coding contests, and the DevLoop bootcamp.",
-    result: "25+",
-    resultLabel: "members led",
-    icon: Trophy,
+    company: "ASTRA · MVSR Engineering College",
+    summary:
+      "Led 25+ members across technical events, coding contests, and DevLoop—a practical web-development bootcamp built to help peers ship.",
+    metric: "25+",
+    metricLabel: "members led",
     image: "/assets/data-dynamo-win.png",
-    bullets: ["Community systems", "Mentoring", "Practical learning formats"],
+    icon: Trophy,
+    link: "https://www.linkedin.com/in/sripathi-dhruv-reddy",
+    linkLabel: "View leadership",
+    focus: "Community systems",
+    stack: ["Leadership", "Mentoring", "Events", "DevLoop"],
+    bullets: [
+      "Coordinated 25+ members across technical programs.",
+      "Ran coding contests and hands-on development sessions.",
+      "Built repeatable learning formats instead of one-off events.",
+    ],
   },
 ];
 
 const domains = [
   {
-    number: "A1",
-    title: "Product engineering",
-    note: "Interfaces, APIs, background jobs, caching, and deployment designed as one coherent product.",
+    number: "01",
+    title: "Full-stack product systems",
+    kicker: "Interfaces to infrastructure",
+    description:
+      "Role-aware products with thoughtful interaction design, dependable APIs, background work, caching, and deployment considered as one system.",
+    image: "/assets/healthcare-3d.png",
     icon: Layers3,
-    proof: "5+ shipped platforms",
+    metric: "5+",
+    metricLabel: "production platforms",
+    tech: ["React", "Vue", "Node.js", "Flask"],
   },
   {
-    number: "A2",
+    number: "02",
     title: "Applied AI & RAG",
-    note: "Evidence-grounded retrieval systems that keep context, citations, and usefulness in the same loop.",
+    kicker: "Answers with evidence",
+    description:
+      "Retrieval systems that keep conclusions grounded in the source—chunking, embeddings, semantic search, context assembly, and cited responses.",
+    image: "/assets/rag-3d.png",
     icon: BrainCircuit,
-    proof: "4 intelligence workflows",
+    metric: "4",
+    metricLabel: "intelligence workflows",
+    tech: ["LLMs", "Embeddings", "Vector DB", "RAG"],
   },
   {
-    number: "A3",
+    number: "03",
     title: "Document intelligence",
-    note: "Legal and tender pipelines that transform dense documents into searchable, traceable decisions.",
+    kicker: "Dense documents → decisions",
+    description:
+      "NLP pipelines for legal and tender corpora that surface requirements, clauses, qualification signals, and traceable summaries.",
+    image: "/assets/rag-3d.png",
     icon: ScanSearch,
-    proof: "2 domain engines",
+    metric: "2×",
+    metricLabel: "domain-specific engines",
+    tech: ["NLP", "Semantic search", "Extraction", "Citations"],
   },
   {
-    number: "A4",
+    number: "04",
     title: "Data systems",
-    note: "Readable schemas, transformations, fast query paths, caching, and operational reporting layers.",
+    kicker: "Pipelines that stay readable",
+    description:
+      "Clean schemas, repeatable transformations, fast query paths, caching, and reporting layers designed for real operational use.",
+    image: "/assets/data-dynamo-win.png",
     icon: Database,
-    proof: "10K+ records",
+    metric: "10K+",
+    metricLabel: "records processed",
+    tech: ["SQL", "MongoDB", "Redis", "Firebase"],
   },
   {
-    number: "A5",
+    number: "05",
     title: "Machine learning",
-    note: "Scientific prediction, numerical processing, evaluation, and visual explanation built for real use.",
+    kicker: "Scientific prediction",
+    description:
+      "Practical ML and numerical workflows combining interpolation, Gaussian smoothing, evaluation, and visual explanation.",
+    image: "/assets/ml-groundwater-3d.png",
     icon: Map,
-    proof: "85%+ accuracy",
+    metric: "85%+",
+    metricLabel: "prediction accuracy",
+    tech: ["Python", "SciPy", "Pandas", "NumPy"],
   },
   {
-    number: "A6",
-    title: "Technical ownership",
-    note: "Discovery, architecture, iteration, delivery, and the connective work that keeps products moving.",
+    number: "06",
+    title: "Product delivery",
+    kicker: "From brief to shipped",
+    description:
+      "The connective work around the code: product framing, scope control, client communication, iteration, deployment, and ownership after launch.",
+    image: "/assets/byusforu-logo.png",
     icon: Workflow,
-    proof: "End-to-end",
+    metric: "End-to-end",
+    metricLabel: "technical ownership",
+    tech: ["Discovery", "Architecture", "Delivery", "Iteration"],
   },
 ];
 
@@ -255,54 +311,64 @@ const skillIcons = [
   { label: "Redis", icon: <SiRedis />, color: "#FF4438" },
   { label: "MySQL", icon: <SiMysql />, color: "#4479A1" },
   { label: "SQLite", icon: <SiSqlite />, color: "#5AA9E6" },
-  { label: "Tailwind", icon: <SiTailwindcss />, color: "#06B6D4" },
+  { label: "Tailwind CSS", icon: <SiTailwindcss />, color: "#06B6D4" },
   { label: "HTML5", icon: <SiHtml5 />, color: "#E34F26" },
   { label: "CSS3", icon: <SiCss />, color: "#663399" },
   { label: "Git", icon: <SiGit />, color: "#F05032" },
   { label: "GitHub", icon: <SiGithub />, color: "#F3F1EA" },
 ];
 
-const bentoItems = [
+const skillBentoItems = [
   {
-    id: "systems",
-    title: "Product systems",
-    subtitle: "Interface → infrastructure",
-    description: "Production web systems with complete technical ownership.",
+    id: "web",
+    title: "Web systems",
+    subtitle: "Production interfaces",
+    description: "Responsive, accessible product surfaces connected to dependable APIs.",
     icon: <Code2 />,
     image: "/assets/healthcare-3d.png",
   },
   {
-    id: "intelligence",
-    title: "AI intelligence",
-    subtitle: "Grounded answers",
-    description: "RAG, NLP, retrieval, citations, and model-assisted workflows.",
+    id: "ai",
+    title: "AI workflows",
+    subtitle: "Grounded intelligence",
+    description: "RAG, NLP, vector retrieval, and model-assisted product features.",
     icon: <BrainCircuit />,
     image: "/assets/rag-3d.png",
   },
   {
     id: "data",
     title: "Data engines",
-    subtitle: "Signals into decisions",
-    description: "Structured pipelines, analytics, ML, and scientific reporting.",
+    subtitle: "Useful pipelines",
+    description: "Structured storage, transformation, caching, analysis, and reporting.",
     icon: <Database />,
     image: "/assets/ml-groundwater-3d.png",
   },
   {
     id: "ship",
     title: "Delivery",
-    subtitle: "Ideas into production",
-    description: "Architecture, iteration, deployment, and ownership.",
+    subtitle: "Ideas to production",
+    description: "Architecture, iteration, deployment, and long-term technical ownership.",
     icon: <Zap />,
     image: "/assets/data-dynamo-win.png",
   },
 ];
+
+const projectLinks: Record<string, string> = {
+  CodeSync: "https://codesync.byus4u.in/",
+  "Healthcare OS": "https://hms.byus4u.in/",
+  Ascend: "https://ascend.byus4u.in/",
+};
 
 export default function PortfolioExperience() {
   const rootRef = useRef<HTMLElement>(null);
   const [introReady, setIntroReady] = useState(false);
   const [entered, setEntered] = useState(false);
   const [activeProject, setActiveProject] = useState<(typeof projects)[number] | null>(null);
-  const [activeChapter, setActiveChapter] = useState(0);
+  const [activeExperience, setActiveExperience] = useState<(typeof experience)[number] | null>(null);
+  const [activeWorkIndex, setActiveWorkIndex] = useState(0);
+  const [activeDomainIndex, setActiveDomainIndex] = useState(0);
+  const activeDomain = domains[activeDomainIndex];
+  const ActiveDomainIcon = activeDomain.icon;
 
   useEffect(() => {
     document.documentElement.classList.toggle("intro-locked", !entered);
@@ -310,357 +376,636 @@ export default function PortfolioExperience() {
   }, [entered]);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("modal-locked", Boolean(activeProject));
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setActiveProject(null);
+    const modalOpen = Boolean(activeProject || activeExperience);
+    document.documentElement.classList.toggle("modal-locked", modalOpen);
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveProject(null);
+        setActiveExperience(null);
+      }
     };
-    window.addEventListener("keydown", close);
+    window.addEventListener("keydown", closeOnEscape);
     return () => {
       document.documentElement.classList.remove("modal-locked");
-      window.removeEventListener("keydown", close);
+      window.removeEventListener("keydown", closeOnEscape);
     };
-  }, [activeProject]);
+  }, [activeProject, activeExperience]);
 
   const enterPortfolio = () => {
-    if (!introReady) return;
     setEntered(true);
-    window.setTimeout(() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" }), 520);
+    window.setTimeout(() => {
+      document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" });
+    }, 120);
   };
 
   useLayoutEffect(() => {
-    if (!entered || !rootRef.current) return;
+    if (!rootRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
 
     const context = gsap.context(() => {
-      gsap.to(".c9-world-art", {
-        yPercent: 16,
-        scale: 1.12,
-        ease: "none",
+      gsap.to(".intro-stage", {
+        scale: 0.5,
+        opacity: 0,
+        filter: "blur(22px)",
         scrollTrigger: {
-          trigger: ".c9-hero",
-          start: "top top",
+          trigger: ".intro",
+          start: "38% top",
           end: "bottom top",
+          scrub: 0.8,
+        },
+      });
+
+      gsap.to(".portfolio-shell > header", {
+        opacity: 1,
+        pointerEvents: "auto",
+        scrollTrigger: {
+          trigger: ".story",
+          start: "top bottom",
+          end: "top 70%",
+          scrub: true,
+        },
+      });
+
+      gsap.set(".identity-beat", { autoAlpha: 0, y: 70 });
+      const identityTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".story",
+          start: "top top",
+          end: "+=360%",
+          pin: ".story-sticky",
+          scrub: 1,
+          anticipatePin: 1,
+        },
+      });
+
+      identityTimeline
+        .fromTo(
+          ".identity-portrait",
+          { autoAlpha: 0, scale: 0.42, z: -900, rotateY: -34, rotateX: 12 },
+          {
+            autoAlpha: 1,
+            scale: 1,
+            z: 0,
+            rotateY: 0,
+            rotateX: 0,
+            duration: 1.2,
+            ease: "expo.out",
+          },
+        )
+        .fromTo(
+          ".identity-name",
+          { autoAlpha: 0, y: 120, letterSpacing: "0.08em" },
+          { autoAlpha: 1, y: 0, letterSpacing: "-0.08em", duration: 1 },
+          0.15,
+        )
+        .to(".identity-beat-1", { autoAlpha: 1, y: 0, duration: 0.7 }, 0.55)
+        .to(".identity-beat-1", { autoAlpha: 0, y: -70, duration: 0.55 }, 1.75)
+        .to(
+          ".identity-portrait",
+          { xPercent: 32, scale: 0.82, rotateY: 8, duration: 0.9 },
+          1.75,
+        )
+        .to(".identity-beat-2", { autoAlpha: 1, y: 0, duration: 0.7 }, 1.85)
+        .to(".identity-beat-2", { autoAlpha: 0, y: -70, duration: 0.55 }, 3.05)
+        .to(
+          ".identity-name",
+          { opacity: 0.09, scale: 1.15, y: -30, duration: 0.8 },
+          3.05,
+        )
+        .to(".identity-beat-3", { autoAlpha: 1, y: 0, duration: 0.75 }, 3.12)
+        .to(".identity-facts", { autoAlpha: 1, y: 0, duration: 0.7 }, 3.35)
+        .to({}, { duration: 0.8 });
+
+      const projectCards = gsap.utils.toArray<HTMLElement>(".project-card");
+      const projectProgress = gsap.utils.toArray<HTMLElement>(".flight-progress i");
+      const placeProjectCards = (progress: number) => {
+        const travel = progress * (projectCards.length - 1);
+        const radius = Math.min(window.innerWidth * 0.48, 760);
+
+        projectCards.forEach((card, index) => {
+          const phase = index - travel;
+          const angle = phase * 0.72;
+          const closeness = Math.max(0, 1 - Math.abs(phase) / 3.8);
+          gsap.set(card, {
+            x: Math.sin(angle) * radius,
+            y: phase * 82,
+            z: (Math.cos(angle) - 1) * 920,
+            rotateY: -Math.sin(angle) * 58,
+            rotateX: phase * -2.2,
+            scale: 0.7 + closeness * 0.3,
+            autoAlpha: Math.max(0.08, closeness),
+            zIndex: Math.round(100 - Math.abs(phase) * 10),
+            pointerEvents: Math.abs(phase) < 1.85 ? "auto" : "none",
+          });
+        });
+
+        projectProgress.forEach((bar, index) => {
+          const distance = Math.abs(index - travel);
+          gsap.set(bar, {
+            backgroundColor: distance < 0.52 ? "#bdf73c" : "rgba(255,255,255,.16)",
+            scaleX: distance < 0.52 ? 1.45 : 1,
+          });
+        });
+      };
+
+      placeProjectCards(0);
+      ScrollTrigger.create({
+        trigger: ".projects-flight",
+        start: "top top",
+        end: `+=${projectCards.length * 125}%`,
+        pin: ".projects-viewport",
+        scrub: 0.75,
+        anticipatePin: 1,
+        onUpdate: (self) => placeProjectCards(self.progress),
+      });
+
+      const experienceScenes = gsap.utils.toArray<HTMLElement>(".experience-scene");
+      const placeExperienceScenes = (progress: number) => {
+        const travel = progress * (experienceScenes.length - 1);
+        const nextIndex = Math.round(travel);
+        setActiveWorkIndex((current) => (current === nextIndex ? current : nextIndex));
+
+        experienceScenes.forEach((scene, index) => {
+          const phase = index - travel;
+          const distance = Math.abs(phase);
+          const closeness = Math.max(0, 1 - distance);
+          gsap.set(scene, {
+            xPercent: -50,
+            yPercent: -50,
+            x: phase * Math.min(window.innerWidth * 0.62, 960),
+            y: distance * 44,
+            z: distance * -720,
+            rotateY: phase * -18,
+            rotateZ: phase * 1.6,
+            scale: 0.82 + closeness * 0.18,
+            autoAlpha: Math.max(0, 1 - distance * 0.72),
+            zIndex: Math.round(100 - distance * 10),
+            pointerEvents: distance < 0.52 ? "auto" : "none",
+          });
+        });
+      };
+
+      placeExperienceScenes(0);
+      ScrollTrigger.create({
+        trigger: ".experience-cinema",
+        start: "top top",
+        end: `+=${experienceScenes.length * 125}%`,
+        pin: ".experience-cinema-sticky",
+        scrub: 0.9,
+        anticipatePin: 1,
+        onUpdate: (self) => placeExperienceScenes(self.progress),
+      });
+
+      gsap.utils.toArray<HTMLElement>(".domain-card").forEach((card, index) => {
+        ScrollTrigger.create({
+          trigger: card,
+          start: "top 58%",
+          end: "bottom 42%",
+          onEnter: () => setActiveDomainIndex(index),
+          onEnterBack: () => setActiveDomainIndex(index),
+        });
+      });
+
+      gsap.from(".achievement-image", {
+        clipPath: "inset(48% 0 48% 0 round 28px)",
+        scale: 1.18,
+        scrollTrigger: {
+          trigger: ".achievement",
+          start: "top 75%",
+          end: "top 25%",
           scrub: 1,
         },
       });
 
-      gsap.from(".c9-hero-copy > *", {
+      gsap.from(".cylinder-copy > *", {
         y: 70,
+        rotateX: -18,
         autoAlpha: 0,
-        stagger: 0.1,
-        duration: 1.05,
-        ease: "power4.out",
-      });
-
-      gsap.utils.toArray<HTMLElement>(".c9-manifesto-beat").forEach((beat, index) => {
-        ScrollTrigger.create({
-          trigger: beat,
-          start: "top 54%",
-          end: "bottom 46%",
-          onEnter: () => setActiveChapter(index),
-          onEnterBack: () => setActiveChapter(index),
-        });
-        gsap.from(beat, {
-          y: 90,
-          rotateX: -12,
-          autoAlpha: 0,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: beat,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-        });
-      });
-
-      const projectTrack = document.querySelector<HTMLElement>(".c9-project-track");
-      if (projectTrack) {
-        gsap.to(projectTrack, {
-          x: () => -(projectTrack.scrollWidth - window.innerWidth + window.innerWidth * 0.08),
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".c9-project-flight",
-            start: "top top",
-            end: () => `+=${projectTrack.scrollWidth * 0.82}`,
-            pin: ".c9-project-viewport",
-            scrub: 0.8,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-      }
-
-      gsap.utils.toArray<HTMLElement>(".c9-log-card").forEach((card, index) => {
-        gsap.from(card, {
-          x: index % 2 ? 110 : -110,
-          rotateY: index % 2 ? -9 : 9,
-          autoAlpha: 0,
-          duration: 1.05,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 76%",
-            toggleActions: "play none none reverse",
-          },
-        });
-      });
-
-      gsap.from(".c9-domain-node", {
-        scale: 0.65,
-        y: 70,
-        autoAlpha: 0,
-        stagger: 0.09,
-        duration: 0.9,
-        ease: "back.out(1.25)",
+        stagger: 0.12,
+        duration: 1,
+        ease: "power3.out",
         scrollTrigger: {
-          trigger: ".c9-domain-field",
+          trigger: ".cylinder-showcase",
           start: "top 72%",
           toggleActions: "play none none reverse",
         },
       });
 
-      gsap.from(".c9-proof-photo", {
-        clipPath: "inset(48% 0 48% 0 round 32px)",
-        scale: 1.16,
-        ease: "none",
+      gsap.from(".domain-story-heading", {
+        clipPath: "inset(0 100% 0 0)",
+        duration: 1.2,
+        ease: "expo.inOut",
         scrollTrigger: {
-          trigger: ".c9-proof",
-          start: "top 80%",
-          end: "top 24%",
-          scrub: 1,
+          trigger: ".domain-story",
+          start: "top 70%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".skills-heading h2", {
+        letterSpacing: "0.02em",
+        filter: "blur(12px)",
+        autoAlpha: 0,
+        duration: 1.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".skills-lab",
+          start: "top 68%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".perspective-copy", {
+        scale: 0.72,
+        rotateZ: -2.5,
+        autoAlpha: 0,
+        duration: 1.25,
+        ease: "back.out(1.35)",
+        scrollTrigger: {
+          trigger: ".perspective-cta",
+          start: "top 66%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".achievement-copy > *", {
+        x: -80,
+        autoAlpha: 0,
+        stagger: 0.11,
+        duration: 0.85,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: ".achievement",
+          start: "top 64%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      gsap.from(".education-card", {
+        y: (index) => (index % 2 === 0 ? 110 : -70),
+        rotate: (index) => (index - 1) * 2.4,
+        autoAlpha: 0,
+        stagger: 0.14,
+        duration: 1.05,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".education-grid",
+          start: "top 78%",
+          toggleActions: "play none none reverse",
         },
       });
     }, rootRef);
 
     return () => context.revert();
-  }, [entered]);
+  }, []);
 
   return (
-    <main ref={rootRef} className={`c9-shell ${entered ? "is-entered" : ""}`}>
+    <main ref={rootRef} className="portfolio-shell">
       <NotchNavbar />
 
-      <section id="home" className={`c9-intro ${entered ? "is-gone" : ""}`}>
-        <div className="c9-intro-ambient" aria-hidden="true" />
-        <div className="c9-intro-index"><span>DR / PORTFOLIO</span><span>HYD · IND</span></div>
-        <TypingKeyboard
-          autoTypeText="Hi, I’m Dhruv Reddy. I build full-stack products, applied AI systems, and data experiences above the obvious."
-          typingSpeed={[34, 70]}
-          scale={0.88}
-          loop={false}
-          onTypingComplete={() => setIntroReady(true)}
-          accentColor="#bdf73c"
-          secondaryAccent="#f7b955"
-        />
-        <button
-          className={`c9-enter ${introReady ? "is-ready" : ""}`}
-          type="button"
-          onClick={enterPortfolio}
-          disabled={!introReady}
-        >
-          <span>ENTER CLOUD NINE</span>
-          <ArrowDown size={16} />
-        </button>
-      </section>
-
-      <section id="about" className="c9-hero">
-        <Image
-          className="c9-world-art"
-          src="/assets/cloud-nine-world.png"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-        />
-        <div className="c9-hero-shade" />
-        <div className="c9-cloud cloud-a" aria-hidden="true" />
-        <div className="c9-cloud cloud-b" aria-hidden="true" />
-        <div className="c9-altitude" aria-hidden="true">
-          <span>ALT / 09</span><i /><i /><i /><i /><b>∞</b>
-        </div>
-
-        <div className="c9-hero-copy">
-          <p className="c9-kicker"><Sparkles size={14} /> FULL-STACK × APPLIED AI</p>
-          <h1>Building above<br />the <em>obvious.</em></h1>
-          <p>
-            I’m Dhruv Reddy—an engineer turning difficult product ideas into
-            cinematic interfaces, dependable systems, and useful intelligence.
-          </p>
-          <div className="c9-hero-actions">
-            <a href="#projects">Explore the work <ArrowDown size={15} /></a>
-            <a href="/assets/dhruv-reddy-resume.pdf" target="_blank">
-              Résumé <Download size={14} />
-            </a>
+      <section id="home" className={`intro ${entered ? "intro-entered" : ""}`}>
+        <div className="intro-stage">
+          <div className="keyboard-wrap">
+            <TypingKeyboard
+              autoTypeText="Hi, I’m Dhruv Reddy. I build full-stack products, applied AI systems, and data experiences. Ready to enter?"
+              typingSpeed={[36, 78]}
+              scale={0.88}
+              loop={false}
+              onTypingComplete={() => setIntroReady(true)}
+              accentColor="#bdf73c"
+              secondaryAccent="#f7b955"
+            />
+          </div>
+          <div className={`intro-action ${introReady ? "is-ready" : ""}`}>
+            <button type="button" onClick={enterPortfolio}>
+              <span>ENTER PORTFOLIO</span>
+              <ArrowDown size={16} />
+            </button>
           </div>
         </div>
+      </section>
 
-        <div className="c9-identity-card">
-          <div className="c9-portrait">
+      <section id="about" className="story">
+        <div className="story-sticky">
+          <div className="identity-grid" aria-hidden="true" />
+          <h2 className="identity-name" aria-label="Dhruv Reddy">DHRUV<br />REDDY</h2>
+          <div className="identity-portrait">
             <Image
               src="/assets/dhruv-hero.png"
               alt="Illustrated portrait of Dhruv Reddy"
               fill
-              sizes="(max-width: 700px) 76vw, 33vw"
+              sizes="(max-width: 900px) 82vw, 42vw"
               priority
             />
           </div>
-          <div className="c9-identity-meta">
-            <span>AVAILABLE FOR AMBITIOUS BUILDS</span>
-            <strong>Dhruv Reddy</strong>
-            <p>Hyderabad, India · 9.43 CGPA</p>
-          </div>
-          <nav aria-label="Dhruv’s social profiles">
-            <a href="https://github.com/DhruvReddyS" target="_blank" rel="noreferrer" aria-label="GitHub"><SiGithub /></a>
-            <a href="https://www.linkedin.com/in/sripathi-dhruv-reddy" target="_blank" rel="noreferrer" aria-label="LinkedIn"><FaLinkedinIn /></a>
-            <a href="https://leetcode.com/u/DhruvReddyS/" target="_blank" rel="noreferrer" aria-label="LeetCode"><SiLeetcode /></a>
-            <a href="mailto:dhruvreddysripathi2006@gmail.com" aria-label="Email Dhruv"><Mail /></a>
-          </nav>
-        </div>
 
-        <div className="c9-hero-marquee" aria-hidden="true">
-          <span>PRODUCT ENGINEERING · RAG SYSTEMS · MACHINE LEARNING · DATA PRODUCTS · TECHNICAL OWNERSHIP ·</span>
-          <span>PRODUCT ENGINEERING · RAG SYSTEMS · MACHINE LEARNING · DATA PRODUCTS · TECHNICAL OWNERSHIP ·</span>
-        </div>
-      </section>
+          <article className="identity-beat identity-beat-1">
+            <p className="eyebrow">01 / HELLO</p>
+            <h3>Dhruv Reddy.</h3>
+            <p>Full-stack engineer and applied AI builder from Hyderabad, India.</p>
+            <nav className="hero-socials" aria-label="Dhruv’s profiles">
+              <a href="https://github.com/DhruvReddyS" target="_blank" rel="noreferrer" aria-label="GitHub">
+                <SiGithub />
+              </a>
+              <a href="https://www.linkedin.com/in/sripathi-dhruv-reddy" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+                <FaLinkedinIn />
+              </a>
+              <a href="https://leetcode.com/u/DhruvReddyS/" target="_blank" rel="noreferrer" aria-label="LeetCode">
+                <SiLeetcode />
+              </a>
+              <a href="mailto:dhruvreddysripathi2006@gmail.com" aria-label="Email Dhruv">
+                <Mail />
+              </a>
+              <a href="/assets/dhruv-reddy-resume.pdf" target="_blank" aria-label="Open resume">
+                <FileText />
+              </a>
+            </nav>
+          </article>
 
-      <section className="c9-manifesto">
-        <div className="c9-manifesto-sticky">
-          <p className="c9-kicker">THE OPERATING SYSTEM / 01—04</p>
-          <h2>Not a list of skills.<br /><em>A way of building.</em></h2>
-          <div className="c9-manifesto-visual" aria-hidden="true">
-            <div className={`c9-core core-${activeChapter}`}>
-              <span>0{activeChapter + 1}</span>
-              <Orbit />
+          <article className="identity-beat identity-beat-2">
+            <p className="eyebrow">02 / WHAT I BUILD</p>
+            <h3>Systems behind<br />the <span className="effect-orbit-word">screen.</span></h3>
+            <p>
+              Production web platforms, retrieval-augmented intelligence, and
+              data products engineered for real users and measurable outcomes.
+            </p>
+          </article>
+
+          <article className="identity-beat identity-beat-3">
+            <p className="eyebrow">03 / CURRENTLY</p>
+            <h3>Learning and<br /><span>shipping.</span></h3>
+            <p>
+              B.E. CSIT at MVSR. IIT Madras Foundation and Programming Diploma
+              complete. Currently pursuing the Diploma in Data Science.
+            </p>
+            <div className="identity-facts">
+              <div><strong>9.43</strong><span>CGPA</span></div>
+              <div><strong>85%+</strong><span>ML accuracy</span></div>
+              <div><strong>5+</strong><span>client platforms</span></div>
             </div>
-            <i /><i /><i />
+          </article>
+
+          <div className="identity-scroll-cue">
+            <span>Scroll to know me</span>
+            <ArrowDown size={15} />
           </div>
-          <div className="c9-manifesto-progress" aria-hidden="true">
-            {[0, 1, 2, 3].map((item) => <i className={item <= activeChapter ? "active" : ""} key={item} />)}
-          </div>
-        </div>
-        <div className="c9-manifesto-beats">
-          {[
-            ["01", "See the whole system.", "The interface, API, data model, intelligence layer, and deployment are one product—not separate chores."],
-            ["02", "Make intelligence traceable.", "AI becomes useful when retrieval, context, citations, and user decisions are designed together."],
-            ["03", "Turn evidence into experience.", "Numbers matter. But the best systems also make complexity understandable, responsive, and human."],
-            ["04", "Own the final mile.", "A build is only real when it ships, works for people, and keeps working after the demo."],
-          ].map(([number, title, copy]) => (
-            <article className="c9-manifesto-beat" key={number}>
-              <span>{number}</span>
-              <h3>{title}</h3>
-              <p>{copy}</p>
-            </article>
-          ))}
         </div>
       </section>
 
-      <section id="projects" className="c9-project-flight">
-        <div className="c9-project-viewport">
-          <header className="c9-flight-header">
+      <section id="projects" className="projects-flight">
+        <div className="projects-viewport">
+          <div className="flight-header">
             <div>
-              <p className="c9-kicker">PROJECT CONSTELLATION / 01—07</p>
-              <h2>Seven worlds.<br /><em>One orbit.</em></h2>
+              <p className="eyebrow">SELECTED PROJECTS / 01—07</p>
+              <h2>A 3D flight through the <span className="effect-marker">work.</span></h2>
             </div>
-            <p>Scroll to travel <ArrowRight size={15} /></p>
+            <p>Keep scrolling <ArrowDown size={14} /></p>
+          </div>
+
+          <div className="project-stage">
+            {projects.map((project) => (
+              <article
+                className={`project-card accent-${project.accent}`}
+                key={project.name}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open details for ${project.name}`}
+                onClick={() => setActiveProject(project)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setActiveProject(project);
+                  }
+                }}
+              >
+                <div className="project-visual">
+                  <Image src={project.image} alt="" fill sizes="80vw" />
+                  <div className="project-number">{project.number}</div>
+                </div>
+                <div className="project-content">
+                  <div>
+                    <p className="project-type">{project.type}</p>
+                    <h3>{project.name}</h3>
+                  </div>
+                  <p>{project.description}</p>
+                  <div className="project-bottom">
+                    <div className="tech-list">
+                      {project.tech.map((item) => <span key={item}>{item}</span>)}
+                    </div>
+                    <strong>{project.impact}</strong>
+                    <span className="project-open">Open case study <ArrowUpRight size={14} /></span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="flight-progress" aria-hidden="true">
+            {projects.map((project) => <i key={project.number} />)}
+          </div>
+        </div>
+      </section>
+
+      <section id="experience" className="experience-cinema">
+        <div className="experience-cinema-sticky">
+          <header className="experience-cinema-header">
+            <div>
+              <p className="eyebrow">WORK EXPERIENCE / 01—04</p>
+              <h2>Built in the <span className="effect-signal">real world.</span></h2>
+            </div>
+            <p>
+              <span>{String(activeWorkIndex + 1).padStart(2, "0")}</span>
+              Scroll to move through the timeline
+            </p>
           </header>
 
-          <div className="c9-orbit-line" aria-hidden="true" />
-          <div className="c9-project-track">
-            {projects.map((project) => (
-              <button
-                className="c9-project-card"
-                type="button"
-                key={project.name}
-                onClick={() => setActiveProject(project)}
-                style={{ "--project-accent": project.color } as React.CSSProperties}
-                aria-label={`Open ${project.name} project`}
-              >
-                <div className="c9-project-image">
-                  <Image src={project.image} alt="" fill sizes="(max-width: 800px) 88vw, 54vw" />
-                  <span>{project.number}</span>
-                  <i>OPEN CASE FILE <ArrowUpRight size={12} /></i>
-                </div>
-                <div className="c9-project-copy">
-                  <p>{project.eyebrow}</p>
-                  <h3>{project.name}</h3>
-                  <strong>{project.impact}</strong>
-                  <div>{project.tech.map((item) => <span key={item}>{item}</span>)}</div>
-                </div>
-              </button>
+          <div className="experience-cinema-stage">
+            {experience.map((item, index) => {
+              const ExperienceIcon = item.icon;
+              return (
+                <article className="experience-scene" key={item.company}>
+                  <div className="experience-scene-media">
+                    <Image
+                      src={item.image}
+                      alt=""
+                      fill
+                      sizes="(max-width: 900px) 100vw, 52vw"
+                    />
+                    <div className="experience-media-hud">
+                      <span>CASE / {String(index + 1).padStart(2, "0")}</span>
+                      <span>DELIVERED</span>
+                    </div>
+                    <div className="experience-company-mark">
+                      <ExperienceIcon size={25} />
+                      <span>{item.focus}</span>
+                    </div>
+                  </div>
+
+                  <div className="experience-scene-copy">
+                    <div className="experience-scene-meta">
+                      <span>{item.date}</span>
+                      <i />
+                      <span>{item.company}</span>
+                    </div>
+                    <h3>{item.role}</h3>
+                    <p>{item.summary}</p>
+
+                    <ul>
+                      {item.bullets.map((bullet) => (
+                        <li key={bullet}><CheckCircle2 size={15} /> {bullet}</li>
+                      ))}
+                    </ul>
+
+                    <div className="experience-scene-bottom">
+                      <div className="experience-scene-metric">
+                        <strong>{item.metric}</strong>
+                        <span>{item.metricLabel}</span>
+                      </div>
+                      <div className="experience-stack">
+                        {item.stack.map((technology) => <span key={technology}>{technology}</span>)}
+                      </div>
+                    </div>
+
+                    <div className="experience-scene-actions">
+                      <a href={item.link} target="_blank" rel="noreferrer">
+                        {item.linkLabel} <ArrowUpRight size={15} />
+                      </a>
+                      <button type="button" onClick={() => setActiveExperience(item)}>
+                        Open full notes
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="experience-timeline" aria-hidden="true">
+            {experience.map((item, index) => (
+              <div className={index <= activeWorkIndex ? "is-active" : ""} key={item.company}>
+                <i />
+                <span>{item.company.split("·")[0].trim()}</span>
+              </div>
             ))}
-            <div className="c9-flight-end">
-              <Orbit size={64} />
-              <p>Seven shipped signals.<br />The next one could be yours.</p>
-              <a href="mailto:dhruvreddysripathi2006@gmail.com">Start a build <ArrowUpRight size={15} /></a>
+          </div>
+        </div>
+      </section>
+
+      <section className="cylinder-showcase">
+        <div className="cylinder-copy">
+          <p className="eyebrow">THE PROJECT ORBIT</p>
+          <h2>Seven builds.<br /><span className="effect-underline">Always in motion.</span></h2>
+          <p>
+            A rotating field of platforms, research, client work, and experiments—
+            each one pushing the next build further.
+          </p>
+        </div>
+        <div className="cylinder-stage">
+          <CylinderCarousel
+            images={[
+              { src: "/assets/healthcare-3d.png", alt: "Healthcare platform visualization" },
+              { src: "/assets/rag-3d.png", alt: "Retrieval augmented generation visualization" },
+              { src: "/assets/ml-groundwater-3d.png", alt: "Groundwater machine learning visualization" },
+              { src: "/assets/data-dynamo-win.png", alt: "Data Dynamo hackathon win" },
+              { src: "/assets/dhruv-hero.png", alt: "Dhruv Reddy portrait" },
+              { src: "/assets/byusforu-logo.png", alt: "ByUsForU studio" },
+              { src: "/assets/rag-3d.png", alt: "Tender NLP visualization" },
+            ]}
+            cardWidth={210}
+            animationDuration={34}
+            cardClassName="cylinder-card"
+          />
+        </div>
+      </section>
+
+      <section id="expertise" className="domain-story">
+        <div className="domain-story-heading">
+          <p className="eyebrow">DOMAINS OF EXPERTISE / 01—06</p>
+          <h2>
+            Six ways I turn complexity into{" "}
+            <span className="effect-orbit-word">working software.</span>
+          </h2>
+          <p>
+            Scroll the cards. The story, evidence, and toolkit change with every
+            domain—without making you hunt for the important part.
+          </p>
+        </div>
+
+        <div className="domain-story-layout">
+          <aside className="domain-story-copy" aria-live="polite">
+            <div className="domain-copy-index">
+              <span>{activeDomain.number}</span>
+              <ActiveDomainIcon size={24} />
             </div>
+            <p className="domain-kicker">{activeDomain.kicker}</p>
+            <h3>{activeDomain.title}</h3>
+            <p>{activeDomain.description}</p>
+
+            <div className="domain-evidence">
+              <strong>{activeDomain.metric}</strong>
+              <span>{activeDomain.metricLabel}</span>
+            </div>
+
+            <div className="domain-tech">
+              {activeDomain.tech.map((technology) => (
+                <span key={technology}>{technology}</span>
+              ))}
+            </div>
+
+            <div className="domain-progress" aria-hidden="true">
+              {domains.map((domain, index) => (
+                <i
+                  className={index <= activeDomainIndex ? "is-active" : ""}
+                  key={domain.number}
+                />
+              ))}
+            </div>
+          </aside>
+
+          <div className="domain-card-rail">
+            {domains.map((domain, index) => {
+              const DomainIcon = domain.icon;
+              return (
+                <button
+                  className={`domain-card ${index === activeDomainIndex ? "is-active" : ""}`}
+                  type="button"
+                  key={domain.number}
+                  onClick={() => setActiveDomainIndex(index)}
+                  aria-label={`Show ${domain.title}`}
+                >
+                  <Image
+                    src={domain.image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 900px) 92vw, 48vw"
+                  />
+                  <div className="domain-card-top">
+                    <span>{domain.number}</span>
+                    <DomainIcon size={22} />
+                  </div>
+                  <div className="domain-card-label">
+                    <p>{domain.kicker}</p>
+                    <h3>{domain.title}</h3>
+                    <span>{domain.metric} · {domain.metricLabel}</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section id="experience" className="c9-flight-log">
-        <header className="c9-section-head">
-          <p className="c9-kicker">FLIGHT LOG / EXPERIENCE</p>
-          <h2>Real work.<br /><em>Real altitude.</em></h2>
-          <p>Different roles. One pattern: take ownership, create clarity, and leave the system stronger.</p>
-        </header>
-
-        <div className="c9-log-path" aria-hidden="true"><i /><i /><i /><i /></div>
-        <div className="c9-log-list">
-          {experience.map((item) => {
-            const ItemIcon = item.icon;
-            return (
-              <article className="c9-log-card" key={item.company}>
-                <div className="c9-log-image">
-                  <Image src={item.image} alt="" fill sizes="(max-width: 800px) 94vw, 38vw" />
-                  <span>{item.number}</span>
-                  <div><ItemIcon size={21} /><b>{item.result}</b><small>{item.resultLabel}</small></div>
-                </div>
-                <div className="c9-log-copy">
-                  <p>{item.period}</p>
-                  <h3>{item.role}</h3>
-                  <h4>{item.company}</h4>
-                  <p>{item.description}</p>
-                  <ul>{item.bullets.map((bullet) => <li key={bullet}><Check size={14} /> {bullet}</li>)}</ul>
-                </div>
-              </article>
-            );
-          })}
+      <section className="skills-lab">
+        <div className="skills-heading">
+          <p className="eyebrow">THE ACTUAL TOOLKIT</p>
+          <h2>Correct tools.<br /><span className="effect-marker effect-marker-amber">Correct colors. Zero filler.</span></h2>
+          <p>
+            The languages, frameworks, databases, and delivery tools I use across
+            production web systems, RAG pipelines, and machine-learning work.
+          </p>
         </div>
-      </section>
-
-      <section id="expertise" className="c9-expertise">
-        <div className="c9-expertise-sky" aria-hidden="true" />
-        <header className="c9-section-head">
-          <p className="c9-kicker">INTELLIGENCE LAYERS / 01—06</p>
-          <h2>The systems<br /><em>behind the spectacle.</em></h2>
-          <p>Six connected domains that let me move from an ambitious brief to a dependable product.</p>
-        </header>
-        <div className="c9-domain-field">
-          <div className="c9-domain-core" aria-hidden="true">
-            <BrainCircuit />
-            <span>DHRUV<br />SYSTEMS</span>
-          </div>
-          {domains.map((domain) => {
-            const DomainIcon = domain.icon;
-            return (
-              <article className="c9-domain-node" key={domain.number}>
-                <div><span>{domain.number}</span><DomainIcon /></div>
-                <h3>{domain.title}</h3>
-                <p>{domain.note}</p>
-                <strong>{domain.proof}</strong>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="c9-stack">
-        <header className="c9-section-head">
-          <p className="c9-kicker">SYSTEM CORE / THE TOOLKIT</p>
-          <h2>Tools in motion.<br /><em>Zero filler.</em></h2>
-          <p>Real technologies, accurate colors, and the combinations I use to ship across web, AI, data, and delivery.</p>
-        </header>
         <StaggeredGrid
-          className="c9-stack-grid"
+          className="skills-staggered"
           images={[
             "/assets/healthcare-3d.png",
             "/assets/rag-3d.png",
@@ -668,139 +1013,191 @@ export default function PortfolioExperience() {
             "/assets/data-dynamo-win.png",
             "/assets/byusforu-logo.png",
           ]}
-          bentoItems={bentoItems}
+          bentoItems={skillBentoItems}
           skillIcons={skillIcons}
-          centerText="SYSTEM CORE"
+          centerText="THE STACK"
           showFooter={false}
         />
-        <div className="c9-skill-ribbon">
+        <div className="skill-key" aria-label="Technology toolkit">
           {skillIcons.map((skill) => (
-            <span key={skill.label} style={{ color: skill.color }}>
-              {skill.icon}<b>{skill.label}</b>
-            </span>
+            <div key={skill.label}>
+              <span style={{ color: skill.color }}>{skill.icon}</span>
+              <strong>{skill.label}</strong>
+            </div>
           ))}
         </div>
       </section>
 
-      <section id="achievement" className="c9-proof">
-        <div className="c9-proof-photo">
-          <Image
-            src="/assets/data-dynamo-win.png"
-            alt="Dhruv Reddy and team receiving the Data Dynamo 2.0 national hackathon award"
-            fill
-            sizes="100vw"
-          />
-        </div>
-        <div className="c9-proof-overlay" />
-        <div className="c9-proof-copy">
-          <p className="c9-kicker"><Award size={15} /> NATIONAL HACKATHON WINNER</p>
-          <h2>24 hours.<br />65+ teams.<br /><em>Cloud nine.</em></h2>
-          <p>
-            Built CodeSync among 300+ participants, transformed the pressure into
-            a working platform, and won Data Dynamo 2.0 at the national level.
-          </p>
-          <div><span>WINNER</span><span>300+ PARTICIPANTS</span><span>NATIONAL LEVEL</span></div>
-        </div>
-      </section>
-
-      <section id="education" className="c9-education">
-        <header className="c9-section-head">
-          <p className="c9-kicker">LEARNING ORBIT / FORMAL PROOF</p>
-          <h2>Two tracks.<br /><em>One compounding journey.</em></h2>
-        </header>
-        <div className="c9-education-grid">
-          <article className="c9-degree-card primary">
-            <div><GraduationCap /><span>IIT MADRAS · BS DATA SCIENCE</span></div>
-            <h3>Foundation complete.<br />Programming diploma complete.</h3>
-            <p><i /> Currently pursuing Diploma in Data Science</p>
-            <nav>
-              <a href="/assets/iitm-foundation-certificate.pdf" target="_blank">Foundation certificate <FileCheck2 /></a>
-              <a href="/assets/iitm-programming-certificate.pdf" target="_blank">Programming diploma <FileCheck2 /></a>
-            </nav>
-          </article>
-          <article className="c9-degree-card">
-            <div><Code2 /><span>MVSR ENGINEERING COLLEGE</span></div>
-            <h3>B.E. Computer Science & Information Technology</h3>
-            <strong>9.43 <small>CGPA</small></strong>
-            <p>SEP 2023 — PRESENT</p>
-          </article>
-          <article className="c9-studio-card">
-            <Image src="/assets/byusforu-logo.png" alt="ByUsForU studio" fill sizes="420px" />
-            <div>
-              <span>FOUNDER / DIGITAL STUDIO</span>
-              <h3>Ideas deserve<br />a runway.</h3>
-              <a href="https://freelance.byus4u.in/" target="_blank" rel="noreferrer">Visit studio <ArrowUpRight /></a>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section className="c9-transmission">
-        <PerspectiveGrid gridSize={32} fadeRadius={78} className="c9-transmission-grid" />
-        <div className="c9-transmission-copy">
-          <p className="c9-kicker">FINAL TRANSMISSION</p>
-          <h2>Have an impossible<br />idea in orbit?</h2>
-          <p>Good. Those are usually the interesting ones.</p>
+      <section className="perspective-cta">
+        <PerspectiveGrid gridSize={34} fadeRadius={74} className="perspective-field" />
+        <div className="perspective-copy">
+          <p className="eyebrow">NEXT GRID / YOUR IDEA</p>
+          <h2>There’s room here<br />for one more <span className="effect-signal">ambitious build.</span></h2>
+          <p>Bring the difficult brief. I’ll bring the systems thinking.</p>
           <CreepyButton
-            className="c9-contact-button"
-            coverClassName="c9-contact-cover"
+            className="contact-creepy"
+            coverClassName="creepy-cover"
             onClick={() => {
               window.location.href = "mailto:dhruvreddysripathi2006@gmail.com";
             }}
           >
-            LET’S BUILD IT
+            START A CONVERSATION
           </CreepyButton>
         </div>
       </section>
 
-      <section className="c9-footer">
+      <section id="achievement" className="achievement">
+        <div className="achievement-copy">
+          <p className="eyebrow">NATIONAL HACKATHON WINNER</p>
+          <div className="achievement-kicker"><Trophy size={18} /> DATA DYNAMO 2.0</div>
+          <h2>24 hours.<br />65+ teams.<br /><span className="effect-stamp">One winning build.</span></h2>
+          <p>
+            Built CodeSync as a smart-campus competitive programming evaluation platform
+            among 300+ participants—then took the national win.
+          </p>
+          <div className="achievement-facts">
+            <span><Award size={16} /> Winner</span>
+            <span>300+ participants</span>
+            <span>National level</span>
+          </div>
+        </div>
+        <div className="achievement-image">
+          <Image
+            src="/assets/data-dynamo-win.png"
+            alt="Dhruv Reddy and team receiving the Data Dynamo 2.0 hackathon award"
+            fill
+            sizes="(max-width: 900px) 100vw, 58vw"
+          />
+        </div>
+      </section>
+
+      <section id="education" className="education">
+        <div className="section-heading">
+          <p className="eyebrow">LEARNING, FORMALIZED</p>
+          <h2>Two tracks. <span className="effect-underline">One compounding journey.</span></h2>
+        </div>
+        <div className="education-grid">
+          <article className="education-card featured">
+            <div className="education-icon"><GraduationCap /></div>
+            <p>IIT MADRAS · BS DATA SCIENCE</p>
+            <h3>Foundation complete.<br />Programming diploma complete.</h3>
+            <div className="pursuing"><i /> Currently pursuing Diploma in Data Science</div>
+            <div className="certificate-links">
+              <a href="/assets/iitm-foundation-certificate.pdf" target="_blank">
+                Foundation certificate <FileCheck2 size={15} />
+              </a>
+              <a href="/assets/iitm-programming-certificate.pdf" target="_blank">
+                Programming diploma <FileCheck2 size={15} />
+              </a>
+            </div>
+          </article>
+          <article className="education-card">
+            <div className="education-icon"><Code2 /></div>
+            <p>MVSR ENGINEERING COLLEGE</p>
+            <h3>B.E. Computer Science & Information Technology</h3>
+            <div className="education-score">
+              <strong>9.43</strong>
+              <span>CGPA · Sep 2023—Present</span>
+            </div>
+          </article>
+          <article className="education-card studio">
+            <div className="studio-logo">
+              <Image src="/assets/byusforu-logo.png" alt="ByUsForU studio logo" fill sizes="240px" />
+            </div>
+            <p>FOUNDER · FREELANCE STUDIO</p>
+            <h3>By us.<br />For you.</h3>
+            <a href="https://freelance.byus4u.in" target="_blank" rel="noreferrer">
+              Visit the studio <ArrowUpRight size={15} />
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <section className="footer-wrap">
         <AnimatedFooter
           headingLines={["LET’S", "BUILD"]}
           leftImage="/assets/dhruv-hero.png"
           rightImage="/assets/ml-groundwater-3d.png"
-          background="#050706"
-          textColor="#f4f0e6"
-          charColor="#60761d"
+          background="#070807"
+          textColor="#f3f1ea"
+          charColor="#536814"
           hoverColor="#bdf73c"
-          hoverCharColor="#050706"
+          hoverCharColor="#070807"
           columns={64}
           cellSize={18}
           fontSize={15}
         />
-        <div className="c9-footer-contact">
+        <div className="footer-contact">
+          <p>Have an ambitious build in mind?</p>
           <a href="mailto:dhruvreddysripathi2006@gmail.com">
-            dhruvreddysripathi2006@gmail.com <ArrowUpRight />
+            dhruvreddysripathi2006@gmail.com <ArrowUpRight size={18} />
           </a>
-          <nav>
+          <div>
             <a href="https://github.com/DhruvReddyS" target="_blank" rel="noreferrer">GitHub</a>
             <a href="https://www.linkedin.com/in/sripathi-dhruv-reddy" target="_blank" rel="noreferrer">LinkedIn</a>
-            <a href="https://leetcode.com/u/DhruvReddyS/" target="_blank" rel="noreferrer">LeetCode</a>
-          </nav>
-          <span>HYDERABAD · INDIA / 2026</span>
+            <span>Hyderabad · India</span>
+          </div>
         </div>
       </section>
 
       <PortfolioPet visible={entered} />
 
       {activeProject && (
-        <div className="c9-modal" role="dialog" aria-modal="true" aria-label={`${activeProject.name} project details`} onClick={() => setActiveProject(null)}>
+        <div className="detail-modal" role="dialog" aria-modal="true" aria-label={`${activeProject.name} project details`} onClick={() => setActiveProject(null)}>
           <article onClick={(event) => event.stopPropagation()}>
-            <button type="button" onClick={() => setActiveProject(null)} aria-label="Close project details"><X /></button>
-            <div className="c9-modal-image">
-              <Image src={activeProject.image} alt="" fill sizes="(max-width: 800px) 94vw, 50vw" />
+            <button className="detail-modal-close" type="button" onClick={() => setActiveProject(null)} aria-label="Close project details">
+              <X size={18} />
+            </button>
+            <div className="detail-modal-media">
+              <Image src={activeProject.image} alt="" fill sizes="(max-width: 900px) 100vw, 48vw" />
               <span>{activeProject.number}</span>
             </div>
-            <div className="c9-modal-copy">
-              <p>{activeProject.eyebrow}</p>
+            <div className="detail-modal-copy">
+              <p className="eyebrow">{activeProject.type}</p>
               <h2>{activeProject.name}</h2>
               <p>{activeProject.description}</p>
-              <strong>{activeProject.impact}</strong>
-              <div>{activeProject.tech.map((item) => <span key={item}>{item}</span>)}</div>
-              {activeProject.link && (
-                <a href={activeProject.link} target="_blank" rel="noreferrer">
-                  Visit project <ArrowUpRight />
+              <div className="detail-impact">
+                <span>Outcome</span>
+                <strong>{activeProject.impact}</strong>
+              </div>
+              <div className="tech-list">
+                {activeProject.tech.map((item) => <span key={item}>{item}</span>)}
+              </div>
+              {projectLinks[activeProject.name] && (
+                <a href={projectLinks[activeProject.name]} target="_blank" rel="noreferrer">
+                  Open live project <ArrowUpRight size={16} />
                 </a>
               )}
+            </div>
+          </article>
+        </div>
+      )}
+
+      {activeExperience && (
+        <div className="detail-modal" role="dialog" aria-modal="true" aria-label={`${activeExperience.role} experience details`} onClick={() => setActiveExperience(null)}>
+          <article onClick={(event) => event.stopPropagation()}>
+            <button className="detail-modal-close" type="button" onClick={() => setActiveExperience(null)} aria-label="Close experience details">
+              <X size={18} />
+            </button>
+            <div className="detail-modal-media">
+              <Image src={activeExperience.image} alt="" fill sizes="(max-width: 900px) 100vw, 48vw" />
+              <span>{(() => {
+                const ExperienceIcon = activeExperience.icon;
+                return <ExperienceIcon size={19} />;
+              })()}</span>
+            </div>
+            <div className="detail-modal-copy">
+              <p className="eyebrow">{activeExperience.date}</p>
+              <h2>{activeExperience.role}</h2>
+              <h3>{activeExperience.company}</h3>
+              <p>{activeExperience.summary}</p>
+              <div className="detail-impact">
+                <span>{activeExperience.metricLabel}</span>
+                <strong>{activeExperience.metric}</strong>
+              </div>
+              <a href="mailto:dhruvreddysripathi2006@gmail.com">
+                Discuss this experience <ArrowUpRight size={16} />
+              </a>
             </div>
           </article>
         </div>

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
-import "./cloud-nine.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,14 +34,14 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       type: "website",
-      title: "Dhruv Reddy — Building Above the Obvious",
-      description: "A Cloud Nine journey through full-stack engineering, applied AI, and data systems.",
+      title: "Dhruv Reddy — Full-stack × Applied AI",
+      description: "Engineering ideas into impact.",
       images: [{ url: new URL("/og.png", metadataBase), width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Dhruv Reddy — Building Above the Obvious",
-      description: "A Cloud Nine journey through full-stack engineering, applied AI, and data systems.",
+      title: "Dhruv Reddy — Full-stack × Applied AI",
+      description: "Engineering ideas into impact.",
       images: [new URL("/og.png", metadataBase)],
     },
   };

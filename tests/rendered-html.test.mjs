@@ -39,16 +39,15 @@ test("server-renders the complete portfolio experience", async () => {
   const html = await response.text();
   assert.match(
     html,
-    /<title>Dhruv Reddy — Cloud Nine Portfolio · Dhruv Reddy<\/title>/i,
+    /<title>Dhruv Reddy — Full-stack &amp; AI Engineer · Dhruv Reddy<\/title>/i,
   );
-  assert.match(html, /ENTER CLOUD NINE/);
-  assert.match(html, /Building above[\s\S]{0,160}obvious\./);
-  assert.match(html, /Open CodeSync project/);
-  assert.match(html, /PROJECT CONSTELLATION/);
+  assert.match(html, /ENTER PORTFOLIO/);
+  assert.match(html, /A 3D flight through the[\s\S]{0,160}work\./);
+  assert.match(html, /Open details for CodeSync/);
   assert.match(html, /AI Research Intern &amp; Team Lead/);
   assert.match(
     html,
-    /Tools in motion\.[\s\S]{0,200}Zero filler\./,
+    /Correct tools\.[\s\S]{0,200}Correct colors\.[\s\S]{0,200}Zero filler\./,
   );
   assert.match(html, /Meet Pixel, Dhruv’s portfolio guide/);
   assert.match(html, /pixel-mascot\.png/);
@@ -70,7 +69,6 @@ test("build emits the portfolio client module and required public assets", async
   const requiredAssets = [
     "dhruv-hero.png",
     "pixel-mascot.png",
-    "cloud-nine-world.png",
     "healthcare-3d.png",
     "rag-3d.png",
     "ml-groundwater-3d.png",
@@ -91,7 +89,7 @@ test("build emits the portfolio client module and required public assets", async
   );
   assert.match(source, /setActiveProject\(project\)/);
   assert.match(source, /role="dialog"/);
-  assert.match(source, /aria-label=\{`Open \$\{project\.name\} project`\}/);
+  assert.match(source, /aria-label=\{`Open details for \$\{project\.name\}`\}/);
 
   const pixel = await readFile(
     new URL("components/portfolio-pet.tsx", projectRoot),

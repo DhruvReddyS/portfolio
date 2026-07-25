@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import PortfolioExperience from "./portfolio-experience";
 
 export const metadata: Metadata = {
-  title: "Dhruv Reddy — Cloud Nine Portfolio",
+  title: "Dhruv Reddy — Full-stack & AI Engineer",
   description:
-    "Enter Dhruv Reddy’s Cloud Nine—a cinematic journey through full-stack products, applied AI systems, data work, and real-world engineering.",
+    "Dhruv Reddy builds production-grade full-stack platforms, applied AI systems, and data products from Hyderabad, India.",
 };
 
 export default function Home() {
