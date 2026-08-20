@@ -8,7 +8,6 @@ import {
   Award,
   BrainCircuit,
   Building2,
-  CheckCircle2,
   Code2,
   Database,
   FileCheck2,
@@ -65,84 +64,101 @@ const projects = [
     number: "01",
     name: "CodeSync",
     type: "Competitive programming intelligence",
+    thesis: "One command center for every coding profile, contest, and career signal.",
     description:
       "Unified analytics across 5+ coding platforms and GitHub, with contest tracking, peer benchmarking, an AI copilot, code editor, and ATS-ready career tools.",
     impact: "200+ learners",
     tech: ["React", "Node.js", "Firebase", "MongoDB", "REST"],
     image: "/assets/data-dynamo-win.png",
     accent: "lime",
+    visual: "codesync",
   },
   {
     number: "02",
     name: "Healthcare OS",
     type: "Multi-role care operations",
+    thesis: "A calmer operating system for patients, doctors, and clinic teams.",
     description:
       "A full-stack clinic platform for patients, doctors, and admins—appointments, treatments, secure JWT workflows, background jobs, caching, and reports.",
     impact: "40% faster response",
     tech: ["Flask", "Vue.js", "Redis", "Celery", "SQLAlchemy"],
     image: "/assets/healthcare-3d.png",
     accent: "silver",
+    visual: "healthcare",
   },
   {
     number: "03",
     name: "QuizMaster",
     type: "Adaptive learning platform",
+    thesis: "Question banks, timed attempts, and feedback shaped into one learning loop.",
     description:
       "A focused quiz and evaluation system with question-bank workflows, timed attempts, performance analytics, and role-based content administration.",
     impact: "Learning, measured",
     tech: ["Python", "Flask", "SQLite", "Jinja", "Bootstrap"],
     image: "/assets/healthcare-3d.png",
     accent: "amber",
+    visual: "quiz",
   },
   {
     number: "04",
     name: "Legal RAG",
     type: "Cited legal intelligence",
+    thesis: "Legal answers that never lose the clause, context, or source behind them.",
     description:
       "Retrieval-augmented legal research that grounds answers in source documents, surfaces clauses, preserves context, and keeps every conclusion traceable.",
     impact: "Answers with evidence",
     tech: ["Python", "LLMs", "Embeddings", "Vector DB", "RAG"],
     image: "/assets/rag-3d.png",
     accent: "lime",
+    visual: "legal",
   },
   {
     number: "05",
     name: "Tender NLP",
     type: "Document intelligence with RAG",
+    thesis: "Dense tender documents translated into requirements, evidence, and decisions.",
     description:
       "An NLP pipeline for dense tender documents—semantic retrieval, requirement extraction, qualification checks, and fast evidence-backed summaries.",
     impact: "Dense docs → decisions",
     tech: ["NLP", "RAG", "Python", "Vector Search", "APIs"],
     image: "/assets/rag-3d.png",
     accent: "silver",
+    visual: "tender",
   },
   {
     number: "06",
     name: "Groundwater ML",
     type: "Scientific prediction & mapping",
+    thesis: "Ten thousand readings turned into a readable map of what lies below.",
     description:
       "Processed 10,000+ readings using interpolation, Gaussian smoothing, and scientific visualization to predict and map groundwater with 85%+ accuracy.",
     impact: "85%+ accuracy",
     tech: ["Python", "SciPy", "Pandas", "NumPy", "Matplotlib"],
     image: "/assets/ml-groundwater-3d.png",
     accent: "earth",
+    visual: "groundwater",
   },
   {
     number: "07",
     name: "Ascend",
     type: "Modular learning system",
+    thesis: "A publishing system that lets structured courses rise from draft to delivery.",
     description:
       "A course creation platform with structured modules, draft publishing, validation, and Cloudinary media delivery tuned for sub-two-second asset loads.",
     impact: "70% fewer form errors",
     tech: ["Flask", "MongoDB", "Cloudinary", "JavaScript"],
     image: "/assets/ml-groundwater-3d.png",
     accent: "amber",
+    visual: "ascend",
   },
 ];
 
 const experience = [
   {
     date: "DEC 2025 — FEB 2026",
+    year: "2025—26",
+    chapter: "PRODUCTION SYSTEMS",
+    signal: "structured",
     role: "Full-stack Developer Intern",
     company: "Axon Development · Texas, USA",
     summary:
@@ -163,6 +179,9 @@ const experience = [
   },
   {
     date: "JUN — JUL 2025",
+    year: "2025",
+    chapter: "APPLIED RESEARCH",
+    signal: "research",
     role: "AI Research Intern & Team Lead",
     company: "OTBI · Osmania University",
     summary:
@@ -183,6 +202,9 @@ const experience = [
   },
   {
     date: "FOUNDER · ONGOING",
+    year: "NOW",
+    chapter: "INDEPENDENT PRACTICE",
+    signal: "studio",
     role: "Independent Digital Studio",
     company: "ByUsForU",
     summary:
@@ -203,6 +225,9 @@ const experience = [
   },
   {
     date: "PRESIDENT · 2024—25",
+    year: "2024—25",
+    chapter: "COMMUNITY MOMENTUM",
+    signal: "community",
     role: "Tech Community Leadership",
     company: "ASTRA · MVSR Engineering College",
     summary:
@@ -359,12 +384,95 @@ const projectLinks: Record<string, string> = {
   Ascend: "https://ascend.byus4u.in/",
 };
 
+type PortfolioProject = (typeof projects)[number];
+
+function ProjectVisual({ project }: { project: PortfolioProject }) {
+  const usesImage = ["codesync", "healthcare", "legal", "groundwater"].includes(project.visual);
+
+  return (
+    <div
+      className={`project-media-inner visual-${project.visual}`}
+      role="img"
+      aria-label={`${project.name} project visualization`}
+    >
+      {usesImage && (
+        <Image src={project.image} alt="" fill sizes="(max-width: 900px) 92vw, 78vw" />
+      )}
+
+      {project.visual === "codesync" && (
+        <div className="visual-codesync-overlay" aria-hidden="true">
+          <span>05 SOURCES CONNECTED</span>
+          <i /><i /><i /><i />
+          <strong>SYNC / 100%</strong>
+        </div>
+      )}
+
+      {project.visual === "healthcare" && (
+        <div className="visual-healthcare-overlay" aria-hidden="true">
+          <span>PATIENT FLOW</span>
+          <i className="healthcare-scan" />
+          <div><b>07</b><small>ACTIVE CARE PATHS</small></div>
+        </div>
+      )}
+
+      {project.visual === "quiz" && (
+        <div className="visual-quiz-system" aria-hidden="true">
+          <div className="quiz-score"><span>86</span><small>MASTERY</small></div>
+          <div className="quiz-question">
+            <small>QUESTION / 08</small>
+            <strong>Which path resolves the system?</strong>
+            <i /><i className="is-selected" /><i />
+          </div>
+          <div className="quiz-module"><b>12</b><span>MODULES</span></div>
+          <div className="quiz-timer">09:42</div>
+        </div>
+      )}
+
+      {project.visual === "legal" && (
+        <div className="visual-legal-overlay" aria-hidden="true">
+          <span>CITATION GRAPH</span>
+          <i /><i /><i />
+          <b>§ 4.2</b>
+          <small>SOURCE VERIFIED</small>
+        </div>
+      )}
+
+      {project.visual === "tender" && (
+        <div className="visual-tender-system" aria-hidden="true">
+          <div className="tender-document tender-document-a"><span>RFP / 2026</span><i /><i /><i /><i /></div>
+          <div className="tender-document tender-document-b"><span>REQUIREMENTS</span><i /><i /><i /></div>
+          <div className="tender-vector"><i /><i /><i /><i /><b>92%</b></div>
+          <small>QUALIFICATION SIGNALS</small>
+        </div>
+      )}
+
+      {project.visual === "groundwater" && (
+        <div className="visual-groundwater-overlay" aria-hidden="true">
+          <span>10,482 READINGS</span>
+          <i /><i /><i />
+          <b>85.7%</b><small>PREDICTION CONFIDENCE</small>
+        </div>
+      )}
+
+      {project.visual === "ascend" && (
+        <div className="visual-ascend-system" aria-hidden="true">
+          <div className="ascend-axis"><i /><i /><i /><i /></div>
+          <div className="ascend-module module-one"><small>01</small><strong>FOUNDATION</strong><span>READY</span></div>
+          <div className="ascend-module module-two"><small>02</small><strong>BUILD</strong><span>LIVE</span></div>
+          <div className="ascend-module module-three"><small>03</small><strong>SHIP</strong><span>PUBLISHED</span></div>
+          <b>↗</b>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PortfolioExperience() {
   const rootRef = useRef<HTMLElement>(null);
-  const [introReady, setIntroReady] = useState(false);
   const [entered, setEntered] = useState(false);
   const [activeProject, setActiveProject] = useState<(typeof projects)[number] | null>(null);
   const [activeExperience, setActiveExperience] = useState<(typeof experience)[number] | null>(null);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [activeWorkIndex, setActiveWorkIndex] = useState(0);
   const [activeDomainIndex, setActiveDomainIndex] = useState(0);
   const activeDomain = domains[activeDomainIndex];
@@ -478,34 +586,37 @@ export default function PortfolioExperience() {
         .to({}, { duration: 0.8 });
 
       const projectCards = gsap.utils.toArray<HTMLElement>(".project-card");
-      const projectProgress = gsap.utils.toArray<HTMLElement>(".flight-progress i");
       const placeProjectCards = (progress: number) => {
         const travel = progress * (projectCards.length - 1);
-        const radius = Math.min(window.innerWidth * 0.48, 760);
+        const nextIndex = Math.round(travel);
+        const radius = Math.min(window.innerWidth * 0.42, 650);
+        setActiveProjectIndex((current) => (current === nextIndex ? current : nextIndex));
 
         projectCards.forEach((card, index) => {
           const phase = index - travel;
-          const angle = phase * 0.72;
-          const closeness = Math.max(0, 1 - Math.abs(phase) / 3.8);
+          const distance = Math.abs(phase);
+          const direction = phase === 0 ? 0 : Math.sign(phase);
+          const isFuture = phase > 0;
+          const closeness = Math.max(0, 1 - distance);
+          const horizontal = direction * Math.pow(Math.min(distance, 3.2), 0.78) * radius;
+          const depth = -Math.pow(distance, 0.82) * (isFuture ? 780 : 520);
+          const rotateY = isFuture
+            ? -Math.min(78, distance * 64)
+            : Math.min(38, distance * 26);
           gsap.set(card, {
-            x: Math.sin(angle) * radius,
-            y: phase * 82,
-            z: (Math.cos(angle) - 1) * 920,
-            rotateY: -Math.sin(angle) * 58,
-            rotateX: phase * -2.2,
-            scale: 0.7 + closeness * 0.3,
-            autoAlpha: Math.max(0.08, closeness),
-            zIndex: Math.round(100 - Math.abs(phase) * 10),
-            pointerEvents: Math.abs(phase) < 1.85 ? "auto" : "none",
+            xPercent: -50,
+            x: horizontal,
+            y: phase * 48 + distance * 18,
+            z: depth,
+            rotateY,
+            rotateX: phase * -1.8,
+            scale: Math.max(0.56, 1 - distance * 0.17),
+            autoAlpha: Math.max(0, 1 - distance * (isFuture ? 0.34 : 0.42)),
+            filter: `blur(${Math.min(8, distance * (isFuture ? 2.8 : 2.1))}px) saturate(${Math.max(0.28, 1 - distance * 0.28)})`,
+            zIndex: Math.round(100 - distance * 12),
+            pointerEvents: distance < 0.5 ? "auto" : "none",
           });
-        });
-
-        projectProgress.forEach((bar, index) => {
-          const distance = Math.abs(index - travel);
-          gsap.set(bar, {
-            backgroundColor: distance < 0.52 ? "#bdf73c" : "rgba(255,255,255,.16)",
-            scaleX: distance < 0.52 ? 1.45 : 1,
-          });
+          card.style.setProperty("--project-light", String(0.2 + closeness * 0.8));
         });
       };
 
@@ -520,41 +631,105 @@ export default function PortfolioExperience() {
         onUpdate: (self) => placeProjectCards(self.progress),
       });
 
-      const experienceScenes = gsap.utils.toArray<HTMLElement>(".experience-scene");
-      const placeExperienceScenes = (progress: number) => {
-        const travel = progress * (experienceScenes.length - 1);
-        const nextIndex = Math.round(travel);
-        setActiveWorkIndex((current) => (current === nextIndex ? current : nextIndex));
+      const experienceScenes = gsap.utils.toArray<HTMLElement>(".career-chapter");
+      gsap.set(experienceScenes, { autoAlpha: 0, pointerEvents: "none" });
+      const careerTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".experience-signal",
+          start: "top top",
+          end: `+=${experienceScenes.length * 185}%`,
+          pin: ".experience-signal-sticky",
+          scrub: 1,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            const nextIndex = Math.min(experienceScenes.length - 1, Math.floor(self.progress * experienceScenes.length));
+            setActiveWorkIndex((current) => (current === nextIndex ? current : nextIndex));
+          },
+        },
+      });
 
-        experienceScenes.forEach((scene, index) => {
-          const phase = index - travel;
-          const distance = Math.abs(phase);
-          const closeness = Math.max(0, 1 - distance);
-          gsap.set(scene, {
-            xPercent: -50,
-            yPercent: -50,
-            x: phase * Math.min(window.innerWidth * 0.62, 960),
-            y: distance * 44,
-            z: distance * -720,
-            rotateY: phase * -18,
-            rotateZ: phase * 1.6,
-            scale: 0.82 + closeness * 0.18,
-            autoAlpha: Math.max(0, 1 - distance * 0.72),
-            zIndex: Math.round(100 - distance * 10),
-            pointerEvents: distance < 0.52 ? "auto" : "none",
-          });
-        });
-      };
+      careerTimeline.fromTo(
+        ".career-signal-pulse",
+        { top: "20%" },
+        { top: "80%", duration: experienceScenes.length * 4, ease: "none" },
+        0,
+      );
 
-      placeExperienceScenes(0);
-      ScrollTrigger.create({
-        trigger: ".experience-cinema",
-        start: "top top",
-        end: `+=${experienceScenes.length * 125}%`,
-        pin: ".experience-cinema-sticky",
-        scrub: 0.9,
-        anticipatePin: 1,
-        onUpdate: (self) => placeExperienceScenes(self.progress),
+      experienceScenes.forEach((scene, index) => {
+        const start = index * 4;
+        const media = scene.querySelector(".career-memory");
+        const companyOutline = scene.querySelector(".career-company-outline");
+        const companySolid = scene.querySelector(".career-company-solid");
+        const role = scene.querySelector(".career-role");
+        const description = scene.querySelector(".career-description");
+        const accomplishments = scene.querySelectorAll(".career-accomplishments li");
+        const metric = scene.querySelector(".career-metric");
+        const action = scene.querySelector(".career-chapter-action");
+
+        careerTimeline
+          .set(scene, { autoAlpha: 1, pointerEvents: "auto" }, start)
+          .fromTo(scene.querySelector(".career-ghost-year"),
+            { autoAlpha: 0, xPercent: -8, scale: 1.08 },
+            { autoAlpha: 0.055, xPercent: 0, scale: 1, duration: 0.8, ease: "power3.out" },
+            start,
+          )
+          .fromTo(companyOutline,
+            { autoAlpha: 0, y: 55 },
+            { autoAlpha: 0.68, y: 0, duration: 0.62, ease: "power3.out" },
+            start + 0.2,
+          )
+          .fromTo(companySolid,
+            { clipPath: "inset(0 100% 0 0)", autoAlpha: 0 },
+            { clipPath: "inset(0 0% 0 0)", autoAlpha: 1, duration: 0.72, ease: "expo.inOut" },
+            start + 0.72,
+          )
+          .fromTo(role,
+            { autoAlpha: 0, y: 34 },
+            { autoAlpha: 1, y: 0, duration: 0.58, ease: "power3.out" },
+            start + 0.95,
+          )
+          .fromTo(media,
+            { clipPath: "inset(48% 48% 48% 48% round 28px)", scale: 1.12, autoAlpha: 0 },
+            { clipPath: "inset(0% 0% 0% 0% round 28px)", scale: 1, autoAlpha: 1, duration: 0.9, ease: "expo.inOut" },
+            start + 0.55,
+          )
+          .fromTo(description,
+            { autoAlpha: 0, y: 28 },
+            { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" },
+            start + 1.35,
+          )
+          .fromTo(accomplishments,
+            { autoAlpha: 0, y: 24 },
+            { autoAlpha: 1, y: 0, stagger: 0.12, duration: 0.45, ease: "power3.out" },
+            start + 1.62,
+          )
+          .fromTo(metric,
+            { autoAlpha: 0, scale: 1.8, filter: "blur(10px)" },
+            { autoAlpha: 1, scale: 1, filter: "blur(0px)", duration: 0.66, ease: "power3.out" },
+            start + 2.02,
+          )
+          .fromTo(action,
+            { autoAlpha: 0, x: -18 },
+            { autoAlpha: 1, x: 0, duration: 0.42 },
+            start + 2.2,
+          );
+
+        if (index < experienceScenes.length - 1) {
+          careerTimeline
+            .to(media, {
+              clipPath: "inset(49% 48% 49% 48% round 28px)",
+              scale: 0.88,
+              duration: 0.58,
+              ease: "power3.inOut",
+            }, start + 3.28)
+            .to(scene, {
+              autoAlpha: 0,
+              filter: "blur(10px)",
+              pointerEvents: "none",
+              duration: 0.5,
+              ease: "power2.in",
+            }, start + 3.42);
+        }
       });
 
       gsap.utils.toArray<HTMLElement>(".domain-card").forEach((card, index) => {
@@ -668,20 +843,13 @@ export default function PortfolioExperience() {
         <div className="intro-stage">
           <div className="keyboard-wrap">
             <TypingKeyboard
-              autoTypeText="Hi, I’m Dhruv Reddy. I build full-stack products, applied AI systems, and data experiences. Ready to enter?"
-              typingSpeed={[36, 78]}
+              typingSpeed={[26, 88]}
               scale={0.88}
               loop={false}
-              onTypingComplete={() => setIntroReady(true)}
+              onEnter={enterPortfolio}
               accentColor="#bdf73c"
               secondaryAccent="#f7b955"
             />
-          </div>
-          <div className={`intro-action ${introReady ? "is-ready" : ""}`}>
-            <button type="button" onClick={enterPortfolio}>
-              <span>ENTER PORTFOLIO</span>
-              <ArrowDown size={16} />
-            </button>
           </div>
         </div>
       </section>
@@ -753,25 +921,45 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section id="projects" className="projects-flight">
+      <section id="projects" className={`projects-flight signature-${projects[activeProjectIndex].visual}`}>
         <div className="projects-viewport">
+          <div className="gallery-environment" aria-hidden="true">
+            <div className="gallery-depth-grid" />
+            <div className="gallery-fog" />
+            <div className="gallery-signature"><i /><i /><i /><i /><i /><i /></div>
+            <span className="gallery-coordinate coordinate-a">X 05.17 / Y 09.43</span>
+            <span className="gallery-coordinate coordinate-b">ARCHIVE / {String(activeProjectIndex + 1).padStart(2, "0")}</span>
+          </div>
+
           <div className="flight-header">
             <div>
-              <p className="eyebrow">SELECTED PROJECTS / 01—07</p>
-              <h2>A 3D flight through the <span className="effect-marker">work.</span></h2>
+              <p className="eyebrow">SELECTED WORK / 01—07</p>
+              <h2>A flight through what I’ve <span className="effect-marker">built.</span></h2>
             </div>
-            <p>Keep scrolling <ArrowDown size={14} /></p>
+            <p>Scroll deeper <ArrowDown size={14} /></p>
           </div>
 
           <div className="project-stage">
-            {projects.map((project) => (
+            {projects.map((project, index) => (
               <article
-                className={`project-card accent-${project.accent}`}
+                className={`project-card accent-${project.accent} ${index === activeProjectIndex ? "is-active" : ""}`}
                 key={project.name}
                 role="button"
                 tabIndex={0}
                 aria-label={`Open details for ${project.name}`}
                 onClick={() => setActiveProject(project)}
+                onPointerMove={(event) => {
+                  if (index !== activeProjectIndex) return;
+                  const bounds = event.currentTarget.getBoundingClientRect();
+                  const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+                  const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+                  event.currentTarget.style.setProperty("--pointer-x", `${x * 10}px`);
+                  event.currentTarget.style.setProperty("--pointer-y", `${y * 8}px`);
+                }}
+                onPointerLeave={(event) => {
+                  event.currentTarget.style.setProperty("--pointer-x", "0px");
+                  event.currentTarget.style.setProperty("--pointer-y", "0px");
+                }}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
@@ -780,98 +968,134 @@ export default function PortfolioExperience() {
                 }}
               >
                 <div className="project-visual">
-                  <Image src={project.image} alt="" fill sizes="80vw" />
-                  <div className="project-number">{project.number}</div>
+                  <ProjectVisual project={project} />
+                  <div className="project-card-index">{project.number} / 07</div>
                 </div>
                 <div className="project-content">
-                  <div>
+                  <div className="project-title-lockup">
                     <p className="project-type">{project.type}</p>
                     <h3>{project.name}</h3>
+                    <p className="project-thesis">{project.thesis}</p>
                   </div>
-                  <p>{project.description}</p>
                   <div className="project-bottom">
                     <div className="tech-list">
-                      {project.tech.map((item) => <span key={item}>{item}</span>)}
+                      {project.tech.slice(0, 4).map((item) => <span key={item}>{item}</span>)}
                     </div>
-                    <strong>{project.impact}</strong>
+                    <div className="project-outcome">
+                      <span>Signal</span>
+                      <strong>{project.impact}</strong>
+                    </div>
                     <span className="project-open">Open case study <ArrowUpRight size={14} /></span>
                   </div>
                 </div>
               </article>
             ))}
           </div>
-          <div className="flight-progress" aria-hidden="true">
-            {projects.map((project) => <i key={project.number} />)}
+
+          <div className="gallery-progress" aria-label={`Project ${activeProjectIndex + 1} of ${projects.length}`}>
+            {projects.map((project, index) => (
+              <div
+                className={`gallery-progress-step ${index < activeProjectIndex ? "is-past" : ""} ${index === activeProjectIndex ? "is-active" : ""}`}
+                key={project.number}
+              >
+                <span>{project.number}</span>
+                {index < projects.length - 1 && <i />}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="experience" className="experience-cinema">
-        <div className="experience-cinema-sticky">
-          <header className="experience-cinema-header">
+      <section id="experience" className={`experience-signal signal-${experience[activeWorkIndex].signal}`}>
+        <div className="experience-signal-sticky">
+          <div className="career-atmosphere" aria-hidden="true">
+            <div className="career-light-shafts" />
+            <div className="career-film-grain" />
+          </div>
+
+          <header className="career-header">
             <div>
-              <p className="eyebrow">WORK EXPERIENCE / 01—04</p>
-              <h2>Built in the <span className="effect-signal">real world.</span></h2>
+              <p className="eyebrow">EXPERIENCE / THE CAREER SIGNAL</p>
+              <h2>Built in the <span>real world.</span></h2>
             </div>
-            <p>
-              <span>{String(activeWorkIndex + 1).padStart(2, "0")}</span>
-              Scroll to move through the timeline
-            </p>
+            <p><span>{String(activeWorkIndex + 1).padStart(2, "0")}</span> Scroll through time</p>
           </header>
 
-          <div className="experience-cinema-stage">
+          <div className="career-signal-track" aria-hidden="true">
+            <i className="career-signal-line" />
+            <i className="career-signal-pulse" />
+            <div className="career-signal-nodes">
+              {experience.map((item, index) => (
+                <span className={index <= activeWorkIndex ? "is-active" : ""} key={item.company}>
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="career-chapters">
             {experience.map((item, index) => {
               const ExperienceIcon = item.icon;
+              const companyName = item.company.split("·")[0].trim();
+              const companyContext = item.company.split("·")[1]?.trim();
               return (
-                <article className="experience-scene" key={item.company}>
-                  <div className="experience-scene-media">
-                    <Image
-                      src={item.image}
-                      alt=""
-                      fill
-                      sizes="(max-width: 900px) 100vw, 52vw"
-                    />
-                    <div className="experience-media-hud">
-                      <span>CASE / {String(index + 1).padStart(2, "0")}</span>
-                      <span>DELIVERED</span>
+                <article className={`career-chapter career-${item.signal}`} key={item.company}>
+                  <div className="career-ghost-year" aria-hidden="true">{item.year}</div>
+
+                  <div className="career-memory">
+                    <Image src={item.image} alt="" fill sizes="(max-width: 900px) 100vw, 52vw" />
+                    <div className="career-memory-shade" />
+                    <div className="career-memory-meta">
+                      <span>{item.chapter}</span>
+                      <span>MEMORY / {String(index + 1).padStart(2, "0")}</span>
                     </div>
-                    <div className="experience-company-mark">
+                    <div className="career-memory-mark">
                       <ExperienceIcon size={25} />
                       <span>{item.focus}</span>
                     </div>
                   </div>
 
-                  <div className="experience-scene-copy">
-                    <div className="experience-scene-meta">
+                  <div className="career-copy">
+                    <div className="career-meta">
+                      <span>CHAPTER {String(index + 1).padStart(2, "0")}</span>
                       <span>{item.date}</span>
                       <i />
-                      <span>{item.company}</span>
+                      <span>{companyContext}</span>
                     </div>
-                    <h3>{item.role}</h3>
-                    <p>{item.summary}</p>
 
-                    <ul>
-                      {item.bullets.map((bullet) => (
-                        <li key={bullet}><CheckCircle2 size={15} /> {bullet}</li>
+                    <div className="career-company-lockup">
+                      <span className="career-company-outline">{companyName}</span>
+                      <span className="career-company-solid">{companyName}</span>
+                    </div>
+
+                    <h3 className="career-role">{item.role}</h3>
+                    <p className="career-description">{item.summary}</p>
+
+                    <ol className="career-accomplishments">
+                      {item.bullets.slice(0, 3).map((bullet, bulletIndex) => (
+                        <li key={bullet}>
+                          <span>{String(bulletIndex + 1).padStart(2, "0")}</span>
+                          <p>{bullet}</p>
+                        </li>
                       ))}
-                    </ul>
+                    </ol>
 
-                    <div className="experience-scene-bottom">
-                      <div className="experience-scene-metric">
+                    <div className="career-chapter-footer">
+                      <div className="career-metric">
                         <strong>{item.metric}</strong>
                         <span>{item.metricLabel}</span>
                       </div>
-                      <div className="experience-stack">
+                      <div className="career-stack">
                         {item.stack.map((technology) => <span key={technology}>{technology}</span>)}
                       </div>
                     </div>
 
-                    <div className="experience-scene-actions">
-                      <a href={item.link} target="_blank" rel="noreferrer">
+                    <div className="career-actions">
+                      <a className="career-source-link" href={item.link} target="_blank" rel="noreferrer">
                         {item.linkLabel} <ArrowUpRight size={15} />
                       </a>
-                      <button type="button" onClick={() => setActiveExperience(item)}>
-                        Open full notes
+                      <button className="career-chapter-action" type="button" onClick={() => setActiveExperience(item)}>
+                        View chapter <ArrowUpRight size={15} />
                       </button>
                     </div>
                   </div>
@@ -880,12 +1104,11 @@ export default function PortfolioExperience() {
             })}
           </div>
 
-          <div className="experience-timeline" aria-hidden="true">
+          <div className="career-index-rail" aria-hidden="true">
             {experience.map((item, index) => (
-              <div className={index <= activeWorkIndex ? "is-active" : ""} key={item.company}>
-                <i />
-                <span>{item.company.split("·")[0].trim()}</span>
-              </div>
+              <span className={index === activeWorkIndex ? "is-active" : ""} key={item.company}>
+                {String(index + 1).padStart(2, "0")} / {item.company.split("·")[0].trim()}
+              </span>
             ))}
           </div>
         </div>
@@ -1149,7 +1372,7 @@ export default function PortfolioExperience() {
               <X size={18} />
             </button>
             <div className="detail-modal-media">
-              <Image src={activeProject.image} alt="" fill sizes="(max-width: 900px) 100vw, 48vw" />
+              <ProjectVisual project={activeProject} />
               <span>{activeProject.number}</span>
             </div>
             <div className="detail-modal-copy">
@@ -1174,7 +1397,7 @@ export default function PortfolioExperience() {
       )}
 
       {activeExperience && (
-        <div className="detail-modal" role="dialog" aria-modal="true" aria-label={`${activeExperience.role} experience details`} onClick={() => setActiveExperience(null)}>
+        <div className={`detail-modal experience-detail-modal modal-${activeExperience.signal}`} role="dialog" aria-modal="true" aria-label={`${activeExperience.role} experience details`} onClick={() => setActiveExperience(null)}>
           <article onClick={(event) => event.stopPropagation()}>
             <button className="detail-modal-close" type="button" onClick={() => setActiveExperience(null)} aria-label="Close experience details">
               <X size={18} />

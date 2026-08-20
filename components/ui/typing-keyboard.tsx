@@ -1,328 +1,290 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
 export interface TypingKeyboardProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Text to auto-type */
   autoTypeText?: string;
-  /** Restart after the full message. Defaults to false. */
   loop?: boolean;
-  /** Called once after the full message has been typed. */
   onTypingComplete?: () => void;
-  /** [min, max] ms delay between keystrokes */
+  onEnter?: () => void;
   typingSpeed?: [number, number];
-  /** Overall scale factor */
   scale?: number;
-  /** Accent color (modifier keys + screen glow) */
   accentColor?: string;
-  /** Secondary accent (enter key) */
   secondaryAccent?: string;
 }
 
-// ─── Key sub-component ──────────────────────────────────────────────────────
-
-function Key({ size = "", accent = "" }: { size?: string; accent?: string }) {
-  const s = size ? `--${size}` : "";
-  const a1 = accent === "b" ? " tk-face--b" : accent === "o" ? " tk-face--o" : "";
+function Key({
+  size = "",
+  accent = "",
+  className = "",
+  onClick,
+  ariaLabel,
+}: {
+  size?: string;
+  accent?: string;
+  className?: string;
+  onClick?: () => void;
+  ariaLabel?: string;
+}) {
+  const sizeClass = size ? `--${size}` : "";
+  const accentClass = accent === "b" ? " tk-face--b" : accent === "o" ? " tk-face--o" : "";
+  const faceClass = (face: "front" | "back" | "right" | "left" | "top" | "bottom") => {
+    const shade = accentClass === " tk-face--b"
+      ? face === "front" ? " tk-face--b3" : face === "left" || face === "bottom" ? " tk-face--b2" : " tk-face--b1"
+      : accentClass === " tk-face--o"
+        ? face === "front" ? " tk-face--o3" : face === "left" || face === "bottom" ? " tk-face--o2" : " tk-face--o1"
+        : "";
+    return `tk-key__${face} tk-face${size ? ` tk-key__${face}${sizeClass}` : ""}${shade}`;
+  };
 
   return (
-    <div className={`tk-key tk-flex${size ? ` tk-key${s}` : ""}`}>
-      <div className={`tk-key__front tk-face${size ? ` tk-key__front${s}` : ""}${a1 === " tk-face--b" ? " tk-face--b3" : a1 === " tk-face--o" ? " tk-face--o3" : ""}`} />
-      <div className={`tk-key__back tk-face${size ? ` tk-key__back${s}` : ""}${a1 === " tk-face--b" ? " tk-face--b1" : a1 === " tk-face--o" ? " tk-face--o1" : ""}`} />
-      <div className={`tk-key__right tk-face${size ? ` tk-key__right${s}` : ""}${a1 === " tk-face--b" ? " tk-face--b1" : a1 === " tk-face--o" ? " tk-face--o1" : ""}`} />
-      <div className={`tk-key__left tk-face${size ? ` tk-key__left${s}` : ""}${a1 === " tk-face--b" ? " tk-face--b2" : a1 === " tk-face--o" ? " tk-face--o2" : ""}`} />
-      <div className={`tk-key__top tk-face${size ? ` tk-key__top${s}` : ""}${a1 === " tk-face--b" ? " tk-face--b1" : a1 === " tk-face--o" ? " tk-face--o1" : ""}`} />
-      <div className={`tk-key__bottom tk-face${size ? ` tk-key__bottom${s}` : ""}${a1 === " tk-face--b" ? " tk-face--b2" : a1 === " tk-face--o" ? " tk-face--o2" : ""}`} />
+    <div
+      className={`tk-key tk-flex${size ? ` tk-key${sizeClass}` : ""}${className ? ` ${className}` : ""}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={ariaLabel}
+      onKeyDown={onClick ? (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick();
+        }
+      } : undefined}
+    >
+      <div className={faceClass("front")} />
+      <div className={faceClass("back")} />
+      <div className={faceClass("right")} />
+      <div className={faceClass("left")} />
+      <div className={faceClass("top")} />
+      <div className={faceClass("bottom")} />
     </div>
   );
 }
 
-// ─── Keycode → DOM index map ────────────────────────────────────────────────
-
-const KC_MAP: Record<number, number> = {
-  81:15, 87:16, 69:17, 82:18, 84:19, 89:20, 85:21, 73:22, 79:23, 80:24,
-  65:29, 83:30, 68:31, 70:32, 71:33, 72:34, 74:35, 75:36, 76:37,
-  90:41, 88:42, 67:43, 86:44, 66:45, 78:46, 77:47,
-  32:56, 13:39, 8:27,
+const KEY_MAP: Record<string, number> = {
+  q: 15, w: 16, e: 17, r: 18, t: 19, y: 20, u: 21, i: 22, o: 23, p: 24,
+  a: 29, s: 30, d: 31, f: 32, g: 33, h: 34, j: 35, k: 36, l: 37,
+  z: 41, x: 42, c: 43, v: 44, b: 45, n: 46, m: 47,
+  " ": 56, "\n": 39, "\b": 27,
 };
 
-// ─── Main Component ─────────────────────────────────────────────────────────
+const HUMAN_SCRIPT = [
+  { type: "text", value: "Hi, I’m Dhruv Reddy.\n" },
+  { type: "pause", value: 520 },
+  { type: "text", value: "I build full-stcak" },
+  { type: "pause", value: 380 },
+  { type: "backspace", value: 3 },
+  { type: "text", value: "ack products, applied AI systems,\n" },
+  { type: "pause", value: 420 },
+  { type: "text", value: "and data experiences.\n" },
+  { type: "pause", value: 560 },
+  { type: "text", value: "Ready to take a look?" },
+] as const;
+
+function humanDelay(char: string, index: number, min: number, max: number) {
+  if (char === "\n") return 270;
+  if (char === "." || char === "?") return 460;
+  if (char === ",") return 235;
+  if (char === " ") return index % 4 === 0 ? 118 : 76;
+  const burst = [0.42, 0.56, 0.48, 0.9, 0.52, 0.44, 1.14, 0.62][index % 8];
+  return Math.round(min + (max - min) * burst);
+}
 
 export function TypingKeyboard({
   className,
-  autoTypeText = "Draco. Fast, private, and beautiful web browser. Built with love by one stubborn developer.",
+  autoTypeText,
   loop = false,
   onTypingComplete,
-  typingSpeed = [40, 120],
+  onEnter,
+  typingSpeed = [28, 92],
   scale = 0.8,
-  accentColor = "#3b82f6",
-  secondaryAccent = "#a855f7",
+  accentColor = "#bdf73c",
+  secondaryAccent = "#f7b955",
   ...props
 }: TypingKeyboardProps) {
-  const mainRef = useRef<HTMLDivElement>(null);
   const kbRef = useRef<HTMLDivElement>(null);
-  const screenRef = useRef<HTMLDivElement>(null);
-  const onTypingCompleteRef = useRef(onTypingComplete);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const keyTimersRef = useRef(new Set<ReturnType<typeof setTimeout>>());
+  const [displayText, setDisplayText] = useState("");
+  const [ready, setReady] = useState(false);
+  const [entering, setEntering] = useState(false);
   const minTypingDelay = typingSpeed[0];
   const maxTypingDelay = typingSpeed[1];
 
-  useEffect(() => {
-    onTypingCompleteRef.current = onTypingComplete;
-  }, [onTypingComplete]);
+  const pressKey = (char: string, strength: "normal" | "heavy" | "enter" = "normal") => {
+    const keyboard = kbRef.current;
+    if (!keyboard) return;
+    const keys = keyboard.querySelectorAll<HTMLDivElement>(".tk-key");
+    const index = KEY_MAP[char.toLowerCase()] ?? KEY_MAP[" "];
+    const key = keys[index];
+    if (!key) return;
+
+    key.classList.add("tk-key--down", `tk-key--${strength}`);
+    if (strength === "heavy") keyboard.classList.add("tk-space-impact");
+    if (strength === "enter") keyboard.classList.add("tk-enter-impact");
+    const hold = strength === "enter" ? 260 : strength === "heavy" ? 130 : 76;
+    const timer = setTimeout(() => {
+      key.classList.remove("tk-key--down", `tk-key--${strength}`);
+      keyboard.classList.remove("tk-space-impact", "tk-enter-impact");
+      keyTimersRef.current.delete(timer);
+    }, hold);
+    keyTimersRef.current.add(timer);
+  };
+
+  const activate = () => {
+    if (!ready || entering) return;
+    setEntering(true);
+    pressKey("\n", "enter");
+    timerRef.current = setTimeout(() => onEnter?.(), 760);
+  };
 
   useEffect(() => {
-    const kb = kbRef.current;
-    const screen = screenRef.current;
-    if (!kb || !screen) return;
+    if (!ready) return;
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        activate();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  });
 
-    // Set fixed isometric perspective
-    kb.style.transform = "perspective(10000px) rotateX(60deg) rotateZ(-35deg)";
-
-    const allKeys = kb.querySelectorAll<HTMLDivElement>(".tk-key");
+  useEffect(() => {
     let alive = true;
-    let idx = 0;
-    let timer: ReturnType<typeof setTimeout>;
-    const keyTimers = new Set<ReturnType<typeof setTimeout>>();
+    let scriptIndex = 0;
+    let charIndex = 0;
+    let rendered = "";
+    const keyTimers = keyTimersRef.current;
+    const script = autoTypeText
+      ? [{ type: "text", value: autoTypeText } as const]
+      : HUMAN_SCRIPT;
 
-    // React Strict Mode intentionally remounts effects in development. Resetting
-    // here guarantees the sentence is rendered once instead of being appended.
-    screen.textContent = "";
-
-    const pressKey = (kc: number) => {
-      const domIdx = KC_MAP[kc];
-      const el = allKeys[domIdx];
-      if (el) {
-        el.classList.add("tk-key--down");
-        const keyTimer = setTimeout(() => {
-          el.classList.remove("tk-key--down");
-          keyTimers.delete(keyTimer);
-        }, 80);
-        keyTimers.add(keyTimer);
-      }
+    const finish = () => {
+      onTypingComplete?.();
+      timerRef.current = setTimeout(() => {
+        if (!alive) return;
+        setReady(true);
+        kbRef.current?.classList.add("tk-enter-ready");
+      }, 860);
     };
 
-    const typeNext = () => {
-      if (!alive || !screen) return;
-      const char = autoTypeText[idx];
-      const kc = char === " " ? 32 : char.toUpperCase().charCodeAt(0);
-
-      pressKey(kc);
-      screen.textContent += char;
-
-      idx++;
-      if (idx >= autoTypeText.length) {
-        onTypingCompleteRef.current?.();
-        if (!loop) return;
-        timer = setTimeout(() => {
-          if (!alive) return;
-          screen.textContent = "";
-          idx = 0;
-          timer = setTimeout(typeNext, 1000);
-        }, 2000);
-      } else {
-        const delay = minTypingDelay + Math.random() * (maxTypingDelay - minTypingDelay);
-        timer = setTimeout(typeNext, delay);
+    const run = () => {
+      if (!alive) return;
+      const operation = script[scriptIndex];
+      if (!operation) {
+        finish();
+        return;
       }
+
+      if (operation.type === "pause") {
+        scriptIndex += 1;
+        charIndex = 0;
+        timerRef.current = setTimeout(run, operation.value);
+        return;
+      }
+
+      if (operation.type === "backspace") {
+        if (charIndex < operation.value) {
+          rendered = rendered.slice(0, -1);
+          setDisplayText(rendered);
+          pressKey("\b");
+          charIndex += 1;
+          timerRef.current = setTimeout(run, charIndex === 1 ? 145 : 82);
+          return;
+        }
+        scriptIndex += 1;
+        charIndex = 0;
+        timerRef.current = setTimeout(run, 190);
+        return;
+      }
+
+      const char = operation.value[charIndex];
+      if (char !== undefined) {
+        rendered += char;
+        setDisplayText(rendered);
+        pressKey(char, char === " " ? "heavy" : char === "\n" ? "enter" : "normal");
+        charIndex += 1;
+        timerRef.current = setTimeout(run, humanDelay(char, charIndex, minTypingDelay, maxTypingDelay));
+        return;
+      }
+
+      scriptIndex += 1;
+      charIndex = 0;
+      timerRef.current = setTimeout(run, 70);
     };
 
-    timer = setTimeout(typeNext, 1500);
+    timerRef.current = setTimeout(run, 1050);
     return () => {
       alive = false;
-      clearTimeout(timer);
+      if (timerRef.current) clearTimeout(timerRef.current);
       keyTimers.forEach(clearTimeout);
+      keyTimers.clear();
     };
-  }, [autoTypeText, loop, minTypingDelay, maxTypingDelay]);
+  }, [autoTypeText, loop, maxTypingDelay, minTypingDelay, onTypingComplete]);
 
   return (
-    <div className={cn("tk-container", className)} {...props}>
-      <style>{`
-        .tk-container * { transform-style: preserve-3d; }
-        .tk-container {
-          width: 100%; height: 100%;
-          display: flex; justify-content: center; align-items: center;
-          font-family: sans-serif; font-weight: bolder;
-          color: rgba(255,255,251,0.7);
-          text-transform: uppercase; letter-spacing: 2px;
-        }
-        .tk-main {
-          width: 800px; height: 600px;
-          position: relative; cursor: pointer;
-          transform: scale(${scale});
-          transform-origin: center center;
-        }
-        .tk-flex { display: flex; justify-content: center; align-items: center; }
-        .tk-face { position: absolute; }
-
-        /* Keyboard body */
-        .tk-keyboard {
-          width: 500px; height: 160px;
-          transform: perspective(10000px) rotateX(50deg) rotateZ(-25deg);
-        }
-        .tk-keyboard__front { width: 500px; height: 25px; transform: rotateX(-90deg) translateZ(80px); background-color: #9C9C9C; }
-        .tk-keyboard__back  { width: 500px; height: 25px; transform: rotateX(90deg) translateZ(80px); background-color: #FFFFFB; }
-        .tk-keyboard__top   {
-          display: flex; flex-direction: column; justify-content: space-around;
-          width: 500px; height: 160px;
-          transform: rotateY(0deg) translateZ(12.5px);
-          background-image: linear-gradient(to bottom, color-mix(in srgb, ${accentColor} 40%, white), color-mix(in srgb, #1a1919 80%, white));
-        }
-        .tk-keyboard__bottom {
-          width: 500px; height: 160px;
-          transform: rotateY(180deg) translateZ(12.5px);
-          background-color: #EAE7E5;
-        }
-        .tk-keyboard__right { width: 25px; height: 160px; transform: rotateY(90deg) translateZ(250px); background-color: #FFFFFB; }
-        .tk-keyboard__left  { width: 25px; height: 160px; transform: rotateY(90deg) translateZ(-250px); background-color: #EAE7E5; }
-
-        /* Screen */
-        .tk-screen {
-          width: 303px; height: 240px;
-          transform: translateZ(100px) translateY(-200px) translateZ(50px) rotateX(270deg);
-          background-color: ${accentColor};
-          border-radius: 10px; padding: 16px;
-          font-size: 14px; line-height: 1.5;
-          word-wrap: break-word; white-space: pre-wrap; overflow: hidden;
-          text-transform: none; letter-spacing: 1px; color: #fff;
-          align-items: flex-start !important;
-          justify-content: flex-start !important;
-          box-shadow:
-            0 0 5px color-mix(in srgb, ${accentColor} 80%, transparent),
-            0 0 10px color-mix(in srgb, ${accentColor} 70%, transparent),
-            0 0 15px color-mix(in srgb, ${accentColor} 60%, transparent),
-            0 0 20px color-mix(in srgb, ${accentColor} 50%, transparent),
-            0 0 40px color-mix(in srgb, ${accentColor} 40%, transparent),
-            0 0 60px color-mix(in srgb, ${accentColor} 30%, transparent);
-          animation: tk-screen-flicker 1s ease-in alternate infinite;
-        }
-        @keyframes tk-screen-flicker {
-          0%, 90%, 96% { background-color: ${accentColor}; }
-          93%, 100%    { background-color: color-mix(in srgb, ${accentColor} 80%, black); }
-        }
-
-        /* Keys container */
-        .tk-keys {
-          display: flex; justify-content: space-between;
-          width: 100%;
-          transform: translateZ(4px);
-          padding: 0 2px;
-        }
-
-        /* Individual key — depth is 8px */
-        .tk-key { width: 30px; height: 27px; transition: .05s ease; }
-        .tk-key--w2 { width: 60px; }
-        .tk-key--w3 { width: 90px; }
-        .tk-key--w6 { width: 195px; }
-
-        .tk-key__front { width: 30px; height: 8px; transform: rotateX(-90deg) translateZ(13.5px); background-color: #838383; }
-        .tk-key__front--w2 { width: 60px; }
-        .tk-key__front--w3 { width: 90px; }
-        .tk-key__front--w6 { width: 195px; }
-
-        .tk-key__back { width: 30px; height: 8px; transform: rotateX(90deg) translateZ(13.5px); background-color: #FFFFFB; }
-        .tk-key__back--w2 { width: 60px; }
-        .tk-key__back--w3 { width: 90px; }
-        .tk-key__back--w6 { width: 195px; }
-
-        .tk-key__top {
-          width: 30px; height: 27px;
-          transform: rotateY(0deg) translateZ(4px);
-          background-color: #FFFFFB;
-          background-image: linear-gradient(to bottom, color-mix(in srgb, ${accentColor} 30%, white), #FFFFFB);
-          box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.12), 0 -1px 2px rgba(0,0,0,0.08);
-        }
-        .tk-key__top--w2 { width: 60px; }
-        .tk-key__top--w3 { width: 90px; }
-        .tk-key__top--w6 { width: 195px; }
-
-        .tk-key__bottom { width: 30px; height: 27px; transform: rotateY(180deg) translateZ(4px); background-color: #838383; }
-        .tk-key__bottom--w2 { width: 60px; }
-        .tk-key__bottom--w3 { width: 90px; }
-        .tk-key__bottom--w6 { width: 195px; }
-
-        .tk-key__right { width: 8px; height: 27px; transform: rotateY(90deg) translateZ(15px); background-color: #838383; }
-        .tk-key__right--w2 { transform: rotateY(90deg) translateZ(30px); }
-        .tk-key__right--w3 { transform: rotateY(90deg) translateZ(45px); }
-        .tk-key__right--w6 { transform: rotateY(90deg) translateZ(97.5px); }
-
-        .tk-key__left {
-          width: 8px; height: 27px;
-          transform: rotateY(90deg) translateZ(-15px);
-          background-image: linear-gradient(to bottom, #c4c4c4, #b8b8b8);
-        }
-        .tk-key__left--w2 { transform: rotateY(90deg) translateZ(-30px); }
-        .tk-key__left--w3 { transform: rotateY(90deg) translateZ(-45px); }
-        .tk-key__left--w6 { transform: rotateY(90deg) translateZ(-97.5px); }
-
-        /* Accent colors */
-        .tk-face--b1 { background: ${accentColor}; }
-        .tk-face--b2 { background-image: linear-gradient(to bottom, color-mix(in srgb, ${accentColor} 80%, black), ${accentColor}); }
-        .tk-face--b3 { background-color: color-mix(in srgb, ${accentColor} 60%, black); }
-
-        .tk-face--o1 { background: ${secondaryAccent}; }
-        .tk-face--o2 { background-image: linear-gradient(to bottom, color-mix(in srgb, ${secondaryAccent} 80%, black), ${secondaryAccent}); }
-        .tk-face--o3 { background-color: color-mix(in srgb, ${secondaryAccent} 60%, black); }
-
-        /* Pressed state */
-        .tk-key--down {
-          display: flex; justify-content: center; align-items: center;
-          transform: translateZ(-5px);
-          transition: .05s ease;
-        }
-        .tk-key--down > .tk-key__top {
-          background: color-mix(in srgb, ${secondaryAccent} 80%, white) !important;
-        }
-      `}</style>
-
-      <div className="tk-main tk-flex" ref={mainRef}>
+    <div
+      className={cn("tk-container", ready && "tk-ready", entering && "tk-entering", className)}
+      style={{
+        "--tk-scale": scale,
+        "--tk-accent": accentColor,
+        "--tk-secondary": secondaryAccent,
+      } as React.CSSProperties}
+      {...props}
+    >
+      <span className="tk-sr-only">
+        Hi, I’m Dhruv Reddy. I build full-stack products, applied AI systems, and data experiences. Ready to take a look? Press Enter to enter the portfolio.
+      </span>
+      <div className="tk-dust" aria-hidden="true" />
+      <div className="tk-main tk-flex">
         <div className="tk-keyboard tk-flex" ref={kbRef}>
-          <div className="tk-screen tk-flex" ref={screenRef} aria-live="polite" />
+          <div className="tk-monitor-shell tk-flex">
+            <div className="tk-monitor-bloom" aria-hidden="true" />
+            <div className="tk-screen" aria-live="polite">
+              <span>{displayText}</span>
+              <i className="tk-caret" aria-hidden="true" />
+              {ready && (
+                <button type="button" onClick={activate} aria-label="Enter portfolio">
+                  [ ENTER ]
+                </button>
+              )}
+            </div>
+          </div>
 
           <div className="tk-keyboard__front tk-face" />
           <div className="tk-keyboard__back tk-face" />
           <div className="tk-keyboard__right tk-face" />
           <div className="tk-keyboard__left tk-face" />
           <div className="tk-keyboard__top tk-face">
-
-            {/* Row 1 */}
             <div className="tk-keys">
               <Key accent="b" />
-              {Array.from({ length: 12 }).map((_, i) => <Key key={`r1-${i}`} />)}
+              {Array.from({ length: 12 }).map((_, index) => <Key key={`r1-${index}`} />)}
               <Key size="w2" accent="b" />
             </div>
-
-            {/* Row 2 */}
             <div className="tk-keys">
               <Key size="w2" accent="b" />
-              {Array.from({ length: 12 }).map((_, i) => <Key key={`r2-${i}`} />)}
+              {Array.from({ length: 12 }).map((_, index) => <Key key={`r2-${index}`} />)}
               <Key accent="b" />
             </div>
-
-            {/* Row 3 */}
             <div className="tk-keys">
               <Key size="w3" accent="b" />
-              {Array.from({ length: 10 }).map((_, i) => <Key key={`r3-${i}`} />)}
-              <Key size="w2" accent="o" />
+              {Array.from({ length: 10 }).map((_, index) => <Key key={`r3-${index}`} />)}
+              <Key size="w2" accent="o" className="tk-physical-enter" onClick={activate} ariaLabel="Press the physical Enter key" />
             </div>
-
-            {/* Row 4 */}
             <div className="tk-keys">
               <Key size="w2" accent="b" />
-              {Array.from({ length: 11 }).map((_, i) => <Key key={`r4-${i}`} />)}
+              {Array.from({ length: 11 }).map((_, index) => <Key key={`r4-${index}`} />)}
               <Key size="w3" accent="b" />
             </div>
-
-            {/* Row 5 */}
             <div className="tk-keys">
               <Key accent="b" />
               <Key accent="o" />
-              {Array.from({ length: 2 }).map((_, i) => <Key key={`r5a-${i}`} accent="b" />)}
-              <Key size="w6" />
-              {Array.from({ length: 5 }).map((_, i) => <Key key={`r5b-${i}`} accent="b" />)}
+              {Array.from({ length: 2 }).map((_, index) => <Key key={`r5a-${index}`} accent="b" />)}
+              <Key size="w6" className="tk-spacebar" />
+              {Array.from({ length: 5 }).map((_, index) => <Key key={`r5b-${index}`} accent="b" />)}
             </div>
-
           </div>
           <div className="tk-keyboard__bottom tk-face" />
         </div>
@@ -332,4 +294,3 @@ export function TypingKeyboard({
 }
 
 export default TypingKeyboard;
-// trigger vercel build

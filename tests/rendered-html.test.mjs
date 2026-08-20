@@ -41,10 +41,12 @@ test("server-renders the complete portfolio experience", async () => {
     html,
     /<title>Dhruv Reddy — Full-stack &amp; AI Engineer · Dhruv Reddy<\/title>/i,
   );
-  assert.match(html, /ENTER PORTFOLIO/);
-  assert.match(html, /A 3D flight through the[\s\S]{0,160}work\./);
+  assert.match(html, /Ready to take a look\?/);
+  assert.match(html, /A flight through what I’ve[\s\S]{0,160}built\./);
   assert.match(html, /Open details for CodeSync/);
   assert.match(html, /AI Research Intern &amp; Team Lead/);
+  assert.match(html, /THE CAREER SIGNAL/);
+  assert.match(html, /View chapter/);
   assert.match(
     html,
     /Correct tools\.[\s\S]{0,200}Correct colors\.[\s\S]{0,200}Zero filler\./,
@@ -105,6 +107,7 @@ test("build emits the portfolio client module and required public assets", async
     "utf8",
   );
   assert.match(keyboard, /loop = false/);
-  assert.match(keyboard, /screen\.textContent = ""/);
-  assert.match(keyboard, /onTypingCompleteRef\.current\?\.\(\)/);
+  assert.match(keyboard, /full-stcak/);
+  assert.match(keyboard, /backspace/);
+  assert.match(keyboard, /Press Enter to enter the portfolio/);
 });
