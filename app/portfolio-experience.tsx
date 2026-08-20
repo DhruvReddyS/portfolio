@@ -323,6 +323,19 @@ const domains = [
   },
 ];
 
+const journeySections = [
+  { id: "about", label: "Identity" },
+  { id: "projects", label: "Projects" },
+  { id: "experience", label: "Experience" },
+  { id: "orbit", label: "Orbit" },
+  { id: "expertise", label: "Domains" },
+  { id: "skills", label: "Stack" },
+  { id: "contact", label: "Contact" },
+  { id: "achievement", label: "Win" },
+  { id: "education", label: "Learning" },
+  { id: "footer", label: "Connect" },
+];
+
 const skillIcons = [
   { label: "React", icon: <SiReact />, color: "#61DAFB" },
   { label: "Vue.js", icon: <SiVuedotjs />, color: "#42B883" },
@@ -475,6 +488,8 @@ export default function PortfolioExperience() {
   const [activeProjectIndex, setActiveProjectIndex] = useState(0);
   const [activeWorkIndex, setActiveWorkIndex] = useState(0);
   const [activeDomainIndex, setActiveDomainIndex] = useState(0);
+  const [activeJourneyIndex, setActiveJourneyIndex] = useState(0);
+  const [hyderabadTime, setHyderabadTime] = useState("IST · LIVE");
   const activeDomain = domains[activeDomainIndex];
   const ActiveDomainIcon = activeDomain.icon;
 
@@ -498,6 +513,45 @@ export default function PortfolioExperience() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [activeProject, activeExperience]);
+
+  useEffect(() => {
+    const updateClock = () => {
+      setHyderabadTime(new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(new Date()) + " IST");
+    };
+    updateClock();
+    const timer = window.setInterval(updateClock, 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!entered) return;
+    let frame = 0;
+    const updateJourney = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const marker = window.innerHeight * 0.52;
+        let nextIndex = 0;
+        journeySections.forEach((section, index) => {
+          const element = document.getElementById(section.id);
+          if (element && element.getBoundingClientRect().top <= marker) nextIndex = index;
+        });
+        setActiveJourneyIndex((current) => current === nextIndex ? current : nextIndex);
+      });
+    };
+    updateJourney();
+    window.addEventListener("scroll", updateJourney, { passive: true });
+    window.addEventListener("resize", updateJourney);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateJourney);
+      window.removeEventListener("resize", updateJourney);
+    };
+  }, [entered]);
 
   const enterPortfolio = () => {
     setEntered(true);
@@ -836,8 +890,33 @@ export default function PortfolioExperience() {
   }, []);
 
   return (
-    <main ref={rootRef} className="portfolio-shell">
+    <main
+      ref={rootRef}
+      className={`portfolio-shell ${entered ? "portfolio-is-live" : ""}`}
+      onPointerMove={(event) => {
+        rootRef.current?.style.setProperty("--site-pointer-x", `${event.clientX}px`);
+        rootRef.current?.style.setProperty("--site-pointer-y", `${event.clientY}px`);
+      }}
+    >
       <NotchNavbar />
+      <div className="site-spotlight" aria-hidden="true" />
+      <nav className="journey-rail" aria-label="Portfolio journey">
+        <span className="journey-rail-title">DR / SIGNAL</span>
+        <div>
+          {journeySections.map((section, index) => (
+            <a
+              className={index === activeJourneyIndex ? "is-active" : ""}
+              href={`#${section.id}`}
+              key={section.id}
+              aria-label={`Go to ${section.label}`}
+            >
+              <i />
+              <span>{String(index + 1).padStart(2, "0")} · {section.label}</span>
+            </a>
+          ))}
+        </div>
+        <span className="journey-rail-progress">{String(activeJourneyIndex + 1).padStart(2, "0")} / {journeySections.length}</span>
+      </nav>
 
       <section id="home" className={`intro ${entered ? "intro-entered" : ""}`}>
         <div className="intro-stage">
@@ -857,6 +936,12 @@ export default function PortfolioExperience() {
       <section id="about" className="story">
         <div className="story-sticky">
           <div className="identity-grid" aria-hidden="true" />
+          <div className="identity-telemetry" aria-hidden="true">
+            <span>17.3850° N</span><i />
+            <span>78.4867° E</span><i />
+            <span>{hyderabadTime}</span>
+          </div>
+          <div className="identity-status"><i /> AVAILABLE FOR AMBITIOUS BUILDS</div>
           <h2 className="identity-name" aria-label="Dhruv Reddy">DHRUV<br />REDDY</h2>
           <div className="identity-portrait">
             <Image
@@ -1114,7 +1199,13 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section className="cylinder-showcase">
+      <section id="orbit" className="cylinder-showcase">
+        <div className="orbit-atmosphere" aria-hidden="true">
+          <i className="orbit-arc orbit-arc-one" />
+          <i className="orbit-arc orbit-arc-two" />
+          <span className="orbit-coordinate orbit-coordinate-one">OBJECT FIELD / 07</span>
+          <span className="orbit-coordinate orbit-coordinate-two">ROTATION / 360°</span>
+        </div>
         <div className="cylinder-copy">
           <p className="eyebrow">THE PROJECT ORBIT</p>
           <h2>Seven builds.<br /><span className="effect-underline">Always in motion.</span></h2>
@@ -1122,6 +1213,10 @@ export default function PortfolioExperience() {
             A rotating field of platforms, research, client work, and experiments—
             each one pushing the next build further.
           </p>
+          <div className="orbit-readout">
+            <span><strong>07</strong> shipped systems</span>
+            <span><strong>∞</strong> next iterations</span>
+          </div>
         </div>
         <div className="cylinder-stage">
           <CylinderCarousel
@@ -1138,10 +1233,17 @@ export default function PortfolioExperience() {
             animationDuration={34}
             cardClassName="cylinder-card"
           />
+          <div className="orbit-ticker" aria-hidden="true">
+            <span>CODE / CARE / LEARN / RETRIEVE / EXTRACT / PREDICT / ASCEND /</span>
+            <span>CODE / CARE / LEARN / RETRIEVE / EXTRACT / PREDICT / ASCEND /</span>
+          </div>
         </div>
       </section>
 
       <section id="expertise" className="domain-story">
+        <div className="domain-constellation" aria-hidden="true">
+          {domains.map((domain, index) => <i style={{ "--node": index } as React.CSSProperties} key={domain.number} />)}
+        </div>
         <div className="domain-story-heading">
           <p className="eyebrow">DOMAINS OF EXPERTISE / 01—06</p>
           <h2>
@@ -1152,6 +1254,21 @@ export default function PortfolioExperience() {
             Scroll the cards. The story, evidence, and toolkit change with every
             domain—without making you hunt for the important part.
           </p>
+        </div>
+        <div className="domain-index-strip" aria-label="Expertise areas">
+          {domains.map((domain, index) => (
+            <button
+              type="button"
+              className={index === activeDomainIndex ? "is-active" : ""}
+              onClick={() => {
+                setActiveDomainIndex(index);
+                document.querySelectorAll(".domain-card")[index]?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+              key={domain.number}
+            >
+              <span>{domain.number}</span>{domain.title}
+            </button>
+          ))}
         </div>
 
         <div className="domain-story-layout">
@@ -1218,7 +1335,12 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section className="skills-lab">
+      <section id="skills" className="skills-lab">
+        <div className="skills-atmosphere" aria-hidden="true">
+          <i /><i /><i />
+          <span>TOOLKIT / VERIFIED</span>
+          <span>BUILD MODE / ACTIVE</span>
+        </div>
         <div className="skills-heading">
           <p className="eyebrow">THE ACTUAL TOOLKIT</p>
           <h2>Correct tools.<br /><span className="effect-marker effect-marker-amber">Correct colors. Zero filler.</span></h2>
@@ -1249,10 +1371,14 @@ export default function PortfolioExperience() {
             </div>
           ))}
         </div>
+        <div className="skills-signal-strip" aria-hidden="true">
+          <span>LANGUAGES</span><i /><span>FRAMEWORKS</span><i /><span>DATA</span><i /><span>DELIVERY</span>
+        </div>
       </section>
 
-      <section className="perspective-cta">
+      <section id="contact" className="perspective-cta">
         <PerspectiveGrid gridSize={34} fadeRadius={74} className="perspective-field" />
+        <div className="contact-orbits" aria-hidden="true"><i /><i /><i /><span>TRANSMISSION OPEN</span></div>
         <div className="perspective-copy">
           <p className="eyebrow">NEXT GRID / YOUR IDEA</p>
           <h2>There’s room here<br />for one more <span className="effect-signal">ambitious build.</span></h2>
@@ -1266,10 +1392,12 @@ export default function PortfolioExperience() {
           >
             START A CONVERSATION
           </CreepyButton>
+          <div className="contact-response-note"><i /> TYPICALLY REPLIES WITHIN 24 HOURS</div>
         </div>
       </section>
 
       <section id="achievement" className="achievement">
+        <div className="achievement-serial" aria-hidden="true">WIN / HYD / 2024</div>
         <div className="achievement-copy">
           <p className="eyebrow">NATIONAL HACKATHON WINNER</p>
           <div className="achievement-kicker"><Trophy size={18} /> DATA DYNAMO 2.0</div>
@@ -1283,6 +1411,12 @@ export default function PortfolioExperience() {
             <span>300+ participants</span>
             <span>National level</span>
           </div>
+          <div className="achievement-timeline" aria-label="Hackathon journey">
+            <span><i />00H <small>Brief</small></span>
+            <span><i />08H <small>Prototype</small></span>
+            <span><i />18H <small>System</small></span>
+            <span><i />24H <small>Winner</small></span>
+          </div>
         </div>
         <div className="achievement-image">
           <Image
@@ -1291,16 +1425,23 @@ export default function PortfolioExperience() {
             fill
             sizes="(max-width: 900px) 100vw, 58vw"
           />
+          <div className="achievement-image-hud" aria-hidden="true">
+            <span>TEAM / CODESYNC</span><span>RESULT / 01</span>
+          </div>
         </div>
       </section>
 
       <section id="education" className="education">
+        <div className="education-signal" aria-hidden="true">
+          <span>2023</span><i /><b>LEARNING IN MOTION</b><i /><span>NOW</span>
+        </div>
         <div className="section-heading">
           <p className="eyebrow">LEARNING, FORMALIZED</p>
           <h2>Two tracks. <span className="effect-underline">One compounding journey.</span></h2>
         </div>
         <div className="education-grid">
           <article className="education-card featured">
+            <span className="education-card-index">01 / IITM</span>
             <div className="education-icon"><GraduationCap /></div>
             <p>IIT MADRAS · BS DATA SCIENCE</p>
             <h3>Foundation complete.<br />Programming diploma complete.</h3>
@@ -1315,6 +1456,7 @@ export default function PortfolioExperience() {
             </div>
           </article>
           <article className="education-card">
+            <span className="education-card-index">02 / MVSR</span>
             <div className="education-icon"><Code2 /></div>
             <p>MVSR ENGINEERING COLLEGE</p>
             <h3>B.E. Computer Science & Information Technology</h3>
@@ -1324,6 +1466,7 @@ export default function PortfolioExperience() {
             </div>
           </article>
           <article className="education-card studio">
+            <span className="education-card-index">03 / PRACTICE</span>
             <div className="studio-logo">
               <Image src="/assets/byusforu-logo.png" alt="ByUsForU studio logo" fill sizes="240px" />
             </div>
@@ -1336,7 +1479,7 @@ export default function PortfolioExperience() {
         </div>
       </section>
 
-      <section className="footer-wrap">
+      <section id="footer" className="footer-wrap">
         <AnimatedFooter
           headingLines={["LET’S", "BUILD"]}
           leftImage="/assets/dhruv-hero.png"
@@ -1351,6 +1494,7 @@ export default function PortfolioExperience() {
           fontSize={15}
         />
         <div className="footer-contact">
+          <div className="footer-live"><i /> OPEN TO COLLABORATE · {hyderabadTime}</div>
           <p>Have an ambitious build in mind?</p>
           <a href="mailto:dhruvreddysripathi2006@gmail.com">
             dhruvreddysripathi2006@gmail.com <ArrowUpRight size={18} />
@@ -1360,6 +1504,11 @@ export default function PortfolioExperience() {
             <a href="https://www.linkedin.com/in/sripathi-dhruv-reddy" target="_blank" rel="noreferrer">LinkedIn</a>
             <span>Hyderabad · India</span>
           </div>
+        </div>
+        <div className="footer-coordinates" aria-hidden="true">
+          <span>17.3850° N / 78.4867° E</span>
+          <span>DESIGNED + ENGINEERED BY DHRUV</span>
+          <span>© 2026 / KEEP BUILDING</span>
         </div>
       </section>
 

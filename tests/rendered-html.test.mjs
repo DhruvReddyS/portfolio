@@ -47,6 +47,12 @@ test("server-renders the complete portfolio experience", async () => {
   assert.match(html, /AI Research Intern &amp; Team Lead/);
   assert.match(html, /THE CAREER SIGNAL/);
   assert.match(html, /View chapter/);
+  assert.match(html, /DR \/ SIGNAL/);
+  assert.match(html, /OBJECT FIELD \/ 07/);
+  assert.match(html, /TOOLKIT \/ VERIFIED/);
+  assert.match(html, /TYPICALLY REPLIES WITHIN 24 HOURS/);
+  assert.match(html, /00H[\s\S]*24H/);
+  assert.match(html, /LEARNING IN MOTION/);
   assert.match(
     html,
     /Correct tools\.[\s\S]{0,200}Correct colors\.[\s\S]{0,200}Zero filler\./,
@@ -67,6 +73,7 @@ test("build emits the portfolio client module and required public assets", async
 
   assert.ok(moduleMatch, "portfolio client module preload is present");
   await access(new URL(`.${moduleMatch[1]}`, clientRoot));
+  await access(new URL("og.png", clientRoot));
 
   const requiredAssets = [
     "dhruv-hero.png",
@@ -92,6 +99,11 @@ test("build emits the portfolio client module and required public assets", async
   assert.match(source, /setActiveProject\(project\)/);
   assert.match(source, /role="dialog"/);
   assert.match(source, /aria-label=\{`Open details for \$\{project\.name\}`\}/);
+  assert.match(source, /id="orbit"/);
+  assert.match(source, /id="skills"/);
+  assert.match(source, /id="contact"/);
+  assert.match(source, /id="footer"/);
+  assert.match(source, /const journeySections/);
 
   const pixel = await readFile(
     new URL("components/portfolio-pet.tsx", projectRoot),
