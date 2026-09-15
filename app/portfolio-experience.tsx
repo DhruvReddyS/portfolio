@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { TypingKeyboard } from "@/components/ui/typing-keyboard";
+import { TypographyIntro } from "@/components/typography-intro";
 import { NotchNavbar } from "@/components/ui/notch-navbar";
 import { AnimatedFooter } from "@/components/ui/animated-footer";
 import { CreepyButton } from "@/components/ui/creepy-button";
@@ -918,18 +918,9 @@ export default function PortfolioExperience() {
         <span className="journey-rail-progress">{String(activeJourneyIndex + 1).padStart(2, "0")} / {journeySections.length}</span>
       </nav>
 
-      <section id="home" className={`intro ${entered ? "intro-entered" : ""}`}>
+      <section id="home" className={`intro type-opening ${entered ? "intro-entered" : ""}`}>
         <div className="intro-stage">
-          <div className="keyboard-wrap">
-            <TypingKeyboard
-              typingSpeed={[26, 88]}
-              scale={0.88}
-              loop={false}
-              onEnter={enterPortfolio}
-              accentColor="#bdf73c"
-              secondaryAccent="#f7b955"
-            />
-          </div>
+          <TypographyIntro onEnter={enterPortfolio} entered={entered} />
         </div>
       </section>
 
