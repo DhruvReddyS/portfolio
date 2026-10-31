@@ -5,7 +5,9 @@ import { LampProvider } from "@/components/buildlog/lamp";
 import { BuildLogNav } from "@/components/buildlog/nav";
 import { MarginRail } from "@/components/buildlog/rail";
 import { GrokCompanion } from "@/components/buildlog/grok";
-import { StackSection } from "@/components/buildlog/stack";
+import { ToolkitSection } from "@/components/buildlog/toolkit";
+import { EducationSection } from "@/components/buildlog/education";
+import { StudioSection } from "@/components/buildlog/studio";
 import { FilmStrip } from "@/components/buildlog/film";
 import { Cursor, SmoothScroll } from "@/components/buildlog/smooth";
 import { Overture } from "@/components/buildlog/overture";
@@ -19,7 +21,16 @@ import {
 } from "@/components/buildlog/sections";
 import type { CaseFile } from "@/lib/portfolio-data";
 
-const WATCHED = ["top", "log", "work", "stack", "wins", "contact"];
+const WATCHED = [
+  "top",
+  "log",
+  "work",
+  "education",
+  "stack",
+  "wins",
+  "studio",
+  "contact",
+];
 
 function useActiveSection() {
   const [active, setActive] = useState("top");
@@ -93,6 +104,9 @@ function BuildLog() {
 
   return (
     <div className="bl-root">
+      <a className="bl-skip" href="#log">
+        Skip to the log
+      </a>
       <Overture />
       <Cursor />
       <div className="bl-paper" aria-hidden="true" />
@@ -103,11 +117,13 @@ function BuildLog() {
       <MarginRail active={active} />
 
       <main className="bl-main">
-        <Hero />
+        <Hero time={time} />
         <LogSection />
         <FilmStrip onOpen={setOpenCase} />
-        <StackSection />
+        <EducationSection />
+        <ToolkitSection />
         <WinsSection />
+        <StudioSection />
         <ContactSection />
       </main>
 

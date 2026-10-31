@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   awards,
-  education,
+  sections,
   logEntries,
   profile,
   type CaseFile,
@@ -13,6 +13,7 @@ import {
 import { Ink, Reveal, Scribble } from "./ink";
 import { Counter, Magnetic, useParallax } from "./smooth";
 import { Doodle } from "./doodle";
+import { Plate } from "./plate";
 import {
   MarkArrow,
   MarkClose,
@@ -54,7 +55,7 @@ export function ActHeader({
 
 /* -------------------------------------------------------------------- hero */
 
-export function Hero() {
+export function Hero({ time }: { time: string }) {
   // Anchored to the top of the page: the drift starts from rest on load
   // rather than picking up a tween that is already half finished.
   const plate = useParallax<HTMLDivElement>({
@@ -62,126 +63,139 @@ export function Hero() {
     from: "top top",
     to: "bottom top",
   });
-  const name = useParallax<HTMLDivElement>({
-    y: 48,
-    from: "top top",
-    to: "bottom top",
-  });
 
   return (
     <section className="bl-hero" id="top">
-      <div className="bl-hero-copy">
-        <Reveal delay={80}>
+      {/* the name leads, full width, before anything else */}
+      <div className="bl-hero-top">
+        <Reveal delay={60}>
           <span className="bl-hero-stamp">
             <i aria-hidden="true" />
-            Open to work · {profile.location}
+            Open to work · {profile.location} · {time} IST
           </span>
         </Reveal>
 
-        <Reveal delay={160}>
-          <div ref={name}>
-            <h1 className="bl-hero-name">
+        <h1 className="bl-hero-name">
+          <span className="bl-mask-line">
+            <span className="bl-hero-word" style={{ animationDelay: "2250ms" }}>
               Dhruv
-              <br />
+            </span>
+          </span>
+          <span className="bl-mask-line">
+            <span className="bl-hero-word" style={{ animationDelay: "2400ms" }}>
               <em>Reddy.</em>
-            </h1>
-          </div>
-        </Reveal>
+            </span>
+          </span>
+        </h1>
 
-        <Reveal delay={240}>
+        <Reveal delay={380}>
           <p className="bl-hero-role">
-            Full-stack Engineer <i aria-hidden="true" /> Applied AI
+            Full-stack Engineer <i aria-hidden="true" /> Applied AI{" "}
+            <i aria-hidden="true" /> Hyderabad
           </p>
-        </Reveal>
-
-        <Reveal delay={320}>
-          <p className="bl-hero-thesis">
-            I build systems that{" "}
-            <Ink type="underline" delay={1400} strokeWidth={2.5}>
-              hold up after the demo
-            </Ink>
-            . Five internships, six platforms, two competitions won. All of it is
-            logged below.
-          </p>
-        </Reveal>
-
-        <Reveal delay={400}>
-          <div className="bl-hero-cta">
-            <Magnetic>
-              <a className="bl-btn bl-btn-solid" href="#work">
-                Read the case files <MarkArrow size={13} />
-              </a>
-            </Magnetic>
-            <Magnetic>
-              <a className="bl-btn" href={`mailto:${profile.email}`}>
-                <MarkMail size={14} /> Get in touch
-              </a>
-            </Magnetic>
-          </div>
-        </Reveal>
-
-        <Reveal delay={480}>
-          <div className="bl-hero-counts">
-            <div>
-              <strong>
-                <Counter value={`0${profile.totals.internships}`} />
-              </strong>
-              <span>Internships</span>
-            </div>
-            <div>
-              <strong>
-                <Counter value={`0${profile.totals.projects}`} />
-              </strong>
-              <span>Major builds</span>
-            </div>
-            <div>
-              <strong>
-                <Counter value={`0${profile.totals.awards}`} />
-              </strong>
-              <span>Wins &amp; leadership</span>
-            </div>
-            <div>
-              <strong>
-                <Counter value="9.34" />
-              </strong>
-              <span>CGPA at MVSR</span>
-            </div>
-          </div>
         </Reveal>
       </div>
 
-      <div className="bl-plate" ref={plate}>
-        <div className="bl-plate-frame">
-          <Image
-            src={profile.portrait}
-            alt={`${profile.full}, full-stack engineer`}
-            fill
-            priority
-            sizes="(max-width: 1000px) 60vw, 28rem"
-          />
-          <span className="bl-plate-wipe" aria-hidden="true" />
+      <div className="bl-hero-main">
+        <div className="bl-hero-copy">
+          <Reveal delay={120}>
+            <p className="bl-hero-thesis">
+              I build systems that{" "}
+              <Ink type="underline" delay={1500} strokeWidth={2.5}>
+                hold up after the demo
+              </Ink>
+              . Five internships, six platforms, a studio of my own, and two
+              competitions won. All of it is logged below.
+            </p>
+          </Reveal>
+
+          <Reveal delay={200}>
+            <p className="bl-hero-now">
+              <span>Right now</span>
+              Building AI candidate screening at{" "}
+              <a href="#log">
+                <strong>SimpleHire.ai</strong>
+              </a>
+            </p>
+          </Reveal>
+
+          <Reveal delay={280}>
+            <div className="bl-hero-cta">
+              <Magnetic>
+                <a className="bl-btn bl-btn-solid" href="#work">
+                  Read the case files <MarkArrow size={13} />
+                </a>
+              </Magnetic>
+              <Magnetic>
+                <a className="bl-btn" href={`mailto:${profile.email}`}>
+                  <MarkMail size={14} /> Get in touch
+                </a>
+              </Magnetic>
+            </div>
+          </Reveal>
+
+          <Reveal delay={360}>
+            <div className="bl-hero-counts">
+              <div>
+                <strong>
+                  <Counter value={`0${profile.totals.internships}`} />
+                </strong>
+                <span>Internships</span>
+              </div>
+              <div>
+                <strong>
+                  <Counter value={`0${profile.totals.projects}`} />
+                </strong>
+                <span>Major builds</span>
+              </div>
+              <div>
+                <strong>
+                  <Counter value={`0${profile.totals.awards}`} />
+                </strong>
+                <span>Wins &amp; leadership</span>
+              </div>
+              <div>
+                <strong>
+                  <Counter value="9.34" />
+                </strong>
+                <span>CGPA at MVSR</span>
+              </div>
+            </div>
+          </Reveal>
         </div>
 
-        <span className="bl-plate-tape" data-corner="tl" aria-hidden="true" />
-        <span className="bl-plate-tape" data-corner="br" aria-hidden="true" />
+        <div className="bl-plate" ref={plate}>
+          <div className="bl-plate-frame">
+            <Image
+              src={profile.portrait}
+              alt={`${profile.full}, full-stack engineer`}
+              fill
+              priority
+              sizes="(max-width: 1000px) 60vw, 26rem"
+            />
+            <span className="bl-plate-wipe" aria-hidden="true" />
+          </div>
 
-        <span className="bl-plate-tag" aria-hidden="true">
-          Plate 01 · {profile.coords}
-        </span>
+          <span className="bl-plate-tape" data-corner="tl" aria-hidden="true" />
+          <span className="bl-plate-tape" data-corner="br" aria-hidden="true" />
 
-        <div className="bl-plate-note" aria-hidden="true">
-          <span className="bl-hand">
-            <Scribble text="that's him" delay={2200} speed={70} />
+          <span className="bl-plate-tag" aria-hidden="true">
+            Plate 01 · {profile.coords}
           </span>
-        </div>
 
+          <div className="bl-plate-note" aria-hidden="true">
+            <span className="bl-hand">
+              <Scribble text="that's him" delay={2400} speed={70} />
+            </span>
+          </div>
+        </div>
       </div>
 
       <p className="bl-hero-scroll" aria-hidden="true">
         Scroll to begin
       </p>
 
-      <Doodle kind="arrowDown" className="bl-doodle-hero" delay={900} />
+      <Doodle kind="arrowDown" className="bl-doodle-hero" delay={1100} />
     </section>
   );
 }
@@ -264,6 +278,14 @@ function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
               </div>
 
               <div className="bl-entry-side">
+                <Plate
+                  dir="log"
+                  name={entry.id}
+                  src={entry.image}
+                  monogram={entry.monogram}
+                  alt={`${entry.company}, ${entry.role}`}
+                />
+
                 <div className="bl-metrics">
                   {entry.metrics.map((metric) => (
                     <div className="bl-metric" key={metric.label}>
@@ -315,29 +337,6 @@ export function LogSection() {
         ))}
       </div>
 
-      <Doodle kind="arrowLoop" className="bl-doodle-edu" delay={120} alt />
-
-      <Reveal className="bl-edu">
-        {education.map((item) => (
-          <div className="bl-edu-card" key={item.id}>
-            <p className="bl-eyebrow">{item.period}</p>
-            <h4>{item.school}</h4>
-            <p>{item.degree}</p>
-            <p>
-              <strong>{item.detail}</strong>
-            </p>
-            {"certificates" in item && item.certificates && (
-              <div className="bl-edu-certs">
-                {item.certificates.map((cert) => (
-                  <a key={cert.href} href={cert.href} target="_blank" rel="noreferrer">
-                    <MarkPaper size={11} /> {cert.label}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </Reveal>
     </section>
   );
 }
@@ -409,6 +408,15 @@ export function WinsSection() {
 
         {rest.map((award) => (
           <article className="bl-win" key={award.id}>
+            <Plate
+              dir="wins"
+              name={award.id}
+              src={award.image}
+              monogram={award.monogram}
+              alt={award.title}
+              className="bl-plate-slot--wide"
+            />
+
             <span className="bl-win-kind">{award.kind}</span>
             <h3 className="bl-win-title">{award.title}</h3>
             <p className="bl-win-org">
@@ -434,7 +442,7 @@ export function ContactSection() {
   return (
     <section className="bl-section bl-contact" id="contact">
       <ActHeader
-        act="V"
+        act="VII"
         title={
           <>
             What happens{" "}
@@ -464,15 +472,30 @@ export function ContactSection() {
         </p>
       </Reveal>
 
+      {/* the actual ask, sized like it matters */}
       <Reveal delay={200}>
-        <Magnetic strength={0.18}>
-          <a className="bl-contact-mail" href={`mailto:${profile.email}`}>
-            {profile.email} <MarkArrow size={18} />
+        <Magnetic strength={0.22}>
+          <a className="bl-cta" href={`mailto:${profile.email}`}>
+            <span className="bl-cta-ring" aria-hidden="true" />
+            <span className="bl-cta-label">
+              <span>Email me</span>
+              <span>Email me</span>
+            </span>
+            <span className="bl-cta-mark" aria-hidden="true">
+              <MarkArrow size={22} />
+            </span>
           </a>
         </Magnetic>
       </Reveal>
 
-      <Reveal delay={280}>
+      <Reveal delay={260}>
+        <p className="bl-cta-sub">
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          <span>Typically replies within a day</span>
+        </p>
+      </Reveal>
+
+      <Reveal delay={320}>
         <div className="bl-contact-links">
           <a className="bl-btn" href={profile.github} target="_blank" rel="noreferrer">
             <MarkGithub size={14} /> GitHub
@@ -489,7 +512,7 @@ export function ContactSection() {
         </div>
       </Reveal>
 
-      <Reveal delay={340}>
+      <Reveal delay={380}>
         <p className="bl-contact-note">
           <i aria-hidden="true" /> Open to internships, full-stack roles and freelance
           builds
@@ -502,14 +525,61 @@ export function ContactSection() {
 
 export function BuildLogFooter({ time }: { time: string }) {
   return (
-    <footer className="bl-footer">
-      <span>{profile.coords}</span>
-      <span>Hyderabad · {time}</span>
-      <span>
-        <a href="/colophon">Colophon &amp; privacy</a>
-      </span>
-      <span>Designed and engineered by Dhruv</span>
-      <span>© {new Date().getFullYear()}, keep building</span>
+    <footer className="bl-footer" id="footer">
+      {/* the name, at the size it deserves, running edge to edge */}
+      <div className="bl-footer-name" aria-hidden="true">
+        <div className="bl-footer-run">
+          {[0, 1].map((copy) => (
+            <span key={copy}>
+              Dhruv Reddy <i /> Full-stack <i /> Applied AI <i />
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="bl-footer-grid">
+        <div className="bl-footer-col">
+          <p className="bl-eyebrow">The log</p>
+          {sections.map((item) => (
+            <a key={item.id} href={`#${item.id}`}>
+              {item.label}
+            </a>
+          ))}
+        </div>
+
+        <div className="bl-footer-col">
+          <p className="bl-eyebrow">Elsewhere</p>
+          <a href={profile.github} target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+          <a href={profile.linkedin} target="_blank" rel="noreferrer">
+            LinkedIn
+          </a>
+          <a href={profile.studio} target="_blank" rel="noreferrer">
+            ByUsForU
+          </a>
+          <a href={profile.resume} target="_blank" rel="noreferrer">
+            Résumé
+          </a>
+        </div>
+
+        <div className="bl-footer-col">
+          <p className="bl-eyebrow">Say hello</p>
+          <a className="bl-footer-mail" href={`mailto:${profile.email}`}>
+            {profile.email}
+          </a>
+          <p className="bl-footer-live">
+            <i aria-hidden="true" /> Hyderabad · {time}
+          </p>
+          <p className="bl-footer-coords">{profile.coords}</p>
+        </div>
+      </div>
+
+      <div className="bl-footer-base">
+        <span>© {new Date().getFullYear()} {profile.full}</span>
+        <a href="/colophon">Colophon, privacy &amp; terms</a>
+        <span>Designed and engineered by Dhruv</span>
+      </div>
     </footer>
   );
 }

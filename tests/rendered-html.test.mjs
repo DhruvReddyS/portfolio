@@ -91,16 +91,34 @@ test("renders all six case files and the side quests", async () => {
   assert.match(html, /Open case file/i);
 });
 
-test("renders all four wins and the education strip", async () => {
+test("renders all four wins", async () => {
   const html = await (await render()).text();
 
   assert.match(html, /Data Dynamo 2\.0/);
   assert.match(html, /ASTRA Tech Club/);
   assert.match(html, /DEVloop/);
   assert.match(html, /Project Expo 2026/);
+});
+
+test("renders both degrees with their figures", async () => {
+  const html = await (await render()).text();
+
   assert.match(html, /MVSR Engineering College/);
-  assert.match(html, /IIT Madras/);
+  assert.match(html, /Indian Institute of Technology Madras/);
   assert.match(html, /9\.34/);
+  assert.match(html, /Computer Science &amp; Information Technology/);
+  assert.match(html, /Data Science &amp; Applications/);
+  assert.match(html, /iitm-foundation-certificate\.pdf/);
+});
+
+test("the toolkit wall lists its shelves", async () => {
+  const html = await (await render()).text();
+
+  for (const shelf of ["Interface", "Server", "Applied AI", "Data", "Delivery"]) {
+    assert.match(html, new RegExp(shelf), `has the ${shelf} shelf`);
+  }
+  assert.match(html, /PostgreSQL/);
+  assert.match(html, /LangGraph/);
 });
 
 test("every section anchor the nav points at exists", async () => {
@@ -175,7 +193,8 @@ test("the source avoids the icon library and keeps the hand-drawn marks", async 
     "components/buildlog/sections.tsx",
     "components/buildlog/nav.tsx",
     "components/buildlog/grok.tsx",
-    "components/buildlog/stack.tsx",
+    "components/buildlog/toolkit.tsx",
+    "components/buildlog/education.tsx",
     "components/buildlog/film.tsx",
     "components/buildlog/smooth.tsx",
   ];

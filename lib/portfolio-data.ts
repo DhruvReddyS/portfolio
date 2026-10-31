@@ -23,11 +23,16 @@ export type LogEntry = {
   metrics: Metric[];
   stack: string[];
   highlight: string;
+  /** Drop a file at /assets/log/<id>.png and set it here. */
+  image?: string;
+  /** Shown while there is no image. */
+  monogram: string;
 };
 
 export const logEntries: LogEntry[] = [
   {
     id: "simplehire",
+    monogram: "SH",
     company: "SimpleHire.ai",
     org: "Task Consulting",
     role: "Full Stack Developer Intern",
@@ -61,6 +66,7 @@ export const logEntries: LogEntry[] = [
   },
   {
     id: "axon",
+    monogram: "AX",
     company: "Axon Development",
     role: "Full Stack Developer Intern",
     period: "Dec 2025 to Feb 2026",
@@ -91,6 +97,7 @@ export const logEntries: LogEntry[] = [
   },
   {
     id: "paper",
+    monogram: "PF",
     company: "Paper Foundation India",
     role: "Full Stack Developer Intern · Team Lead",
     period: "Jun to Aug 2026",
@@ -122,6 +129,7 @@ export const logEntries: LogEntry[] = [
   },
   {
     id: "sai",
+    monogram: "SE",
     company: "Sai Enterprises",
     role: "Full Stack & AI Developer Intern",
     period: "Apr to May 2026",
@@ -151,6 +159,7 @@ export const logEntries: LogEntry[] = [
   },
   {
     id: "otbi",
+    monogram: "OT",
     company: "Osmania Technology Business Incubator",
     org: "OTBI",
     role: "AI Research Intern · Team Lead",
@@ -200,6 +209,7 @@ export type CaseFile = {
   link?: { label: string; href: string };
   status?: string;
   visual: string;
+  /** Drop a file at /assets/work/<id>.png and it is picked up. */
   image?: string;
 };
 
@@ -473,7 +483,6 @@ export const caseFiles: CaseFile[] = [
     ],
     link: { label: "Open HMS", href: "https://hms.byus4u.in/" },
     visual: "healthcare",
-    image: "/assets/healthcare-3d.png",
   },
   {
     id: "quizmaster",
@@ -530,11 +539,13 @@ export type Award = {
   facts: string[];
   metrics: Metric[];
   image?: string;
+  monogram: string;
 };
 
 export const awards: Award[] = [
   {
     id: "data-dynamo",
+    monogram: "01",
     kind: "National hackathon",
     title: "Data Dynamo 2.0",
     org: "Anurag University",
@@ -559,6 +570,7 @@ export const awards: Award[] = [
   },
   {
     id: "astra",
+    monogram: "02",
     kind: "Leadership",
     title: "President of ASTRA Tech Club",
     org: "MVSR Engineering College",
@@ -580,6 +592,7 @@ export const awards: Award[] = [
   },
   {
     id: "devloop",
+    monogram: "03",
     kind: "Community",
     title: "DEVloop Bootcamp",
     org: "ASTRA Tech Club · MVSR",
@@ -601,6 +614,7 @@ export const awards: Award[] = [
   },
   {
     id: "project-expo",
+    monogram: "04",
     kind: "Competition",
     title: "Project Expo 2026 Winner",
     org: "RDC-Cell (M-MARTIC) · MVSR",
@@ -657,20 +671,58 @@ export const sideQuests: SideQuest[] = [
   },
 ];
 
-export const education = [
+export type School = {
+  id: string;
+  school: string;
+  short: string;
+  degree: string;
+  field: string;
+  period: string;
+  location: string;
+  status: string;
+  /** Headline figure for the school. */
+  mark: { value: string; label: string };
+  highlights: string[];
+  /** Drop a file at /assets/edu/<id>.png and set it here. */
+  image?: string;
+  monogram: string;
+  certificates?: { label: string; href: string }[];
+};
+
+export const education: School[] = [
   {
     id: "mvsr",
     school: "MVSR Engineering College",
-    degree: "B.E. in Computer Science & Information Technology",
-    detail: "9.34 CGPA",
+    short: "MVSR",
+    degree: "B.E.",
+    field: "Computer Science & Information Technology",
     period: "Ongoing",
+    location: "Hyderabad",
+    status: "In progress",
+    monogram: "M",
+    mark: { value: "9.34", label: "CGPA" },
+    highlights: [
+      "President of the ASTRA technical club",
+      "Winner, MVSR Project Expo 2026",
+      "Ran the DEVloop web development bootcamp",
+    ],
   },
   {
     id: "iitm",
-    school: "IIT Madras",
-    degree: "BS in Data Science & Applications",
-    detail: "Foundation and Programming Diploma complete, Data Science Diploma in progress",
+    school: "Indian Institute of Technology Madras",
+    short: "IIT Madras",
+    degree: "BS",
+    field: "Data Science & Applications",
     period: "Ongoing",
+    location: "Online degree",
+    status: "Diploma stage",
+    monogram: "IITM",
+    mark: { value: "2", label: "diplomas complete" },
+    highlights: [
+      "Foundation stage complete",
+      "Programming Diploma complete",
+      "Data Science Diploma in progress",
+    ],
     certificates: [
       { label: "Foundation certificate", href: "/assets/iitm-foundation-certificate.pdf" },
       { label: "Programming certificate", href: "/assets/iitm-programming-certificate.pdf" },
@@ -678,12 +730,60 @@ export const education = [
   },
 ];
 
+
+/**
+ * The independent studio. Everything here is taken from the studio's own site
+ * at freelance.byus4u.in, so the claims are the ones it already makes.
+ */
+export const studio = {
+  name: "ByUsForU",
+  initials: "BFU",
+  tagline: "Digital Experiences. Built With Intent.",
+  role: "Founder & Lead Engineer",
+  summary:
+    "An independent digital studio building modern, purposeful websites for brands that care how they are seen. Every build is custom: clean structure, crafted layouts, no templates.",
+  site: "https://freelance.byus4u.in/",
+  email: "team.byusforu@gmail.com",
+  instagram: "https://instagram.com/byus4u",
+  logo: "/assets/byusforu-logo.png",
+  marks: [
+    { value: "100%", label: "custom builds" },
+    { value: "24h", label: "response time" },
+    { value: "1 yr", label: "support included" },
+  ],
+  services: [
+    "Digital design & development",
+    "Brand-aligned UI and UX",
+    "Technical setup & deployment",
+    "Launch and go-live support",
+  ],
+  process: [
+    { step: "01", title: "Understand the brand", note: "Vision, audience and goals, clarified early." },
+    { step: "02", title: "Define scope", note: "Pages, features, timelines and milestones locked in." },
+    { step: "03", title: "Technical foundation", note: "Setup and structure, prepared to scale cleanly." },
+    { step: "04", title: "Design & build", note: "Developed in full, tested for responsiveness and speed." },
+    { step: "05", title: "Review & launch", note: "Final refinements, then it goes live." },
+    { step: "06", title: "Ongoing support", note: "A full year of it, after launch." },
+  ],
+  clients: [
+    { name: "WestBrook Homes", note: "A refined presence for a brand built on trust", status: "Delivered" },
+    { name: "Zyca Café & Kitchen", note: "Lively and expressive, built on social energy", status: "Delivered" },
+    { name: "Ukasa Café", note: "A calm, earthy identity built on balance", status: "Delivered" },
+    { name: "Ember & Oak Café", note: "Warm and immersive, built around mood", status: "Delivered" },
+    { name: "WestBrook Luxury Homes", note: "Bespoke homes, premium finishes, cost clarity", status: "In build" },
+    { name: "Sai Enterprises", note: "Graphic machinery suppliers across two continents", status: "In build" },
+    { name: "Axon Development", note: "Future-ready digital infrastructure", status: "In build" },
+  ],
+};
+
 export const sections = [
   { id: "log", label: "The Log", act: "I", note: "where it happened" },
   { id: "work", label: "Case Files", act: "II", note: "what got built" },
-  { id: "stack", label: "The Stack", act: "III", note: "what it's built with" },
-  { id: "wins", label: "The Wins", act: "IV", note: "what it won" },
-  { id: "contact", label: "Contact", act: "V", note: "what's next" },
+  { id: "education", label: "Study", act: "III", note: "two at once" },
+  { id: "stack", label: "The Stack", act: "IV", note: "what it's built with" },
+  { id: "wins", label: "The Wins", act: "V", note: "what it won" },
+  { id: "studio", label: "The Studio", act: "VI", note: "the one he runs" },
+  { id: "contact", label: "Contact", act: "VII", note: "what's next" },
 ];
 
 export const profile = {

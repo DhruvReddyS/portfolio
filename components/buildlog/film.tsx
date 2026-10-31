@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
 import { Ink } from "./ink";
 import { MaskLines } from "./smooth";
 import { MarkArrow, MarkRosette } from "./marks";
+import { Plate } from "./plate";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -99,21 +99,17 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
         <div className="bl-film-viewport">
           <div className="bl-film-track" ref={track}>
             {caseFiles.map((file) => (
-              <article
-                className="bl-panel"
-                key={file.id}
-                data-plain={file.image ? "false" : "true"}
-              >
-                {file.image && (
-                  <div className="bl-panel-media">
-                    <Image
-                      src={file.image}
-                      alt={`${file.name}, ${file.tagline}`}
-                      fill
-                      sizes="70vw"
-                    />
-                  </div>
-                )}
+              <article className="bl-panel" key={file.id}>
+                <div className="bl-panel-media">
+                  <Plate
+                    bare
+                    dir="work"
+                    name={file.id}
+                    src={file.image}
+                    monogram={file.name}
+                    alt={`${file.name}, ${file.tagline}`}
+                  />
+                </div>
 
                 <span className="bl-panel-index" aria-hidden="true">
                   {file.index}

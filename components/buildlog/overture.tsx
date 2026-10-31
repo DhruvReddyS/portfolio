@@ -4,14 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { profile } from "@/lib/portfolio-data";
 
-const SEEN_KEY = "buildlog-opened";
-
 /**
  * The cover of the log book, lifted away on arrival.
  *
- * It renders nothing on the server and only mounts once per session, so a
- * visitor clicking back and forth never sits through it twice. Anyone who has
- * asked for reduced motion skips it entirely.
+ * Renders nothing on the server, so the page underneath is complete before
+ * this ever mounts. Anyone who has asked for reduced motion skips it.
  */
 export function Overture() {
   const [play, setPlay] = useState(false);
@@ -20,17 +17,9 @@ export function Overture() {
   const rule = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    // Plays on every arrival. Only a reduced-motion preference skips it.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let seen = false;
-    try {
-      seen = window.sessionStorage.getItem(SEEN_KEY) === "1";
-      window.sessionStorage.setItem(SEEN_KEY, "1");
-    } catch {
-      /* private mode: just play it */
-    }
-
-    if (!seen) queueMicrotask(() => setPlay(true));
+    queueMicrotask(() => setPlay(true));
   }, []);
 
   useEffect(() => {
