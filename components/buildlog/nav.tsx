@@ -2,14 +2,13 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { profile, sections } from "@/lib/portfolio-data";
-import { useLamp } from "./lamp";
 import { useSmoothScroll } from "./smooth";
-import { MarkClose, MarkDownload, MarkLamp, MarkLines } from "./marks";
+import { MarkClose, MarkDownload, MarkLines } from "./marks";
 
 export function BuildLogNav({ active }: { active: string }) {
-  const { lamp, toggle } = useLamp();
   const { scrollTo } = useSmoothScroll();
   const [hidden, setHidden] = useState(false);
+  const [stuck, setStuck] = useState(false);
   const [menu, setMenu] = useState(false);
   const [ring, setRing] = useState<{ x: number; w: number } | null>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -20,6 +19,7 @@ export function BuildLogNav({ active }: { active: string }) {
     const onScroll = () => {
       const y = window.scrollY;
       setHidden(y > 240 && y > lastScroll.current);
+      setStuck(y > 12);
       lastScroll.current = y;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -58,7 +58,7 @@ export function BuildLogNav({ active }: { active: string }) {
 
   return (
     <>
-      <header className="bl-nav" data-hidden={hidden && !menu}>
+      <header className="bl-nav" data-hidden={hidden && !menu} data-stuck={stuck}>
         <a
           className="bl-brand"
           href="#top"
@@ -67,8 +67,10 @@ export function BuildLogNav({ active }: { active: string }) {
             scrollTo(0);
           }}
         >
-          <i aria-hidden="true" />
-          Build Log
+          <span className="bl-brand-mark" aria-hidden="true">
+            <i>&lt;</i>SDR<i>/&gt;</i>
+          </span>
+          <span className="bl-sr">S. Dhruv Reddy, home</span>
         </a>
 
         <div className="bl-tabs" ref={tabsRef}>
@@ -89,22 +91,15 @@ export function BuildLogNav({ active }: { active: string }) {
               onClick={() => go(item.id)}
             >
               <sup>{item.act}</sup>
-              {item.label}
+              <span className="bl-tab-roll">
+                <span>{item.label}</span>
+                <span aria-hidden="true">{item.label}</span>
+              </span>
             </button>
           ))}
         </div>
 
         <div className="bl-nav-actions">
-          <button
-            className="bl-lamp"
-            type="button"
-            onClick={toggle}
-            aria-label={lamp === "off" ? "Turn the desk lamp on" : "Turn the desk lamp off"}
-            title={lamp === "off" ? "Lights on" : "Lights out"}
-          >
-            <MarkLamp size={15} lit={lamp === "on"} />
-          </button>
-
           <a className="bl-resume" href={profile.resume} target="_blank" rel="noreferrer">
             Résumé <MarkDownload size={12} />
           </a>

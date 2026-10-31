@@ -6,56 +6,33 @@
 
 :root,
 [data-lamp="off"] {
-  --bl-bg: #0d0c0a;
-  --bl-bg-deep: #070605;
-  --bl-surface: #141210;
-  --bl-surface-2: #1a1715;
+  --bl-bg: #090908;
+  --bl-bg-deep: #050504;
+  --bl-surface: #110f0e;
+  --bl-surface-2: #181514;
   --bl-ink: #e9e3d5;
   --bl-ink-soft: #a8a294;
   --bl-ink-dim: #70695d;
   --bl-rule: rgba(233, 227, 213, 0.12);
   --bl-rule-soft: rgba(233, 227, 213, 0.06);
-  --bl-accent: #c9502f;
-  --bl-accent-ink: #f7f2e6;
-  --bl-accent-soft: rgba(201, 80, 47, 0.16);
+  --bl-accent: #d2552f;
+  --bl-accent-ink: #0b0a09;
+  --bl-accent-soft: rgba(210, 85, 47, 0.16);
   --bl-amber: #d49a3c;
-  --bl-hand: #c9502f;
+  --bl-hand: #d2552f;
   --bl-hand-2: #d49a3c;
   --bl-grain: 0.045;
   --bl-lift: 0 1rem 2.5rem rgba(0, 0, 0, 0.5);
   color-scheme: dark;
 }
 
-[data-lamp="on"] {
-  --bl-bg: #e7e0cd;
-  --bl-bg-deep: #d5ccb5;
-  --bl-surface: #efe9d9;
-  --bl-surface-2: #f5f0e4;
-  --bl-ink: #1a1711;
-  --bl-ink-soft: #4b4638;
-  --bl-ink-dim: #746d5d;
-  --bl-rule: rgba(26, 23, 17, 0.17);
-  --bl-rule-soft: rgba(26, 23, 17, 0.08);
-  --bl-accent: #ab3a1c;
-  --bl-accent-ink: #f7f2e6;
-  --bl-accent-soft: rgba(171, 58, 28, 0.13);
-  --bl-amber: #93641b;
-  --bl-hand: #ab3a1c;
-  --bl-hand-2: #93641b;
-  --bl-grain: 0.07;
-  --bl-lift: 0 0.75rem 2rem rgba(70, 58, 30, 0.16);
-  color-scheme: light;
-}
-
 :root {
   --bl-display: var(--font-display), "Iowan Old Style", Georgia, serif;
   --bl-sans: var(--font-sans), system-ui, sans-serif;
-  --bl-hand-font: var(--font-hand), cursive;
   --bl-mono: var(--font-mono), ui-monospace, monospace;
   --bl-gutter: clamp(1.25rem, 5vw, 6rem);
-  --bl-rail: clamp(0rem, 4vw, 5rem);
+  --bl-rail: 0rem;
   --bl-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --bl-line: 30px;
 }
 
 html,
@@ -81,32 +58,6 @@ body {
  * Ruled log-book paper: faint horizontal lines and a single margin rule,
  * drawn at the real line height so text sits on it.
  */
-.bl-paper {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to bottom, var(--bl-rule-soft) 1px, transparent 1px);
-  background-size: 100% var(--bl-line);
-  opacity: 0.85;
-}
-
-.bl-margin-rule {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc(var(--bl-gutter) + var(--bl-rail) - 1.6rem);
-  width: 1px;
-  z-index: 0;
-  pointer-events: none;
-  background: color-mix(in srgb, var(--bl-hand) 26%, transparent);
-  opacity: 0.5;
-}
-
-@media (max-width: 900px) {
-  .bl-margin-rule { display: none; }
-}
 
 .bl-grain-layer {
   position: fixed;
@@ -155,15 +106,6 @@ body {
   color: var(--bl-ink-soft);
 }
 
-.bl-hand {
-  font-family: var(--bl-hand-font);
-  color: var(--bl-hand);
-  font-size: 1.3rem;
-  line-height: 1.2;
-  transform: rotate(-2.2deg);
-  display: inline-block;
-}
-
 .bl-mono {
   font-family: var(--bl-mono);
   font-size: 0.7rem;
@@ -192,23 +134,13 @@ body {
 .bl-nav[data-hidden="true"] { transform: translateY(-102%); }
 
 .bl-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--bl-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
   color: var(--bl-ink);
   white-space: nowrap;
 }
 
-.bl-brand i {
-  width: 6px;
-  height: 6px;
-  background: var(--bl-accent);
-  display: inline-block;
-}
+
 
 .bl-tabs {
   position: relative;
@@ -333,105 +265,6 @@ body {
   color: var(--bl-accent);
 }
 
-/* ---------- margin rail ------------------------------------------------- */
-
-.bl-rail-wrap {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: calc(var(--bl-gutter) * 0.5);
-  z-index: 40;
-  width: 2.25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.bl-rail-line {
-  position: relative;
-  width: 1px;
-  height: min(50vh, 24rem);
-  background: var(--bl-rule);
-}
-
-.bl-rail-fill {
-  position: absolute;
-  inset: 0 0 auto 0;
-  width: 2px;
-  left: -0.5px;
-  background: var(--bl-hand);
-}
-
-.bl-rail-nib {
-  position: absolute;
-  left: 50%;
-  width: 7px;
-  height: 7px;
-  translate: -50% -50%;
-  background: var(--bl-hand);
-}
-
-.bl-rail-ticks { position: absolute; inset: 0; pointer-events: auto; }
-
-.bl-rail-tick {
-  position: absolute;
-  left: 50%;
-  translate: -50% -50%;
-  width: 1.4rem;
-  height: 1.4rem;
-  display: grid;
-  place-items: center;
-  appearance: none;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.bl-rail-tick::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  border: 1px solid var(--bl-ink-dim);
-  background: var(--bl-bg);
-  transition: background 0.25s, border-color 0.25s, transform 0.25s;
-}
-
-.bl-rail-tick[data-done="true"]::before { border-color: var(--bl-hand); }
-
-.bl-rail-tick[data-active="true"]::before {
-  background: var(--bl-hand);
-  border-color: var(--bl-hand);
-  transform: scale(1.4);
-}
-
-.bl-rail-tick span {
-  position: absolute;
-  left: 1.5rem;
-  font-family: var(--bl-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.25s;
-}
-
-.bl-rail-tick:hover span,
-.bl-rail-tick[data-active="true"] span { opacity: 1; }
-
-.bl-rail-pct {
-  margin-top: 0.9rem;
-  font-family: var(--bl-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.12em;
-  color: var(--bl-ink-dim);
-}
-
-@media (max-width: 900px) { .bl-rail-wrap { display: none; } }
-
 /* ---------- hero --------------------------------------------------------- */
 
 .bl-hero {
@@ -439,61 +272,52 @@ body {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: clamp(1rem, 3.5vh, 2.25rem);
-  padding: clamp(4.5rem, 11vh, 7rem) var(--bl-gutter) clamp(2.5rem, 6vh, 4rem)
-    calc(var(--bl-gutter) + var(--bl-rail));
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+  padding: clamp(4.5rem, 10vh, 6.5rem) var(--bl-gutter) clamp(2.5rem, 6vh, 4rem);
+  overflow: hidden;
 }
 
-.bl-hero-top { display: grid; gap: clamp(0.75rem, 2vh, 1.25rem); justify-items: start; }
+.bl-hero-stamp i { width: 5px; height: 5px; border-radius: 50%; background: var(--bl-accent); }
 
-.bl-hero-stamp {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.7rem;
-  border: 1px solid var(--bl-rule);
-  font-family: var(--bl-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--bl-ink-soft);
-}
+/* ---- the stage: name behind, portrait in front ---- */
 
-.bl-hero-stamp i { width: 5px; height: 5px; background: var(--bl-accent); }
-
-/* the name, as large as the measure allows */
-.bl-hero-name {
-  margin: 0;
+.bl-hero-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
   display: grid;
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-variation-settings: "SOFT" 28, "WONK" 1, "opsz" 144;
-  /* sized off the viewport height too, so the act always clears the fold */
-  font-size: clamp(2.6rem, min(11.5vw, 17vh), 9.5rem);
-  line-height: 0.84;
-  letter-spacing: -0.045em;
+  place-items: center;
+  perspective: 1200px;
+  --mx: 0;
+  --my: 0;
 }
-
-.bl-hero-name em {
-  font-style: italic;
-  font-variation-settings: "SOFT" 55, "WONK" 1;
-  color: var(--bl-accent);
-}
-
-/* each word rises out of its own mask once the cover is gone */
-.bl-hero-word { display: block; }
 
 @media (scripting: enabled) {
-  .bl-hero-word {
-    transform: translateY(104%);
-    animation: bl-rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: inherit;
-  }
 }
 
-@keyframes bl-rise {
-  to { transform: translateY(0); }
+/* the portrait sits on top of the letters, which is what sells the depth */
+
+/* a warm bloom behind it, so it is lit rather than pasted on */
+
+/* fades the base of the photo into the page, so it has no hard bottom edge */
+
+/* the line, in front of both layers */
+/* ---- the copy under the stage ---- */
+
+.bl-hero-foot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.7rem clamp(1.5rem, 4vw, 3rem);
+  padding-top: clamp(0.75rem, 2vh, 1.25rem);
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-hero-foot-copy {
+  display: grid;
+  gap: clamp(0.5rem, 1.4vh, 0.85rem);
+  justify-items: start;
+  align-content: end;
 }
 
 .bl-hero-role {
@@ -503,7 +327,7 @@ body {
   gap: 0.7rem;
   margin: 0;
   font-family: var(--bl-mono);
-  font-size: clamp(0.62rem, 1vw, 0.74rem);
+  font-size: clamp(0.58rem, 0.95vw, 0.7rem);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--bl-ink-soft);
@@ -511,208 +335,52 @@ body {
 
 .bl-hero-role i { width: 1.6rem; height: 1px; background: var(--bl-rule); }
 
-.bl-hero-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  align-items: end;
-  gap: clamp(1.25rem, 3.5vw, 3rem);
-  border-top: 1px solid var(--bl-rule);
-  padding-top: clamp(1rem, 2.5vh, 1.75rem);
-}
-
-.bl-hero-copy {
-  display: grid;
-  gap: clamp(0.8rem, 2vh, 1.2rem);
-  justify-items: start;
-  align-content: start;
-}
-
 .bl-hero-thesis {
-  max-width: 40ch;
+  max-width: 46ch;
   margin: 0;
-  font-size: clamp(1rem, 1.45vw, 1.22rem);
-  line-height: 1.6;
+  font-size: clamp(0.95rem, 1.3vw, 1.12rem);
+  line-height: 1.55;
   color: var(--bl-ink-soft);
 }
 
-.bl-hero-cta { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.bl-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  padding-top: 0.25rem;
+}
+
+.bl-hero-counts-wrap { align-self: end; }
 
 .bl-hero-counts {
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(1rem, 2.5vw, 2.25rem);
-  padding-top: 0.25rem;
+  gap: clamp(0.9rem, 2vw, 2rem);
+  justify-content: flex-end;
 }
 
 .bl-hero-counts div { display: grid; gap: 0.15rem; }
 
 .bl-hero-counts strong {
   font-family: var(--bl-display);
-  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
   line-height: 1;
   font-weight: 400;
 }
 
 .bl-hero-counts span {
   font-family: var(--bl-mono);
-  font-size: 0.56rem;
+  font-size: 0.54rem;
   letter-spacing: 0.17em;
   text-transform: uppercase;
   color: var(--bl-ink-dim);
 }
 
-/* the portrait, handled as a physical print */
-.bl-plate {
-  position: relative;
-  justify-self: end;
-  width: min(100%, 17rem);
-  max-height: 42vh;
-  aspect-ratio: 1122 / 1402;
-  z-index: 2;
+@media (max-width: 900px) {
+  .bl-hero-foot { grid-template-columns: 1fr; }
+  .bl-hero-counts { justify-content: flex-start; }
 }
-
-.bl-plate-frame {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background: var(--bl-surface);
-  border: 1px solid var(--bl-rule);
-  box-shadow: var(--bl-lift);
-  transform: rotate(-1.2deg);
-  transition: transform 0.7s var(--bl-ease);
-}
-
-.bl-plate:hover .bl-plate-frame { transform: rotate(0deg); }
-
-.bl-plate-frame img {
-  object-fit: cover;
-  object-position: center top;
-}
-
-.bl-plate-wipe {
-  position: absolute;
-  inset: 0;
-  background: var(--bl-bg);
-  transform-origin: bottom;
-  z-index: 3;
-  /* the print developing: runs from CSS so it never needs hydration */
-  animation: bl-develop 1.5s cubic-bezier(0.76, 0, 0.24, 1) 0.4s both;
-}
-
-@keyframes bl-develop {
-  from { transform: scaleY(1); }
-  to { transform: scaleY(0); }
-}
-
-/* strips of tape holding the print down */
-.bl-plate-tape {
-  position: absolute;
-  z-index: 5;
-  width: 5.5rem;
-  height: 1.5rem;
-  background: color-mix(in srgb, var(--bl-ink) 11%, transparent);
-  border-left: 1px solid var(--bl-rule-soft);
-  border-right: 1px solid var(--bl-rule-soft);
-}
-
-.bl-plate-tape[data-corner="tl"] { top: -0.7rem; left: -1.4rem; rotate: -38deg; }
-.bl-plate-tape[data-corner="br"] { bottom: -0.7rem; right: -1.4rem; rotate: -38deg; }
-
-.bl-plate-tag {
-  position: absolute;
-  bottom: -1.5rem;
-  left: 0.2rem;
-  font-family: var(--bl-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  z-index: 5;
-}
-
-.bl-plate-note {
-  position: absolute;
-  top: 7%;
-  right: 100%;
-  margin-right: 0.9rem;
-  z-index: 6;
-  pointer-events: none;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.bl-plate-note .bl-hand { font-size: 1.45rem; transform: rotate(-7deg); }
-
-/* grok, sitting on the corner of the print */
-.bl-plate-bot {
-  position: absolute;
-  bottom: -2.2rem;
-  left: -2.6rem;
-  width: clamp(6rem, 13vw, 8.5rem);
-  height: clamp(6rem, 13vw, 8.5rem);
-  z-index: 7;
-}
-
-.bl-hero-scroll {
-  position: absolute;
-  bottom: 1.5rem;
-  left: calc(var(--bl-gutter) + var(--bl-rail));
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0;
-  font-family: var(--bl-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-}
-
-@media (max-width: 1000px) {
-  .bl-hero-main { grid-template-columns: 1fr; gap: 2.5rem; }
-  .bl-plate { width: min(100%, 17rem); justify-self: start; }
-  .bl-plate-note { right: auto; left: 0; top: -2.4rem; margin-right: 0; text-align: left; }
-  .bl-plate-bot {
-    left: -1.4rem;
-    bottom: -1.4rem;
-    width: clamp(4.5rem, 16vw, 6rem);
-    height: clamp(4.5rem, 16vw, 6rem);
-  }
-}
-
-/* ---------- act headers --------------------------------------------------- */
-
-.bl-act {
-  position: relative;
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: clamp(0.9rem, 3vw, 2.25rem);
-  padding: 0 var(--bl-gutter) 0 calc(var(--bl-gutter) + var(--bl-rail));
-  margin-bottom: clamp(2.5rem, 6vh, 4rem);
-}
-
-.bl-act-num {
-  font-family: var(--bl-display);
-  font-size: clamp(2.2rem, 6vw, 4.5rem);
-  line-height: 0.8;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--bl-ink-dim);
-  opacity: 0.45;
-}
-
-.bl-act-copy { display: grid; gap: 0.3rem; }
-
-.bl-act-copy h2 {
-  margin: 0;
-  font-family: var(--bl-display);
-  font-size: clamp(1.9rem, 4.8vw, 3.4rem);
-  line-height: 1.02;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-
-.bl-act-rule { flex: 1; min-width: 2rem; height: 1px; background: var(--bl-rule); align-self: center; }
 
 /* ---------- the log ------------------------------------------------------- */
 
@@ -786,7 +454,7 @@ body {
 
 .bl-entry-headline {
   margin: 0;
-  max-width: 46ch;
+  max-width: 54ch;
   font-size: clamp(1rem, 1.4vw, 1.15rem);
   line-height: 1.55;
   color: var(--bl-ink-soft);
@@ -823,9 +491,22 @@ body {
 
 .bl-entry-detail-inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-  gap: clamp(1.25rem, 3vw, 2.5rem);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.95fr);
+  gap: clamp(1.25rem, 3vw, 3rem);
   padding: 1.4rem 0 0.4rem;
+}
+
+/* on a laptop the plate and the figures sit side by side, not stacked */
+@media (min-width: 1100px) {
+  .bl-entry-side {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.25rem 1.75rem;
+  }
+  .bl-entry-side .bl-plate-slot { grid-row: span 2; }
+  .bl-entry-side .bl-metrics { align-content: start; }
+  .bl-entry-side .bl-chips,
+  .bl-entry-side .bl-keynote { grid-column: 1 / -1; }
 }
 
 .bl-entry-summary {
@@ -857,6 +538,8 @@ body {
 }
 
 .bl-entry-side { display: grid; gap: 1rem; align-content: start; }
+
+.bl-entry-side .bl-metrics { gap: 0.9rem 1.5rem; }
 
 .bl-metrics {
   display: flex;
@@ -902,27 +585,6 @@ body {
 }
 
 /* a pen bracket instead of a coloured bar */
-.bl-keynote {
-  position: relative;
-  margin: 0;
-  padding: 0.5rem 0 0.5rem 1.25rem;
-  font-family: var(--bl-hand-font);
-  font-size: 1.22rem;
-  line-height: 1.4;
-  color: var(--bl-ink);
-}
-
-.bl-keynote::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 0.7rem;
-  border: 1.4px solid var(--bl-hand);
-  border-right: 0;
-  border-radius: 40% 0 0 40% / 12% 0 0 12%;
-}
 
 @media (max-width: 880px) {
   .bl-entry { grid-template-columns: minmax(0, 1fr) auto; gap: 0.9rem 1.2rem; }
@@ -1247,7 +909,6 @@ body {
   border-bottom: 1px solid var(--bl-rule);
 }
 
-
 .bl-win-kind {
   font-family: var(--bl-mono);
   font-size: 0.54rem;
@@ -1276,7 +937,7 @@ body {
 
 .bl-win-headline {
   margin: 0;
-  font-family: var(--bl-hand-font);
+  font-family: var(--bl-sans);
   font-size: 1.3rem;
   line-height: 1.32;
   color: var(--bl-ink);
@@ -1397,7 +1058,6 @@ body {
 
 /* ---------- the stack ------------------------------------------------------------ */
 
-
 /* ---------- contact ---------------------------------------------------------------- */
 
 .bl-contact {
@@ -1450,105 +1110,114 @@ body {
 
 .bl-contact-note i { width: 5px; height: 5px; background: var(--bl-accent); }
 
-/* ---------- grok, walking the margin ------------------------------------ */
+/* ---------- grok, the docked guide ---------------------------------------- */
 
 .bl-bot {
   position: fixed;
-  left: calc(var(--bl-gutter) * 0.5);
+  right: clamp(0.9rem, 2.5vw, 1.75rem);
+  bottom: clamp(0.9rem, 2.5vw, 1.75rem);
   z-index: 90;
-  width: clamp(2.6rem, 3.6vw, 3.4rem);
-  height: clamp(2.6rem, 3.6vw, 3.4rem);
-  translate: -50% -50%;
-  pointer-events: none;
-  /* eases the last few pixels so the walk never looks jittery */
-  transition: top 0.35s cubic-bezier(0.33, 1, 0.68, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.bl-bot-dock {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bl-surface);
+  box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: transform 0.3s var(--bl-ease);
+}
+
+.bl-bot-dock:hover { transform: scale(1.06); }
+
+.bl-bot-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.bl-bot-ring circle {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.bl-bot-ring-track { stroke: var(--bl-rule); }
+
+.bl-bot-ring-fill {
+  stroke: var(--bl-accent);
+  stroke-dasharray: 125.6;
+  transition: stroke-dashoffset 0.8s var(--bl-ease);
 }
 
 .bl-bot-body {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  animation: bl-breathe 4s ease-in-out infinite;
+  display: block;
+  width: 72%;
+  height: 72%;
 }
 
-.bl-bot-body::before {
-  content: "";
-  position: absolute;
-  inset: -22%;
-  border-radius: 50%;
-  background: var(--bl-bg);
-  z-index: -1;
+.bl-bot-read {
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+  color: var(--bl-ink-dim);
 }
 
-/* a small stride while the page is actually moving */
-.bl-bot[data-stepping="true"] .bl-bot-body {
-  animation: bl-stride 0.42s ease-in-out infinite;
-}
-
-@keyframes bl-breathe {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-5%) scale(1.015); }
-}
-
-@keyframes bl-stride {
-  0%, 100% { transform: translateY(0) rotate(-3deg); }
-  50% { transform: translateY(-12%) rotate(3deg); }
-}
-
-.bl-bot-bubble {
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 0.7rem);
-  translate: 0 -50%;
-  width: max-content;
-  max-width: 12rem;
-  margin: 0;
-  padding: 0.45rem 0.7rem;
+/* it only puts a card up when it has something specific to say */
+.bl-bot-card {
+  max-width: 15rem;
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  padding: 0.8rem 0.9rem;
+  border-radius: 14px;
   background: var(--bl-surface-2);
   border: 1px solid var(--bl-rule);
-  font-family: var(--bl-hand-font);
-  font-size: 1.02rem;
-  line-height: 1.25;
-  color: var(--bl-ink);
-  animation: bl-say 0.45s var(--bl-ease);
+  box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.45);
+  animation: bl-say 0.4s var(--bl-ease);
 }
 
-.bl-bot-bubble::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: -0.3rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  translate: 0 -50%;
-  background: var(--bl-surface-2);
-  rotate: 45deg;
-  border-bottom: 1px solid var(--bl-rule);
-  border-left: 1px solid var(--bl-rule);
+.bl-bot-card p {
+  margin: 0;
+  font-family: var(--bl-sans);
+  font-size: 1.1rem;
+  line-height: 1.3;
+  color: var(--bl-ink);
+}
+
+.bl-bot-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
 }
 
 @keyframes bl-say {
-  from { opacity: 0; transform: translateX(-6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
 }
 
-/* on a phone it tucks into the corner and keeps quiet */
-@media (max-width: 900px) {
-  .bl-bot {
-    left: auto;
-    right: 0.9rem;
-    top: auto !important;
-    bottom: 0.9rem;
-    translate: 0 0;
-    width: 2.8rem;
-    height: 2.8rem;
-    transition: none;
-  }
-  .bl-bot-bubble { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bl-bot-body { animation: none; }
+@media (max-width: 560px) {
+  .bl-bot-card { max-width: 11rem; }
+  .bl-bot-read { display: none; }
 }
 
 /* ---------- colophon page --------------------------------------------------------------- */
@@ -1628,9 +1297,12 @@ body {
 html.bl-locked,
 html.bl-locked body { overflow: hidden; }
 
-@media (max-width: 780px) {
+@media (max-width: 1040px) {
   .bl-tabs { display: none; }
   .bl-burger { display: inline-flex; }
+}
+
+@media (max-width: 560px) {
   .bl-resume { display: none; }
 }
 
@@ -1664,8 +1336,6 @@ html.bl-locked body { overflow: hidden; }
   to { background-position: -50% 0; }
 }
 
-.bl-plate-bot .bl-bot-skeleton { width: 100%; }
-
 /* the companion steps aside while the hero avatar has the stage */
 .bl-bot {
   transition: opacity 0.5s var(--bl-ease), transform 0.5s var(--bl-ease);
@@ -1678,15 +1348,6 @@ html.bl-locked body { overflow: hidden; }
 }
 
 /* a paper disc so the avatar reads as a sticker on the print, not a hole */
-.bl-plate-bot::before {
-  content: "";
-  position: absolute;
-  inset: -7%;
-  border-radius: 50%;
-  background: var(--bl-bg);
-  border: 1px solid var(--bl-rule);
-  z-index: -1;
-}
 
 /* ---- scroll-in reveals -------------------------------------------------- */
 
@@ -1713,80 +1374,14 @@ html.bl-locked body { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .bl-reveal { opacity: 1 !important; transform: none !important; }
-  .bl-plate-wipe { animation: none; transform: scaleY(0); }
 }
 
 /* ---------- masked line reveals -------------------------------------------- */
 
 .bl-mask { display: block; }
 
-.bl-mask-line {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.08em;
-}
-
-.bl-mask-inner {
-  display: block;
-  transform: translateY(0);
-}
-
 @media (scripting: enabled) {
-  .bl-mask-inner {
-    transform: translateY(105%);
-    opacity: 0;
-    transition:
-      transform 1s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-  }
 
-  .bl-mask[data-in="true"] .bl-mask-inner {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* ---------- cursor ---------------------------------------------------------- */
-
-.has-cursor,
-.has-cursor * { cursor: none !important; }
-
-.bl-cursor-dot,
-.bl-cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  pointer-events: none;
-  margin-left: -50%;
-  margin-top: -50%;
-  opacity: 0;
-}
-
-.has-cursor .bl-cursor-dot,
-.has-cursor .bl-cursor-ring { opacity: 1; }
-
-.bl-cursor-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--bl-hand);
-}
-
-.bl-cursor-ring {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--bl-ink) 40%, transparent);
-  transition: width 0.3s var(--bl-ease), height 0.3s var(--bl-ease),
-    border-color 0.3s var(--bl-ease), background 0.3s var(--bl-ease);
-}
-
-.bl-cursor-ring[data-hot="true"] {
-  width: 58px;
-  height: 58px;
-  border-color: var(--bl-hand);
-  background: color-mix(in srgb, var(--bl-hand) 9%, transparent);
 }
 
 /* ---------- the film strip --------------------------------------------------- */
@@ -1860,13 +1455,7 @@ html.bl-locked body { overflow: hidden; }
   position: absolute;
   inset: 0;
   z-index: 0;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0 calc(var(--bl-line) - 1px),
-      rgba(233, 227, 213, 0.05) calc(var(--bl-line) - 1px) var(--bl-line)
-    ),
-    #14120f;
+  background: #14120f;
 }
 
 .bl-plate-bare {
@@ -1876,12 +1465,7 @@ html.bl-locked body { overflow: hidden; }
   place-items: center;
 }
 
-.bl-plate-bare img {
-  width: 112%;
-  height: 100%;
-  object-fit: cover;
-  margin-left: -6%;
-}
+.bl-plate-bare img[data-loaded="true"] { width: 112%; margin-left: -6%; }
 
 /* the title, oversized and ghosted, until a screenshot replaces it */
 .bl-plate-bare > span {
@@ -1894,7 +1478,6 @@ html.bl-locked body { overflow: hidden; }
   text-align: center;
   padding: 0 2rem;
 }
-
 
 .bl-panel-media::after {
   content: "";
@@ -1930,7 +1513,6 @@ html.bl-locked body { overflow: hidden; }
 .bl-panel .bl-btn { color: var(--bl-ink); }
 
 .bl-panel .bl-btn-solid { color: var(--bl-accent-ink); }
-
 
 .bl-panel-index {
   position: absolute;
@@ -2062,13 +1644,11 @@ html.bl-locked body { overflow: hidden; }
   content: "";
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(
-    to bottom,
-    var(--bl-rule-soft) 1px,
-    transparent 1px
+  background: radial-gradient(
+    48rem 32rem at 50% 42%,
+    color-mix(in srgb, var(--bl-accent) 10%, transparent),
+    transparent 70%
   );
-  background-size: 100% var(--bl-line);
-  opacity: 0.85;
   pointer-events: none;
 }
 
@@ -2141,69 +1721,9 @@ html.bl-locked body { overflow: hidden; }
 
 /* ---------- margin doodles ----------------------------------------------- */
 
-.bl-doodle {
-  position: absolute;
-  pointer-events: none;
-  overflow: visible;
-  z-index: 3;
-}
-
-.bl-doodle path {
-  stroke: var(--bl-hand);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.bl-doodle[data-alt="true"] path { stroke: var(--bl-hand-2); }
-
-.bl-doodle-hero {
-  bottom: 1rem;
-  left: calc(var(--bl-gutter) + var(--bl-rail) + 9.5rem);
-  width: 3.4rem;
-  opacity: 0.8;
-}
-
-.bl-doodle-log {
-  top: 6rem;
-  left: calc(var(--bl-gutter) + var(--bl-rail) - 2.6rem);
-  width: 1.5rem;
-  height: 14rem;
-}
-
-.bl-doodle-edu {
-  right: var(--bl-gutter);
-  margin-top: -3.5rem;
-  width: 6.5rem;
-  opacity: 0.85;
-}
-
-.bl-doodle-wins {
-  top: 2.5rem;
-  right: calc(var(--bl-gutter) + 1rem);
-  width: 3.2rem;
-}
-
 .bl-contact-huge-wrap { position: relative; display: inline-block; }
 
-.bl-doodle-contact {
-  left: 0;
-  bottom: -0.6rem;
-  width: min(22rem, 62vw);
-}
-
-.bl-doodle-tick {
-  position: static;
-  width: 1.5rem;
-  margin-left: 0.3rem;
-  vertical-align: middle;
-}
-
 @media (max-width: 900px) {
-  .bl-doodle-log,
-  .bl-doodle-edu,
-  .bl-doodle-hero { display: none; }
 }
 
 /* ---------- lean into the scroll ------------------------------------------ */
@@ -2310,16 +1830,11 @@ html.bl-locked body { overflow: hidden; }
 /* the crest plate: an image when there is one, a monogram when there is not */
 .bl-school-plate {
   position: relative;
-  aspect-ratio: 16 / 7;
+  aspect-ratio: 16 / 5;
+  max-height: 11rem;
   display: grid;
   place-items: center;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0 calc(var(--bl-line) - 1px),
-      var(--bl-rule-soft) calc(var(--bl-line) - 1px) var(--bl-line)
-    ),
-    var(--bl-surface-2);
+  background: var(--bl-surface-2);
   border-bottom: 1px solid var(--bl-rule);
   overflow: hidden;
 }
@@ -2819,13 +2334,7 @@ html.bl-locked body { overflow: hidden; }
   place-items: center;
   overflow: hidden;
   border: 1px solid var(--bl-rule);
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0 calc(var(--bl-line) - 1px),
-      var(--bl-rule-soft) calc(var(--bl-line) - 1px) var(--bl-line)
-    ),
-    var(--bl-surface-2);
+  background: var(--bl-surface-2);
 }
 
 .bl-plate-slot--wide { aspect-ratio: 16 / 9; }
@@ -2842,12 +2351,20 @@ html.bl-locked body { overflow: hidden; }
 }
 
 /* the slot fills itself once a file is dropped in */
-.bl-plate-slot img {
+.bl-plate-slot img,
+.bl-plate-bare img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  opacity: 0;
+  transition: opacity 0.5s var(--bl-ease);
 }
+
+.bl-plate-slot img[data-loaded="true"],
+.bl-plate-bare img[data-loaded="true"] { opacity: 1; }
 
 /* inside a school card the slot is the whole crest area */
 .bl-school-plate .bl-plate-slot {
@@ -2884,10 +2401,6 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-ink);
   border: 1px solid var(--bl-rule);
   overflow: hidden;
-}
-
-[data-lamp="on"] .bl-studio-panel {
-  box-shadow: 0 1.5rem 3.5rem rgba(60, 50, 25, 0.22);
 }
 
 .bl-studio-head {
@@ -3151,11 +2664,7 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-skip:focus-visible { transform: translateY(0); }
 
-/*
- * The custom cursor hides the system one, so a visible focus ring is the only
- * thing a keyboard has to go on. It is drawn in the pen colour, offset so it
- * never touches the text it is marking.
- */
+/* A visible focus ring, drawn in the pen colour and offset off the text. */
 :where(a, button, [role="button"], input, textarea, select, [tabindex]):focus-visible {
   outline: 2px solid var(--bl-accent);
   outline-offset: 3px;
@@ -3163,7 +2672,6 @@ html.bl-locked body { overflow: hidden; }
 }
 
 /* a pointer is still a pointer on anything that acts like a control */
-.has-cursor :where(a, button, [role="button"]):focus-visible { cursor: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .bl-hero-word {
@@ -3171,4 +2679,949 @@ html.bl-locked body { overflow: hidden; }
     animation: none !important;
   }
   .bl-skip { transition: none; }
+}
+
+/* the handle sits under the platform name in the footer */
+.bl-footer-col a span {
+  display: block;
+  font-family: var(--bl-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--bl-ink-dim);
+}
+
+/* ---------- nav links roll on hover --------------------------------------- */
+
+.bl-tab-roll {
+  display: inline-grid;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.bl-tab-roll span {
+  grid-area: 1 / 1;
+  transition: transform 0.42s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.bl-tab-roll span:last-child { transform: translateY(105%); }
+
+.bl-tab:hover .bl-tab-roll span:first-child { transform: translateY(-105%); }
+.bl-tab:hover .bl-tab-roll span:last-child { transform: translateY(0); }
+
+/* ---------- the log preview card ------------------------------------------ */
+
+.bl-log-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  width: 15rem;
+  margin: -3rem 0 0 2.5rem;
+  pointer-events: none;
+  opacity: 0;
+  scale: 0.92;
+  transition: opacity 0.3s var(--bl-ease), scale 0.4s var(--bl-ease);
+  will-change: transform;
+  background: var(--bl-surface);
+  border: 1px solid var(--bl-rule);
+  box-shadow: var(--bl-lift);
+}
+
+.bl-log-preview[data-on="true"] { opacity: 1; scale: 1; }
+
+.bl-log-preview .bl-plate-slot { border: 0; border-bottom: 1px solid var(--bl-rule); }
+
+.bl-log-preview p {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+}
+
+.bl-log-preview strong {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.1;
+}
+
+.bl-log-preview span {
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+@media (pointer: coarse), (max-width: 900px) {
+  .bl-log-preview { display: none; }
+}
+
+/* ---------- hover, made obvious ------------------------------------------- */
+
+.bl-case-live:hover,
+.bl-edu-certs a:hover,
+.bl-bot-cta:hover { color: var(--bl-ink); }
+
+.bl-chip { transition: border-color 0.25s var(--bl-ease), color 0.25s var(--bl-ease); }
+.bl-chip:hover { border-color: var(--bl-accent); color: var(--bl-ink); }
+
+.bl-quest { transition: background 0.3s var(--bl-ease); }
+.bl-quest:hover { background: var(--bl-surface); }
+
+.bl-studio-clients li { transition: background 0.3s var(--bl-ease); }
+.bl-studio-clients li:hover { background: var(--bl-surface); }
+
+/* ---------- cinematic dark: glow, pills, rounded plates ------------------- */
+
+/* a soft warm bloom behind the page, so the black is never flat */
+.bl-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 18% 8%, rgba(210, 85, 47, 0.09), transparent 70%),
+    radial-gradient(50rem 34rem at 88% 72%, rgba(210, 85, 47, 0.06), transparent 70%);
+  opacity: 1;
+  transition: opacity 0.7s var(--bl-ease);
+}
+
+/* buttons and chips become pills */
+.bl-btn,
+.bl-resume {
+  border-radius: 999px;
+  padding-inline: 1.4rem;
+}
+
+.bl-chip,
+.bl-case-kind,
+.bl-studio-clients em,
+.bl-toolkit-filter {
+  border-radius: 999px;
+}
+
+.bl-cta { border-radius: 999px; }
+
+/* media and panels get a real corner */
+.bl-panel,
+.bl-school,
+.bl-studio-panel,
+.bl-plate-slot,
+.bl-log-preview,
+.bl-modal-sheet,
+.bl-tool {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.bl-plate-slot { border-radius: 12px; }
+.bl-tool { border-radius: 14px; }
+
+/* a faint corner bloom on the big surfaces, the way a lit screen looks */
+.bl-panel::before,
+.bl-studio-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    24rem 18rem at 92% 94%,
+    rgba(210, 85, 47, 0.14),
+    transparent 70%
+  );
+  z-index: 1;
+}
+
+.bl-studio-panel { position: relative; }
+
+/* ==========================================================================
+   Buttons.
+   Kept at the end of the file on purpose: twice now a section rewrite higher
+   up has swallowed these rules, leaving every call to action unstyled.
+   ========================================================================== */
+
+.bl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border: 1px solid var(--bl-rule);
+  color: var(--bl-ink);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    border-color 0.25s var(--bl-ease),
+    color 0.25s var(--bl-ease),
+    background 0.25s var(--bl-ease);
+}
+
+.bl-btn:hover {
+  border-color: var(--bl-ink);
+  background: color-mix(in srgb, var(--bl-ink) 7%, transparent);
+}
+
+.bl-btn-solid {
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+  border-color: var(--bl-accent);
+}
+
+.bl-btn-solid:hover {
+  background: var(--bl-accent);
+  border-color: var(--bl-accent);
+  filter: brightness(1.12);
+}
+
+/* ==========================================================================
+   SECTION HEADS, HERO STAGE
+   One language: dark, typographic, centred. Replaces the act headers and the
+   notebook hero that preceded them.
+   ========================================================================== */
+
+.bl-head {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  max-width: 46rem;
+  margin: 0 auto clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.bl-head-label {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-head-title {
+  margin: 0;
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.bl-head-lead {
+  margin: 0;
+  max-width: 44ch;
+  font-size: clamp(0.92rem, 1.3vw, 1.05rem);
+  line-height: 1.6;
+  color: var(--bl-ink-dim);
+}
+
+/* ---- hero: name behind, figure centre, copy and credentials either side -- */
+
+.bl-hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  align-items: stretch;
+  padding: clamp(5rem, 11vh, 7rem) var(--bl-gutter) clamp(1.75rem, 4vh, 3rem);
+  overflow: hidden;
+  --mx: 0;
+  --my: 0;
+}
+
+/*
+ * The name is laid across the upper half, behind everything. The figure fills
+ * the middle column and stands over it; the detail columns are anchored to the
+ * bottom, below where the name reaches, so no text is ever printed on text.
+ */
+.bl-hero-wordmark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(5rem, 11vh, 7rem);
+  height: 46%;
+  z-index: 0;
+  margin: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.01em;
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+  pointer-events: none;
+  transform: translate3d(calc(var(--mx) * -12px), calc(var(--my) * -7px), 0);
+}
+
+.bl-hero-wordmark span {
+  display: block;
+  white-space: nowrap;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-ink) 84%, transparent) 0%,
+    color-mix(in srgb, var(--bl-ink) 24%, transparent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bl-hero-wordmark [data-line="1"] {
+  font-size: clamp(2rem, 8.2vw, 8.4rem);
+  letter-spacing: 0.04em;
+}
+
+.bl-hero-wordmark [data-line="2"] {
+  font-size: clamp(2.8rem, 13.4vw, 14rem);
+  background: linear-gradient(
+    180deg,
+    var(--bl-accent) 0%,
+    color-mix(in srgb, var(--bl-accent) 36%, transparent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (scripting: enabled) {
+  .bl-hero-wordmark span {
+    opacity: 0;
+    animation: bl-depth 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .bl-hero-wordmark [data-line="1"] { animation-delay: 0.6s; }
+  .bl-hero-wordmark [data-line="2"] { animation-delay: 0.78s; }
+}
+
+@keyframes bl-depth {
+  from { opacity: 0; filter: blur(14px); transform: translateY(12%); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+/* details left, figure centre, details right */
+.bl-hero-grid {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr) minmax(0, 1fr);
+  align-items: end;
+  gap: clamp(1rem, 3vw, 2.5rem);
+}
+
+.bl-hero-left {
+  display: grid;
+  justify-items: start;
+  align-content: end;
+  gap: clamp(0.6rem, 1.6vh, 1rem);
+}
+
+/* the figure fills the middle column, floor to ceiling */
+.bl-hero-figure {
+  position: relative;
+  grid-column: 2;
+  align-self: stretch;
+  justify-self: center;
+  width: 100%;
+  min-height: clamp(20rem, 58vh, 40rem);
+  transform: translate3d(calc(var(--mx) * 12px), calc(var(--my) * 7px), 0);
+}
+
+.bl-hero-figure img {
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 1.75rem 3rem rgba(0, 0, 0, 0.82));
+}
+
+.bl-hero-aura {
+  position: absolute;
+  inset: 18% -24% 2%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--bl-accent) 20%, transparent),
+    transparent 74%
+  );
+  filter: blur(48px);
+  z-index: -1;
+}
+
+.bl-hero-creds {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-content: end;
+}
+
+/* ---- tablet: 641 to 1024 ------------------------------------------------
+   The same three columns, tightened: the figure narrows, the credentials
+   lose their trailing tag, and the type steps down a size.               */
+@media (max-width: 1024px) {
+  .bl-hero {
+    padding-bottom: clamp(1.25rem, 3vh, 2rem);
+  }
+
+  .bl-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr) minmax(0, 1fr);
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  .bl-hero-wordmark { height: 40%; }
+
+  .bl-hero-figure { min-height: clamp(16rem, 46vh, 26rem); }
+
+  .bl-hero-am { font-size: clamp(1.1rem, 2.6vw, 1.6rem); }
+  .bl-hero-blurb { font-size: 0.86rem; max-width: 30ch; }
+
+  .bl-hero-creds li { padding: 0.55rem 0.6rem; gap: 0.55rem; }
+  .bl-hero-creds em { display: none; }
+  .bl-cred-icon { width: 1.9rem; height: 1.9rem; }
+  .bl-cred-text strong { font-size: 0.88rem; }
+
+  .bl-socials a { padding: 0.36rem 0.6rem; }
+}
+
+/* ---- mobile: 640 and under ----------------------------------------------
+   Three columns cannot hold at this width, so the hero stacks: the name at a
+   size that fits, the figure under it, then the details.                  */
+@media (max-width: 640px) {
+  .bl-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding-top: clamp(4.5rem, 12vh, 6rem);
+  }
+
+  .bl-hero-wordmark {
+    position: static;
+    height: auto;
+    transform: none;
+    text-align: center;
+  }
+
+  .bl-hero-wordmark [data-line="1"] { font-size: clamp(1.4rem, 7.5vw, 2.4rem); }
+  .bl-hero-wordmark [data-line="2"] { font-size: clamp(2rem, 11.5vw, 3.6rem); }
+
+  .bl-hero-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .bl-hero-figure {
+    order: -1;
+    width: min(60vw, 14rem);
+    min-height: 0;
+    aspect-ratio: 1122 / 1402;
+    align-self: center;
+    transform: none;
+  }
+
+  .bl-hero-am { font-size: clamp(1.25rem, 6.5vw, 1.7rem); }
+  .bl-hero-blurb { font-size: 0.92rem; max-width: none; }
+
+  .bl-hero-creds { gap: 0.4rem; }
+  .bl-hero-creds em { display: inline-block; }
+
+  .bl-hero-cta { width: 100%; }
+  .bl-hero-cta > span { flex: 1 1 auto; }
+  .bl-hero-cta .bl-btn { width: 100%; justify-content: center; }
+
+  .bl-socials { width: 100%; }
+  .bl-socials li { flex: 1 1 auto; }
+  .bl-socials a { width: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-hero-wordmark,
+  .bl-hero-figure { transform: none !important; }
+  .bl-hero-wordmark span { opacity: 1 !important; animation: none !important; }
+  .bl-rotator-word { animation: none !important; }
+}
+
+/* a quieter note where the pen bracket used to be */
+.bl-note {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--bl-surface);
+  border: 1px solid var(--bl-rule);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--bl-ink-soft);
+}
+
+.bl-list { display: grid; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
+
+.bl-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.89rem;
+  line-height: 1.55;
+  color: var(--bl-ink-soft);
+}
+
+.bl-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 0.6rem;
+  height: 1px;
+  background: var(--bl-accent);
+}
+
+.bl-eyebrow {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+@media (max-width: 900px) {
+  .bl-stage-figure { width: min(40vh, 16rem); }
+  .bl-hero-foot { grid-template-columns: 1fr; }
+  .bl-hero-counts { justify-content: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-stage-name,
+  .bl-stage-figure,
+  .bl-stage-line { transform: none !important; }
+  .bl-stage-name > span { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .bl-stage-line { opacity: 1 !important; animation: none !important; }
+}
+
+/* ==========================================================================
+   The cut-out carries a grey disc from the original artwork, drawn behind the
+   subject's head and fused to his shoulder, so it cannot be separated. These
+   two rules absorb it: the glow behind is widened to sit under it, and the
+   figure's outer edges are feathered so the disc and the stray hairlines fall
+   away instead of ending on a hard boundary.
+   ========================================================================== */
+
+.bl-stage-figure img {
+  mask-image: radial-gradient(
+    ellipse 68% 78% at 50% 62%,
+    #000 58%,
+    rgba(0, 0, 0, 0.55) 78%,
+    transparent 100%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 68% 78% at 50% 62%,
+    #000 58%,
+    rgba(0, 0, 0, 0.55) 78%,
+    transparent 100%
+  );
+}
+
+.bl-stage-glow {
+  inset: -6% -34% 4%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--bl-accent) 30%, transparent) 0%,
+    color-mix(in srgb, var(--bl-accent) 12%, transparent) 46%,
+    transparent 74%
+  );
+  filter: blur(40px);
+}
+
+/* ==========================================================================
+   Full-screen sections. min-height rather than height, so the long ones
+   (the log, the toolkit) can still grow past the fold instead of clipping.
+   ========================================================================== */
+
+.bl-section {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bl-film { min-height: 100svh; }
+
+@media (max-width: 760px) {
+  .bl-section { min-height: auto; }
+}
+
+/* ==========================================================================
+   Navbar motion. It lifts away on the way down and drops back on the way up,
+   and its contents stagger in behind it rather than arriving all at once.
+   ========================================================================== */
+
+.bl-nav {
+  background: color-mix(in srgb, var(--bl-bg) 86%, transparent);
+  backdrop-filter: blur(16px) saturate(130%);
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.4s var(--bl-ease),
+    background 0.4s var(--bl-ease),
+    border-color 0.4s var(--bl-ease);
+}
+
+.bl-nav[data-hidden="true"] {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+
+/* the bar itself fades its rule in only once the page has moved */
+.bl-nav { border-bottom-color: transparent; }
+.bl-nav[data-stuck="true"] { border-bottom-color: var(--bl-rule); }
+
+.bl-brand,
+.bl-tabs .bl-tab,
+.bl-nav-actions > * {
+  animation: bl-nav-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.bl-brand { animation-delay: 0.15s; }
+.bl-tabs .bl-tab:nth-child(2) { animation-delay: 0.2s; }
+.bl-tabs .bl-tab:nth-child(3) { animation-delay: 0.26s; }
+.bl-tabs .bl-tab:nth-child(4) { animation-delay: 0.32s; }
+.bl-tabs .bl-tab:nth-child(5) { animation-delay: 0.38s; }
+.bl-tabs .bl-tab:nth-child(6) { animation-delay: 0.44s; }
+.bl-tabs .bl-tab:nth-child(7) { animation-delay: 0.5s; }
+.bl-tabs .bl-tab:nth-child(8) { animation-delay: 0.56s; }
+.bl-nav-actions > * { animation-delay: 0.6s; }
+
+@keyframes bl-nav-in {
+  from { opacity: 0; transform: translateY(-70%); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-brand,
+  .bl-tabs .bl-tab,
+  .bl-nav-actions > * { animation: none; }
+}
+
+/* the wordmark: initials wrapped in brackets, the way a tag is written */
+.bl-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 10px;
+  font-family: var(--bl-mono);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  transition: border-color 0.3s var(--bl-ease), background 0.3s var(--bl-ease);
+}
+
+.bl-brand:hover .bl-brand-mark {
+  border-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--bl-accent) 10%, transparent);
+}
+
+.bl-brand-mark i {
+  font-style: normal;
+  color: var(--bl-accent);
+  transition: transform 0.35s var(--bl-ease);
+}
+
+.bl-brand:hover .bl-brand-mark i:first-child { transform: translateX(-2px); }
+.bl-brand:hover .bl-brand-mark i:last-child { transform: translateX(2px); }
+
+/* ==========================================================================
+   The field behind the hero: rings centred on the figure, a faint grid, and
+   the toolkit scattered around the edges so the space is never just empty.
+   ========================================================================== */
+
+.bl-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* a technical grid, barely there */
+  background-image:
+    linear-gradient(to right, var(--bl-rule-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--bl-rule-soft) 1px, transparent 1px);
+  background-size: 6rem 6rem;
+  mask-image: radial-gradient(ellipse 72% 68% at 50% 52%, #000 25%, transparent 85%);
+}
+
+.bl-field-word {
+  position: absolute;
+  translate: -50% -50%;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--bl-ink) 26%, transparent);
+  white-space: nowrap;
+  animation: bl-drift 7s ease-in-out infinite;
+}
+
+.bl-field-word:nth-child(odd) { animation-duration: 9s; animation-delay: -2s; }
+.bl-field-word:nth-child(3n) { animation-duration: 11s; animation-delay: -4s; }
+
+@keyframes bl-drift {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(-7px); opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .bl-field-word { display: none; }
+  }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-field-word { animation: none; }
+}
+
+/* ==========================================================================
+   Hero detail styles.
+   Kept at the end of the file with the buttons: a region replacement higher
+   up has repeatedly swallowed these, which strips the pill, the rotator and
+   the credential cards back to bare text.
+   ========================================================================== */
+
+.bl-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.38rem 0.85rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+  white-space: nowrap;
+}
+
+.bl-pill i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--bl-accent);
+  animation: bl-pulse 2.2s infinite;
+}
+
+/* the role line, with the word that changes */
+.bl-rotator {
+  position: relative;
+  display: inline-grid;
+  vertical-align: bottom;
+  overflow: hidden;
+  color: var(--bl-accent);
+}
+
+/* reserves the width of the longest word so the line never jumps */
+.bl-rotator-ghost {
+  grid-area: 1 / 1;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.bl-rotator-word {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  animation: bl-rotate 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bl-rotate {
+  from { opacity: 0; transform: translateY(85%); }
+  to { opacity: 1; transform: none; }
+}
+
+/* the credential cards */
+.bl-hero-creds li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bl-surface) 62%, transparent);
+  transition: border-color 0.3s var(--bl-ease), background 0.3s var(--bl-ease);
+}
+
+.bl-hero-creds li:hover {
+  border-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  background: var(--bl-surface);
+}
+
+.bl-cred-icon {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bl-accent) 14%, transparent);
+  color: var(--bl-accent);
+}
+
+.bl-cred-text { display: grid; gap: 0.1rem; min-width: 0; }
+
+.bl-cred-text strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--bl-ink);
+}
+
+.bl-cred-text small {
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-hero-creds em {
+  font-style: normal;
+  font-family: var(--bl-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  white-space: nowrap;
+  padding: 0.18rem 0.45rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+}
+
+/* socials, as labelled pills */
+.bl-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bl-socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.8rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+  white-space: nowrap;
+  transition: all 0.25s var(--bl-ease);
+}
+
+.bl-socials a:hover {
+  border-color: var(--bl-accent);
+  color: var(--bl-ink);
+  background: color-mix(in srgb, var(--bl-accent) 12%, transparent);
+}
+
+.bl-hero-am {
+  margin: 0;
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-size: clamp(1.35rem, 2.4vw, 2.1rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--bl-ink);
+}
+
+.bl-hero-blurb {
+  max-width: 34ch;
+  margin: 0;
+  font-size: clamp(0.88rem, 1.15vw, 1rem);
+  line-height: 1.65;
+  color: var(--bl-ink-dim);
+}
+
+.bl-hero-cta { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-rotator-word { animation: none !important; }
+}
+
+/* ==========================================================================
+   The name has to read, and the portrait has to be whole.
+   The earlier gradient faded to a quarter opacity at the baseline, which made
+   the lower half of every letter disappear. It now stays mostly solid and
+   only eases off at the very bottom.
+   ========================================================================== */
+
+.bl-hero-wordmark [data-line="1"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-ink) 96%, transparent) 0%,
+    color-mix(in srgb, var(--bl-ink) 78%, transparent) 62%,
+    color-mix(in srgb, var(--bl-ink) 52%, transparent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bl-hero-wordmark [data-line="2"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-accent) 100%, transparent) 0%,
+    color-mix(in srgb, var(--bl-accent) 88%, transparent) 60%,
+    color-mix(in srgb, var(--bl-accent) 62%, transparent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* never crop the portrait: it scales to fit its box, whole, every time */
+.bl-hero-figure {
+  overflow: visible;
+}
+
+.bl-hero-figure img {
+  object-fit: contain !important;
+  object-position: bottom center;
+}
+
+/* ---- tablet, settled -----------------------------------------------------
+   Three columns do not survive 820px: the middle one squeezed down to under
+   200px, which left the portrait tiny and a hole through the middle of the
+   hero. At this width the figure takes the full width as its own row, large
+   and centred under the name, and the copy and credentials sit beneath it as
+   a pair. Scoped above 640 so the stacked phone layout is untouched.      */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .bl-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: end;
+    row-gap: clamp(0.75rem, 2vh, 1.25rem);
+    column-gap: clamp(0.9rem, 2.4vw, 1.6rem);
+  }
+
+  .bl-hero-figure {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+    align-self: end;
+    width: auto;
+    height: clamp(17rem, 49vh, 31rem);
+    min-height: 0;
+    aspect-ratio: 1122 / 1402;
+  }
+
+  .bl-hero-left { grid-column: 1; grid-row: 2; }
+  .bl-hero-creds { grid-column: 2; grid-row: 2; }
+
+  /* the name sits higher, clear of the portrait's head */
+  .bl-hero-wordmark { height: 32%; }
 }

@@ -4,10 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
-import { Ink } from "./ink";
-import { MaskLines } from "./smooth";
 import { MarkArrow, MarkRosette } from "./marks";
 import { Plate } from "./plate";
+import { SectionHeader } from "./sections";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -75,28 +74,13 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
   return (
     <>
         <section className="bl-film" id="work" ref={section}>
-        <header className="bl-film-head">
-          <span className="bl-act-num" aria-hidden="true">
-            II
-          </span>
-          <div>
-            <p className="bl-eyebrow">Act II</p>
-            <MaskLines
-              className="bl-film-title"
-              as="h2"
-              lines={[
-                <>
-                  Six things I{" "}
-                  <Ink type="highlight" delay={500} iterations={1}>
-                    actually shipped
-                  </Ink>
-                </>,
-              ]}
-            />
-          </div>
-        </header>
+        <SectionHeader
+        label="02 / Selected work"
+        title="Six things I shipped"
+        lead="Drag or scroll sideways. Open any one for the full case file."
+      />
 
-        <div className="bl-film-viewport">
+      <div className="bl-film-viewport">
           <div className="bl-film-track" ref={track}>
             {caseFiles.map((file) => (
               <article className="bl-panel" key={file.id}>
@@ -162,9 +146,9 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
       <section className="bl-section bl-quests-section">
         <div className="bl-quests">
           <div className="bl-quests-head">
-            <p className="bl-eyebrow">Side quests</p>
+            <p className="bl-head-label">Side quests</p>
             <i aria-hidden="true" />
-            <span className="bl-hand">built because it bugged me</span>
+            <span className="bl-mono">Built because it bugged me</span>
           </div>
           <ul className="bl-quest-list">
             {sideQuests.map((quest) => (

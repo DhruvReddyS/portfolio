@@ -744,7 +744,6 @@ export const studio = {
     "An independent digital studio building modern, purposeful websites for brands that care how they are seen. Every build is custom: clean structure, crafted layouts, no templates.",
   site: "https://freelance.byus4u.in/",
   email: "team.byusforu@gmail.com",
-  instagram: "https://instagram.com/byus4u",
   logo: "/assets/byusforu-logo.png",
   marks: [
     { value: "100%", label: "custom builds" },
@@ -787,14 +786,16 @@ export const sections = [
 ];
 
 export const profile = {
-  name: "Dhruv Reddy",
-  full: "Sripathi Dhruv Reddy",
+  name: "S. Dhruv Reddy",
+  full: "S. Dhruv Reddy",
   role: "Full-stack Engineer · Applied AI",
   location: "Hyderabad, India",
   coords: "17.3850° N / 78.4867° E",
   email: "dhruvreddysripathi2006@gmail.com",
   github: "https://github.com/DhruvReddyS",
+  githubHandle: "@DhruvReddyS",
   linkedin: "https://www.linkedin.com/in/sripathi-dhruv-reddy",
+  linkedinHandle: "in/sripathi-dhruv-reddy",
   studio: "https://freelance.byus4u.in/",
   resume: "/assets/dhruv-reddy-resume.pdf",
   portrait: "/assets/dhruv-hero.png",

@@ -1,9 +1,9 @@
 "use client";
 
 import { education } from "@/lib/portfolio-data";
-import { Ink, Reveal } from "./ink";
+import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
-import { ActHeader } from "./sections";
+import { SectionHeader } from "./sections";
 import { MarkPaper } from "./marks";
 import { Plate } from "./plate";
 
@@ -14,17 +14,10 @@ import { Plate } from "./plate";
 export function EducationSection() {
   return (
     <section className="bl-section bl-study" id="education">
-      <ActHeader
-        act="III"
-        title={
-          <>
-            Two degrees,{" "}
-            <Ink type="underline" delay={400} strokeWidth={2.5}>
-              at the same time
-            </Ink>
-          </>
-        }
-        note="one on campus, one online"
+      <SectionHeader
+        label="03 / Study"
+        title="Two degrees at once"
+        lead="One on campus at MVSR, one online with IIT Madras."
       />
 
       <div className="bl-study-grid">

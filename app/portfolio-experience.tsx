@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LampProvider } from "@/components/buildlog/lamp";
 import { BuildLogNav } from "@/components/buildlog/nav";
-import { MarginRail } from "@/components/buildlog/rail";
 import { GrokCompanion } from "@/components/buildlog/grok";
 import { ToolkitSection } from "@/components/buildlog/toolkit";
 import { EducationSection } from "@/components/buildlog/education";
 import { StudioSection } from "@/components/buildlog/studio";
 import { FilmStrip } from "@/components/buildlog/film";
-import { Cursor, SmoothScroll } from "@/components/buildlog/smooth";
+import { SmoothScroll } from "@/components/buildlog/smooth";
 import { Overture } from "@/components/buildlog/overture";
 import {
   BuildLogFooter,
@@ -108,13 +106,9 @@ function BuildLog() {
         Skip to the log
       </a>
       <Overture />
-      <Cursor />
-      <div className="bl-paper" aria-hidden="true" />
-      <div className="bl-margin-rule" aria-hidden="true" />
       <div className="bl-grain-layer" aria-hidden="true" />
 
       <BuildLogNav active={active === "top" ? "" : active} />
-      <MarginRail active={active} />
 
       <main className="bl-main">
         <Hero time={time} />
@@ -140,10 +134,8 @@ function BuildLog() {
 
 export default function PortfolioExperience() {
   return (
-    <LampProvider>
-      <SmoothScroll>
-        <BuildLog />
-      </SmoothScroll>
-    </LampProvider>
+    <SmoothScroll>
+      <BuildLog />
+    </SmoothScroll>
   );
 }

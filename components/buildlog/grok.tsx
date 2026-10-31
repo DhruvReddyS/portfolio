@@ -1,153 +1,153 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { sections } from "@/lib/portfolio-data";
+import { MarkArrow } from "./marks";
 import type { GrokAnimation } from "./grok-avatar";
 
-/**
- * Loaded in the browser only: the avatar package compiles a JSON schema at
- * import time, which the Workers runtime used for SSR does not allow.
- */
 const GrokAvatar = dynamic(() => import("./grok-avatar"), {
   ssr: false,
   loading: () => <span className="bl-bot-skeleton" aria-hidden="true" />,
 });
 
-/** What it is doing, and what it has to say, in each act. */
-const MOODS: Record<string, { animation: GrokAnimation; lines: string[] }> = {
-  hero: {
-    animation: "idle",
-    lines: ["Oh. You came.", "Scroll. I walk down with you."],
-  },
-  log: {
-    animation: "thinking",
-    lines: [
-      "Five rooms. Five different problems.",
-      "The top one is still running.",
-      "Open an entry, the numbers are real.",
-    ],
-  },
-  work: {
-    animation: "searching",
-    lines: [
-      "Six builds. This bit moves sideways.",
-      "Corpusil is the deep one.",
-      "Two of these won something.",
-    ],
-  },
-  education: {
-    animation: "curious",
-    lines: ["Two degrees at once.", "9.34, in case you skimmed."],
-  },
-  stack: {
-    animation: "working",
-    lines: ["All of this has shipped.", "No filler. I checked."],
-  },
-  wins: {
-    animation: "proud",
-    lines: [
-      "This part he is quiet about.",
-      "First prize. Six hundred people.",
-      "Then it won again.",
-    ],
-  },
-  studio: {
-    animation: "happy",
-    lines: [
-      "He runs this one himself.",
-      "Real clients. Real invoices.",
-      "Seven brands on the books.",
-    ],
-  },
-  contact: {
-    animation: "excited",
-    lines: ["Here is the part where you email him.", "He replies. Quickly."],
-  },
+/**
+ * Grok is a guide with a job, not a mascot that chatters.
+ *
+ * It keeps a docked position, tracks which acts you have actually reached,
+ * and only speaks when it has something specific to offer: the act you have
+ * not seen yet, or the next step once you have seen them all. The ring around
+ * it shows how much of the log you have read.
+ */
+
+type Prompt = {
+  line: string;
+  action?: { label: string; href: string };
+  animation: GrokAnimation;
 };
 
-const LINE_MS = 5400;
+const ACTS = sections.map((item) => item.id);
 
-/**
- * Grok walks down the left margin as the page scrolls, keeping pace with the
- * ink rail rather than jumping between fixed points. Its vertical position is
- * the scroll progress, so the movement is continuous and belongs to the page.
- */
 export function GrokCompanion({ section }: { section: string }) {
-  const mood = MOODS[section] ?? MOODS.hero;
+  const [seen, setSeen] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
+  const [nudging, setNudging] = useState(false);
+  const idle = useRef<number | undefined>(undefined);
 
-  const [line, setLine] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [stepping, setStepping] = useState(false);
-  const step = useRef<number | undefined>(undefined);
-
+  // Remember every act that has been reached.
   useEffect(() => {
-    queueMicrotask(() => setLine(0));
-    const timer = window.setInterval(() => setLine((value) => value + 1), LINE_MS);
-    return () => window.clearInterval(timer);
+    if (section === "top" || !ACTS.includes(section)) return;
+    queueMicrotask(() =>
+      setSeen((prev) => (prev.includes(section) ? prev : [...prev, section])),
+    );
   }, [section]);
 
-  // Walk with the scroll.
+  const unseen = ACTS.filter((id) => !seen.includes(id));
+  const read = Math.round(((ACTS.length - unseen.length) / ACTS.length) * 100);
+
+  // It speaks up only after you have gone quiet, and only once per pause.
   useEffect(() => {
-    let frame = 0;
-    let last = 0;
-
-    const measure = () => {
-      frame = 0;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      const next = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-
-      // a short stride animation whenever it is actually moving
-      if (Math.abs(next - last) > 0.0008) {
-        last = next;
-        setStepping(true);
-        window.clearTimeout(step.current);
-        step.current = window.setTimeout(() => setStepping(false), 220);
-      }
-
-      setProgress(next);
+    const wake = () => {
+      setNudging(false);
+      window.clearTimeout(idle.current);
+      idle.current = window.setTimeout(() => setNudging(true), 9000);
     };
 
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(measure);
-    };
-
-    measure();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    wake();
+    const events: (keyof WindowEventMap)[] = ["scroll", "pointerdown", "keydown"];
+    events.forEach((e) => window.addEventListener(e, wake, { passive: true }));
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) cancelAnimationFrame(frame);
-      window.clearTimeout(step.current);
+      window.clearTimeout(idle.current);
+      events.forEach((e) => window.removeEventListener(e, wake));
     };
   }, []);
 
-  // Keep it inside the viewport, and let it duck out over the footer so it
-  // never sits on top of the links.
-  const top = 27 + progress * 54;
-  const away = progress > 0.965;
+  const prompt: Prompt = useMemo(() => {
+    if (unseen.length === 0) {
+      return {
+        line: "That is the whole log. Still here?",
+        action: { label: "Say hello", href: "#contact" },
+        animation: "excited",
+      };
+    }
+
+    if (seen.length === 0) {
+      return {
+        line: "Seven acts down there. I will keep count.",
+        action: { label: "Start at the log", href: "#log" },
+        animation: "idle",
+      };
+    }
+
+    const next = sections.find((item) => item.id === unseen[0]);
+    return {
+      line: `You have not been to ${next?.label ?? "the rest"} yet.`,
+      action: next ? { label: `Take me there`, href: `#${next.id}` } : undefined,
+      animation: "curious",
+    };
+  }, [unseen, seen.length]);
+
+  const avatar = useMemo(
+    () => (
+      <GrokAvatar
+        animation={prompt.animation}
+        size="100%"
+        ariaLabel=""
+      />
+    ),
+    [prompt.animation],
+  );
+
+  // Never over the hero: the credentials live in that corner.
+  const showing = (open || nudging) && section !== "hero";
 
   return (
-    <div
-      className="bl-bot"
-      style={{ top: `${top}%` }}
-      data-stepping={stepping}
-      data-away={away}
-    >
-      <div className="bl-bot-body">
-        <GrokAvatar
-          animation={mood.animation}
-          size="100%"
-          ariaLabel="Grok, a companion walking down the margin with you"
-        />
-      </div>
-
-      {line < mood.lines.length && (
-        <p className="bl-bot-bubble" key={`${section}-${line}`}>
-          {mood.lines[line]}
-        </p>
+    <div className="bl-bot" data-showing={showing}>
+      {showing && (
+        <div className="bl-bot-card" role="status">
+          <p>{prompt.line}</p>
+          {prompt.action && (
+            <a
+              className="bl-bot-go"
+              href={prompt.action.href}
+              onClick={() => {
+                setNudging(false);
+                setOpen(false);
+              }}
+            >
+              {prompt.action.label} <MarkArrow size={12} />
+            </a>
+          )}
+        </div>
       )}
+
+      <button
+        className="bl-bot-dock"
+        type="button"
+        aria-expanded={open}
+        aria-label={`Guide. ${read}% of the log read. ${prompt.line}`}
+        onClick={() => {
+          setOpen((v) => !v);
+          setNudging(false);
+        }}
+      >
+        {/* the ring is how much of the log has been reached */}
+        <svg className="bl-bot-ring" viewBox="0 0 44 44" aria-hidden="true">
+          <circle className="bl-bot-ring-track" cx="22" cy="22" r="20" />
+          <circle
+            className="bl-bot-ring-fill"
+            cx="22"
+            cy="22"
+            r="20"
+            style={{ strokeDashoffset: 125.6 - (125.6 * read) / 100 }}
+          />
+        </svg>
+        <span className="bl-bot-body">{avatar}</span>
+      </button>
+
+      <span className="bl-bot-read" aria-hidden="true">
+        {read}%
+      </span>
     </div>
   );
 }

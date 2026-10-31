@@ -38,14 +38,32 @@ test("server-renders the build log", async () => {
 
   const html = await response.text();
 
-  assert.match(html, /<title>The Build Log · Dhruv Reddy<\/title>/i);
-  assert.match(html, /Dhruv/);
-  assert.match(html, /Reddy\./);
-  assert.match(html, /hold up after the demo/);
+  assert.match(html, /<title>The Build Log · S. Dhruv Reddy<\/title>/i);
+  // The hero sets the name one letter at a time, so the readable name lives
+  // in a visually hidden span beside it.
+  assert.match(html, /S\. Dhruv Reddy/);
+  // the roles live in the rotator, listed once for screen readers
+  assert.match(html, /full-stack developer/);
+  assert.match(html, /AI builder/);
+  assert.match(html, /freelancer/);
+  // and the socials
+  assert.match(html, /github\.com\/DhruvReddyS/);
+  assert.match(html, /linkedin\.com\/in\/sripathi-dhruv-reddy/);
+  assert.match(html, /SRIPATHI/);
+  assert.match(html, /DHRUV REDDY/);
+  assert.match(html, /9\.34 \/ 10/);
 
-  // every act is present, in order
-  for (const act of ["Where it", "happened", "actually shipped", "won", "next"]) {
-    assert.match(html, new RegExp(act.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  // every section head is present
+  for (const head of [
+    "Where it happened",
+    "Six things I shipped",
+    "Two degrees at once",
+    "Thirty-one things I build with",
+    "What it won",
+    "And a studio he runs",
+    "What happens next",
+  ]) {
+    assert.match(html, new RegExp(head), `renders "${head}"`);
   }
 
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);

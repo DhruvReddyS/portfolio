@@ -34,8 +34,8 @@ import {
   SiVercel,
   SiVuedotjs,
 } from "react-icons/si";
-import { Ink, Reveal } from "./ink";
-import { ActHeader } from "./sections";
+import { Reveal } from "./reveal";
+import { SectionHeader } from "./sections";
 
 type Group = "Interface" | "Server" | "Applied AI" | "Data" | "Delivery";
 
@@ -92,17 +92,10 @@ export function ToolkitSection() {
 
   return (
     <section className="bl-section bl-toolkit" id="stack">
-      <ActHeader
-        act="IV"
-        title={
-          <>
-            Thirty-one things I{" "}
-            <Ink type="box" delay={400} padding={7} strokeWidth={2}>
-              build with
-            </Ink>
-          </>
-        }
-        note="pick a shelf"
+      <SectionHeader
+        label="04 / Toolkit"
+        title="Thirty-one things I build with"
+        lead="Every one of these has shipped in something on this page."
       />
 
       <Reveal className="bl-toolkit-filters">

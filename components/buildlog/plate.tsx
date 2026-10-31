@@ -14,7 +14,8 @@ import { useState } from "react";
  * file may not be there yet.
  */
 
-const EXTENSIONS = ["png", "jpg", "jpeg", "webp"];
+// Two is enough; each miss costs a failed request.
+const EXTENSIONS = ["png", "jpg"];
 
 export function Plate({
   /** Folder under /public/assets, e.g. "log" or "edu". */
@@ -46,6 +47,7 @@ export function Plate({
   ];
 
   const [attempt, setAttempt] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const exhausted = attempt >= candidates.length;
 
   return (
@@ -54,16 +56,22 @@ export function Plate({
         .filter(Boolean)
         .join(" ")}
     >
-      {exhausted ? (
-        <span aria-hidden="true">{monogram}</span>
-      ) : (
+      {/* always drawn, and simply covered once a real file loads */}
+      <span aria-hidden="true">{monogram}</span>
+
+      {!exhausted && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={candidates[attempt]}
           alt={alt}
           loading="lazy"
           decoding="async"
-          onError={() => setAttempt((value) => value + 1)}
+          data-loaded={loaded}
+          onLoad={() => setLoaded(true)}
+          onError={() => {
+            setLoaded(false);
+            setAttempt((value) => value + 1);
+          }}
         />
       )}
     </div>

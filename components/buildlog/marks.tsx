@@ -234,3 +234,14 @@ export function MarkCrate(props: MarkProps) {
     </Mark>
   );
 }
+
+/** A rounded square with a lens, drawn by hand. */
+export function MarkInstagram(props: MarkProps) {
+  return (
+    <Mark {...props}>
+      <path d="M7.2 3.3c3.2-.2 6.4-.2 9.6 0 2.3.2 3.8 1.8 4 4 .2 3.1.2 6.2 0 9.3-.2 2.3-1.8 3.9-4.1 4.1-3.1.2-6.3.2-9.4 0-2.3-.2-3.9-1.8-4.1-4.1-.2-3.1-.2-6.2 0-9.3.2-2.2 1.7-3.8 4-4z" />
+      <path d="M12.1 8.2c2.1-.1 3.9 1.6 3.9 3.7 0 2.1-1.7 3.9-3.8 3.9-2.1 0-3.8-1.7-3.8-3.8 0-2 1.7-3.7 3.7-3.8z" />
+      <path d="M17.4 6.8v.1" strokeWidth={2.4} />
+    </Mark>
+  );
+}

@@ -1,21 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   awards,
-  sections,
   logEntries,
   profile,
+  sections,
   type CaseFile,
   type LogEntry,
 } from "@/lib/portfolio-data";
-import { Ink, Reveal, Scribble } from "./ink";
-import { Counter, Magnetic, useParallax } from "./smooth";
-import { Doodle } from "./doodle";
+import { Reveal } from "./reveal";
+import { Counter, Magnetic } from "./smooth";
 import { Plate } from "./plate";
+import { Rotator } from "./rotator";
 import {
   MarkArrow,
+  MarkPin,
+  MarkWindow,
   MarkClose,
   MarkCross,
   MarkGithub,
@@ -25,191 +27,304 @@ import {
   MarkRosette,
 } from "./marks";
 
-/* ---------------------------------------------------------------- act head */
+/* ------------------------------------------------------------- section head */
 
-export function ActHeader({
-  act,
+export function SectionHeader({
+  label,
   title,
-  note,
+  lead,
 }: {
-  act: string;
+  label: string;
   title: React.ReactNode;
-  note: string;
+  lead?: string;
 }) {
   return (
-    <Reveal className="bl-act" as="header">
-      <span className="bl-act-num" aria-hidden="true">
-        {act}
-      </span>
-      <div className="bl-act-copy">
-        <p className="bl-eyebrow">Act {act}</p>
-        <h2>{title}</h2>
-      </div>
-      <i className="bl-act-rule" aria-hidden="true" />
-      <span className="bl-hand" aria-hidden="true">
-        <Scribble text={note} speed={46} />
-      </span>
+    <Reveal className="bl-head" as="header">
+      <p className="bl-head-label">{label}</p>
+      <h2 className="bl-head-title">{title}</h2>
+      {lead && <p className="bl-head-lead">{lead}</p>}
     </Reveal>
   );
 }
 
 /* -------------------------------------------------------------------- hero */
 
+/** The credentials that belong beside the name, not buried in a section. */
+const CREDENTIALS = [
+  { icon: <MarkRosette size={18} />, label: "CGPA", value: "9.34 / 10", note: "MVSR" },
+  {
+    icon: <MarkPin size={18} />,
+    label: "MVSR Engineering College",
+    value: "B.E. CSIT",
+    note: "Hyderabad",
+  },
+  {
+    icon: <MarkPaper size={18} />,
+    label: "IIT Madras",
+    value: "BS Data Science",
+    note: "Diploma stage",
+  },
+  {
+    icon: <MarkWindow size={18} />,
+    label: "Freelancer",
+    value: "ByUsForU",
+    note: "7 brands",
+  },
+];
+
+/** Words that fill the space around the figure, at a whisper. */
+const FIELD = [
+  { text: "React", x: 6, y: 20 },
+  { text: "Next.js", x: 17, y: 62 },
+  { text: "FastAPI", x: 9, y: 80 },
+  { text: "LangGraph", x: 78, y: 17 },
+  { text: "Qdrant", x: 90, y: 44 },
+  { text: "Neo4j", x: 82, y: 72 },
+  { text: "TypeScript", x: 28, y: 12 },
+  { text: "Python", x: 68, y: 86 },
+  { text: "RAG", x: 94, y: 28 },
+  { text: "Vue", x: 3, y: 46 },
+];
+
+function HeroField() {
+  return (
+    <div className="bl-field" aria-hidden="true">
+      {/* the toolkit, scattered and faint */}
+      {FIELD.map((item) => (
+        <span
+          key={item.text}
+          className="bl-field-word"
+          style={{ left: `${item.x}%`, top: `${item.y}%` }}
+        >
+          {item.text}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+const ROLES = [
+  "full-stack developer",
+  "AI builder",
+  "freelancer",
+  "RAG engineer",
+  "problem solver",
+];
+
+const SOCIALS = [
+  { label: "GitHub", href: profile.github, icon: <MarkGithub size={15} /> },
+  { label: "LinkedIn", href: profile.linkedin, icon: <MarkLinkedin size={15} /> },
+  { label: "Email", href: `mailto:${profile.email}`, icon: <MarkMail size={15} /> },
+];
+
 export function Hero({ time }: { time: string }) {
-  // Anchored to the top of the page: the drift starts from rest on load
-  // rather than picking up a tween that is already half finished.
-  const plate = useParallax<HTMLDivElement>({
-    y: -80,
-    from: "top top",
-    to: "bottom top",
-  });
+  const stage = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = stage.current;
+    if (!node) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const to = { x: 0, y: 0 };
+    const at = { x: 0, y: 0 };
+    let raf = 0;
+
+    const onMove = (event: PointerEvent) => {
+      to.x = (event.clientX / window.innerWidth) * 2 - 1;
+      to.y = (event.clientY / window.innerHeight) * 2 - 1;
+    };
+    const loop = () => {
+      at.x += (to.x - at.x) * 0.05;
+      at.y += (to.y - at.y) * 0.05;
+      node.style.setProperty("--mx", at.x.toFixed(4));
+      node.style.setProperty("--my", at.y.toFixed(4));
+      raf = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    raf = requestAnimationFrame(loop);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
-    <section className="bl-hero" id="top">
-      {/* the name leads, full width, before anything else */}
-      <div className="bl-hero-top">
-        <Reveal delay={60}>
-          <span className="bl-hero-stamp">
-            <i aria-hidden="true" />
-            Open to work · {profile.location} · {time} IST
-          </span>
-        </Reveal>
+    <section className="bl-hero" id="top" ref={stage}>
+      <HeroField />
 
-        <h1 className="bl-hero-name">
-          <span className="bl-mask-line">
-            <span className="bl-hero-word" style={{ animationDelay: "2250ms" }}>
-              Dhruv
+      {/* the name, large, behind everything */}
+      <h1 className="bl-hero-wordmark" aria-hidden="true">
+        <span data-line="1">SRIPATHI</span>
+        <span data-line="2">DHRUV REDDY</span>
+      </h1>
+      <span className="bl-sr">S. Dhruv Reddy</span>
+
+      <div className="bl-hero-grid">
+        <div className="bl-hero-left">
+          <Reveal delay={60}>
+            <span className="bl-pill">
+              <i aria-hidden="true" />
+              Open to work · {time} IST
             </span>
-          </span>
-          <span className="bl-mask-line">
-            <span className="bl-hero-word" style={{ animationDelay: "2400ms" }}>
-              <em>Reddy.</em>
-            </span>
-          </span>
-        </h1>
+          </Reveal>
 
-        <Reveal delay={380}>
-          <p className="bl-hero-role">
-            Full-stack Engineer <i aria-hidden="true" /> Applied AI{" "}
-            <i aria-hidden="true" /> Hyderabad
-          </p>
-        </Reveal>
-      </div>
-
-      <div className="bl-hero-main">
-        <div className="bl-hero-copy">
-          <Reveal delay={120}>
-            <p className="bl-hero-thesis">
-              I build systems that{" "}
-              <Ink type="underline" delay={1500} strokeWidth={2.5}>
-                hold up after the demo
-              </Ink>
-              . Five internships, six platforms, a studio of my own, and two
-              competitions won. All of it is logged below.
+          <Reveal delay={150}>
+            <p className="bl-hero-am">
+              I&apos;m a <Rotator words={ROLES} />
             </p>
           </Reveal>
 
-          <Reveal delay={200}>
-            <p className="bl-hero-now">
-              <span>Right now</span>
-              Building AI candidate screening at{" "}
-              <a href="#log">
-                <strong>SimpleHire.ai</strong>
-              </a>
+          <Reveal delay={210}>
+            <p className="bl-hero-blurb">
+              Building real-world products at the intersection of web, applied AI
+              and problem solving. Things that hold up after the demo.
             </p>
           </Reveal>
 
-          <Reveal delay={280}>
+          <Reveal delay={270}>
             <div className="bl-hero-cta">
               <Magnetic>
                 <a className="bl-btn bl-btn-solid" href="#work">
-                  Read the case files <MarkArrow size={13} />
+                  Explore projects <MarkArrow size={13} />
                 </a>
               </Magnetic>
               <Magnetic>
                 <a className="bl-btn" href={`mailto:${profile.email}`}>
-                  <MarkMail size={14} /> Get in touch
+                  <MarkMail size={14} /> Hire me
                 </a>
               </Magnetic>
             </div>
           </Reveal>
 
-          <Reveal delay={360}>
-            <div className="bl-hero-counts">
-              <div>
-                <strong>
-                  <Counter value={`0${profile.totals.internships}`} />
-                </strong>
-                <span>Internships</span>
-              </div>
-              <div>
-                <strong>
-                  <Counter value={`0${profile.totals.projects}`} />
-                </strong>
-                <span>Major builds</span>
-              </div>
-              <div>
-                <strong>
-                  <Counter value={`0${profile.totals.awards}`} />
-                </strong>
-                <span>Wins &amp; leadership</span>
-              </div>
-              <div>
-                <strong>
-                  <Counter value="9.34" />
-                </strong>
-                <span>CGPA at MVSR</span>
-              </div>
-            </div>
+          <Reveal delay={330}>
+            <ul className="bl-socials">
+              {SOCIALS.map((item) => (
+                <li key={item.label}>
+                  <a
+                    href={item.href}
+                    target={item.href.startsWith("mailto") ? undefined : "_blank"}
+                    rel="noreferrer"
+                    aria-label={item.label}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
 
-        <div className="bl-plate" ref={plate}>
-          <div className="bl-plate-frame">
-            <Image
-              src={profile.portrait}
-              alt={`${profile.full}, full-stack engineer`}
-              fill
-              priority
-              sizes="(max-width: 1000px) 60vw, 26rem"
-            />
-            <span className="bl-plate-wipe" aria-hidden="true" />
-          </div>
-
-          <span className="bl-plate-tape" data-corner="tl" aria-hidden="true" />
-          <span className="bl-plate-tape" data-corner="br" aria-hidden="true" />
-
-          <span className="bl-plate-tag" aria-hidden="true">
-            Plate 01 · {profile.coords}
-          </span>
-
-          <div className="bl-plate-note" aria-hidden="true">
-            <span className="bl-hand">
-              <Scribble text="that's him" delay={2400} speed={70} />
-            </span>
-          </div>
+        <div className="bl-hero-figure">
+          <span className="bl-hero-aura" aria-hidden="true" />
+          <Image
+            src="/assets/dhruv.png"
+            alt={`${profile.full}, full-stack engineer`}
+            fill
+            priority
+            sizes="(max-width: 1024px) 60vw, 30rem"
+          />
         </div>
+
+        {/* the credentials, each given room to breathe */}
+        <ul className="bl-hero-creds">
+          {CREDENTIALS.map((item, index) => (
+            <Reveal as="li" key={item.label} delay={360 + index * 70}>
+              <span className="bl-cred-icon" aria-hidden="true">
+                {item.icon}
+              </span>
+              <span className="bl-cred-text">
+                <strong>{item.value}</strong>
+                <small>{item.label}</small>
+              </span>
+              <em>{item.note}</em>
+            </Reveal>
+          ))}
+        </ul>
       </div>
-
-      <p className="bl-hero-scroll" aria-hidden="true">
-        Scroll to begin
-      </p>
-
-      <Doodle kind="arrowDown" className="bl-doodle-hero" delay={1100} />
     </section>
   );
 }
 
 /* --------------------------------------------------------------- the log */
 
+function LogPreview({ listRef }: { listRef: React.RefObject<HTMLDivElement | null> }) {
+  const card = useRef<HTMLDivElement>(null);
+  const [entry, setEntry] = useState<LogEntry | null>(null);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    const onOver = (event: PointerEvent) => {
+      const row = (event.target as HTMLElement)?.closest?.("[data-entry]");
+      const id = row instanceof HTMLElement ? row.dataset.entry : undefined;
+      setEntry(logEntries.find((item) => item.id === id) ?? null);
+    };
+    const onLeave = () => setEntry(null);
+
+    list.addEventListener("pointerover", onOver);
+    list.addEventListener("pointerleave", onLeave);
+    return () => {
+      list.removeEventListener("pointerover", onOver);
+      list.removeEventListener("pointerleave", onLeave);
+    };
+  }, [listRef]);
+
+  useEffect(() => {
+    const node = card.current;
+    if (!node) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    const at = { x: 0, y: 0 };
+    const to = { x: 0, y: 0 };
+    let frame = 0;
+
+    const onMove = (event: PointerEvent) => {
+      to.x = event.clientX;
+      to.y = event.clientY;
+    };
+    const loop = () => {
+      at.x += (to.x - at.x) * 0.14;
+      at.y += (to.y - at.y) * 0.14;
+      node.style.transform = `translate3d(${at.x}px, ${at.y}px, 0)`;
+      frame = requestAnimationFrame(loop);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    frame = requestAnimationFrame(loop);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return (
+    <div className="bl-log-preview" ref={card} data-on={Boolean(entry)} aria-hidden="true">
+      {entry && (
+        <>
+          <Plate dir="log" name={entry.id} src={entry.image} monogram={entry.monogram} alt="" />
+          <p>
+            <strong>{entry.company}</strong>
+            <span>{entry.period}</span>
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
 function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
   const [open, setOpen] = useState(index === 0);
-  const headline = entry.mark ? entry.headline.split(entry.mark) : [entry.headline];
 
   return (
     <Reveal as="article" delay={index * 60}>
       <div
         className="bl-entry"
+        data-entry={entry.id}
         data-open={open}
         onClick={() => setOpen((value) => !value)}
         role="button"
@@ -239,15 +354,7 @@ function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
             {entry.org && <small>{entry.org}</small>}
           </h3>
           <p className="bl-entry-role">{entry.role}</p>
-          <p className="bl-entry-headline">
-            {headline[0]}
-            {entry.mark && (
-              <Ink type="underline" delay={240} strokeWidth={2}>
-                {entry.mark}
-              </Ink>
-            )}
-            {headline[1]}
-          </p>
+          <p className="bl-entry-headline">{entry.headline}</p>
         </div>
 
         <span className="bl-entry-ghost" aria-hidden="true">
@@ -270,7 +377,7 @@ function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
             <div className="bl-entry-detail-inner">
               <div>
                 <p className="bl-entry-summary">{entry.summary}</p>
-                <ul className="bl-work-list">
+                <ul className="bl-list">
                   {entry.work.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
@@ -285,7 +392,6 @@ function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
                   monogram={entry.monogram}
                   alt={`${entry.company}, ${entry.role}`}
                 />
-
                 <div className="bl-metrics">
                   {entry.metrics.map((metric) => (
                     <div className="bl-metric" key={metric.label}>
@@ -303,7 +409,7 @@ function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
                     </span>
                   ))}
                 </div>
-                <p className="bl-keynote">{entry.highlight}</p>
+                <p className="bl-note">{entry.highlight}</p>
               </div>
             </div>
           </div>
@@ -314,29 +420,23 @@ function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
 }
 
 export function LogSection() {
+  const list = useRef<HTMLDivElement>(null);
+
   return (
     <section className="bl-section" id="log">
-      <ActHeader
-        act="I"
-        title={
-          <>
-            Where it{" "}
-            <Ink type="circle" delay={400} padding={8} strokeWidth={2}>
-              happened
-            </Ink>
-          </>
-        }
-        note="five rooms, five problems"
+      <SectionHeader
+        label="01 / Experience"
+        title="Where it happened"
+        lead="Five rooms, five different problems, and what came out of each."
       />
 
-      <Doodle kind="brace" className="bl-doodle-log" delay={200} />
-
-      <div className="bl-log-list">
+      <div className="bl-log-list" ref={list}>
         {logEntries.map((entry, index) => (
           <LogRow key={entry.id} entry={entry} index={index} />
         ))}
       </div>
 
+      <LogPreview listRef={list} />
     </section>
   );
 }
@@ -348,20 +448,11 @@ export function WinsSection() {
 
   return (
     <section className="bl-section" id="wins">
-      <ActHeader
-        act="IV"
-        title={
-          <>
-            What it{" "}
-            <Ink type="circle" delay={400} padding={9} strokeWidth={2}>
-              won
-            </Ink>
-          </>
-        }
-        note="and who it helped"
+      <SectionHeader
+        label="05 / Recognition"
+        title="What it won"
+        lead="Competitions, and the people it was built for."
       />
-
-      <Doodle kind="burst" className="bl-doodle-wins" delay={240} alt />
 
       <div className="bl-wins-grid">
         <article className="bl-win bl-win-hero">
@@ -371,7 +462,6 @@ export function WinsSection() {
             <p className="bl-win-org">
               {hero.org} · {hero.place}
             </p>
-            <p className="bl-win-headline">{hero.headline}</p>
             <p className="bl-win-body">{hero.body}</p>
             <ul className="bl-win-facts">
               {hero.facts.map((fact) => (
@@ -398,10 +488,6 @@ export function WinsSection() {
                 fill
                 sizes="(max-width: 880px) 100vw, 50vw"
               />
-              <div className="bl-win-shot-hud" aria-hidden="true">
-                <span>Team / Error404</span>
-                <span>Result / 01</span>
-              </div>
             </div>
           )}
         </article>
@@ -416,13 +502,11 @@ export function WinsSection() {
               alt={award.title}
               className="bl-plate-slot--wide"
             />
-
             <span className="bl-win-kind">{award.kind}</span>
             <h3 className="bl-win-title">{award.title}</h3>
             <p className="bl-win-org">
               {award.org} · {award.year}
             </p>
-            <p className="bl-win-headline">{award.headline}</p>
             <p className="bl-win-body">{award.body}</p>
             <ul className="bl-win-facts">
               {award.facts.map((fact) => (
@@ -441,28 +525,14 @@ export function WinsSection() {
 export function ContactSection() {
   return (
     <section className="bl-section bl-contact" id="contact">
-      <ActHeader
-        act="VII"
-        title={
-          <>
-            What happens{" "}
-            <Ink type="underline" delay={400} strokeWidth={3}>
-              next
-            </Ink>
-          </>
-        }
-        note="your move"
-      />
+      <SectionHeader label="07 / Contact" title="What happens next" />
 
       <Reveal>
-        <div className="bl-contact-huge-wrap">
-          <p className="bl-contact-huge">
-            Let&apos;s
-            <br />
-            <em>build.</em>
-          </p>
-          <Doodle kind="squiggle" className="bl-doodle-contact" delay={700} />
-        </div>
+        <p className="bl-contact-huge">
+          Let&apos;s
+          <br />
+          <em>build.</em>
+        </p>
       </Reveal>
 
       <Reveal delay={120}>
@@ -472,7 +542,6 @@ export function ContactSection() {
         </p>
       </Reveal>
 
-      {/* the actual ask, sized like it matters */}
       <Reveal delay={200}>
         <Magnetic strength={0.22}>
           <a className="bl-cta" href={`mailto:${profile.email}`}>
@@ -498,10 +567,10 @@ export function ContactSection() {
       <Reveal delay={320}>
         <div className="bl-contact-links">
           <a className="bl-btn" href={profile.github} target="_blank" rel="noreferrer">
-            <MarkGithub size={14} /> GitHub
+            <MarkGithub size={14} /> {profile.githubHandle}
           </a>
           <a className="bl-btn" href={profile.linkedin} target="_blank" rel="noreferrer">
-            <MarkLinkedin size={14} /> LinkedIn
+            <MarkLinkedin size={14} /> {profile.linkedinHandle}
           </a>
           <a className="bl-btn" href={profile.studio} target="_blank" rel="noreferrer">
             ByUsForU <MarkArrow size={12} />
@@ -511,14 +580,6 @@ export function ContactSection() {
           </a>
         </div>
       </Reveal>
-
-      <Reveal delay={380}>
-        <p className="bl-contact-note">
-          <i aria-hidden="true" /> Open to internships, full-stack roles and freelance
-          builds
-          <Doodle kind="tick" className="bl-doodle-tick" delay={300} />
-        </p>
-      </Reveal>
     </section>
   );
 }
@@ -526,12 +587,11 @@ export function ContactSection() {
 export function BuildLogFooter({ time }: { time: string }) {
   return (
     <footer className="bl-footer" id="footer">
-      {/* the name, at the size it deserves, running edge to edge */}
       <div className="bl-footer-name" aria-hidden="true">
         <div className="bl-footer-run">
           {[0, 1].map((copy) => (
             <span key={copy}>
-              Dhruv Reddy <i /> Full-stack <i /> Applied AI <i />
+              S. Dhruv Reddy <i /> Full-stack <i /> Applied AI <i />
             </span>
           ))}
         </div>
@@ -539,7 +599,7 @@ export function BuildLogFooter({ time }: { time: string }) {
 
       <div className="bl-footer-grid">
         <div className="bl-footer-col">
-          <p className="bl-eyebrow">The log</p>
+          <p className="bl-head-label">Sections</p>
           {sections.map((item) => (
             <a key={item.id} href={`#${item.id}`}>
               {item.label}
@@ -548,23 +608,23 @@ export function BuildLogFooter({ time }: { time: string }) {
         </div>
 
         <div className="bl-footer-col">
-          <p className="bl-eyebrow">Elsewhere</p>
+          <p className="bl-head-label">Elsewhere</p>
           <a href={profile.github} target="_blank" rel="noreferrer">
-            GitHub
+            GitHub <span>{profile.githubHandle}</span>
           </a>
           <a href={profile.linkedin} target="_blank" rel="noreferrer">
-            LinkedIn
+            LinkedIn <span>{profile.linkedinHandle}</span>
           </a>
           <a href={profile.studio} target="_blank" rel="noreferrer">
-            ByUsForU
+            ByUsForU <span>freelance.byus4u.in</span>
           </a>
           <a href={profile.resume} target="_blank" rel="noreferrer">
-            Résumé
+            Résumé <span>PDF</span>
           </a>
         </div>
 
         <div className="bl-footer-col">
-          <p className="bl-eyebrow">Say hello</p>
+          <p className="bl-head-label">Say hello</p>
           <a className="bl-footer-mail" href={`mailto:${profile.email}`}>
             {profile.email}
           </a>
@@ -576,9 +636,11 @@ export function BuildLogFooter({ time }: { time: string }) {
       </div>
 
       <div className="bl-footer-base">
-        <span>© {new Date().getFullYear()} {profile.full}</span>
+        <span>
+          © {new Date().getFullYear()} {profile.full}
+        </span>
         <a href="/colophon">Colophon, privacy &amp; terms</a>
-        <span>Designed and engineered by Dhruv</span>
+        <span>Designed and engineered by {profile.name}</span>
       </div>
     </footer>
   );
@@ -586,13 +648,7 @@ export function BuildLogFooter({ time }: { time: string }) {
 
 /* ---------------------------------------------------------- case modal */
 
-export function CaseModal({
-  file,
-  onClose,
-}: {
-  file: CaseFile;
-  onClose: () => void;
-}) {
+export function CaseModal({ file, onClose }: { file: CaseFile; onClose: () => void }) {
   useEffect(() => {
     document.documentElement.classList.add("bl-locked");
     const escape = (event: KeyboardEvent) => {
@@ -616,7 +672,7 @@ export function CaseModal({
       <article className="bl-modal-sheet" onClick={(event) => event.stopPropagation()}>
         <header className="bl-modal-head">
           <span className="bl-mono">
-            Case file {file.index} · {file.domain}
+            {file.index} · {file.domain}
           </span>
           <button
             className="bl-modal-close"
@@ -630,21 +686,19 @@ export function CaseModal({
 
         <div className="bl-modal-body">
           <div className="bl-modal-hero">
-            <p className="bl-eyebrow">{file.tagline}</p>
+            <p className="bl-head-label">{file.tagline}</p>
             <h3 className="bl-modal-title">{file.name}</h3>
             <p className="bl-modal-overview">{file.overview}</p>
           </div>
 
-          {file.image && (
-            <div className="bl-modal-art">
-              <Image
-                src={file.image}
-                alt={`${file.name} visual`}
-                fill
-                sizes="(max-width: 1100px) 100vw, 64rem"
-              />
-            </div>
-          )}
+          <Plate
+            dir="work"
+            name={file.id}
+            src={file.image}
+            monogram={file.name}
+            alt={`${file.name} visual`}
+            className="bl-modal-art"
+          />
 
           {file.awards && (
             <div className="bl-modal-awards">
@@ -676,7 +730,7 @@ export function CaseModal({
             {file.features.map((group) => (
               <div className="bl-feature" key={group.title}>
                 <h4>{group.title}</h4>
-                <ul className="bl-work-list">
+                <ul className="bl-list">
                   {group.items.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
@@ -688,7 +742,7 @@ export function CaseModal({
           <div className="bl-divider" />
 
           <div>
-            <p className="bl-eyebrow" style={{ marginBottom: "0.55rem" }}>
+            <p className="bl-head-label" style={{ marginBottom: "0.55rem" }}>
               Built with
             </p>
             <div className="bl-chips">
@@ -700,7 +754,7 @@ export function CaseModal({
             </div>
           </div>
 
-          {file.note && <p className="bl-keynote">{file.note}</p>}
+          {file.note && <p className="bl-note">{file.note}</p>}
 
           <div className="bl-contact-links">
             {file.link && (
@@ -710,7 +764,7 @@ export function CaseModal({
                 target="_blank"
                 rel="noreferrer"
               >
-                {file.link.label} <MarkArrow size={13} />
+                {file.link.label} <MarkArrow size={14} />
               </a>
             )}
             {file.status && <span className="bl-chip">{file.status}</span>}

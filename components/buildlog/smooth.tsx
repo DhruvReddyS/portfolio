@@ -88,65 +88,6 @@ export function useSmoothScroll() {
 }
 
 /**
- * A small cursor dot that swells over anything interactive. Pointer-device
- * only, so it never appears on touch screens.
- */
-export function Cursor() {
-  const dot = useRef<HTMLDivElement>(null);
-  const ring = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!window.matchMedia("(pointer: fine)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    document.documentElement.classList.add("has-cursor");
-
-    const point = { x: innerWidth / 2, y: innerHeight / 2 };
-    const trail = { ...point };
-    let frame = 0;
-
-    const move = (event: PointerEvent) => {
-      point.x = event.clientX;
-      point.y = event.clientY;
-
-      const interactive = (event.target as HTMLElement)?.closest?.(
-        "a, button, [role='button'], input, textarea, select",
-      );
-      ring.current?.setAttribute("data-hot", interactive ? "true" : "false");
-    };
-
-    const loop = () => {
-      trail.x += (point.x - trail.x) * 0.16;
-      trail.y += (point.y - trail.y) * 0.16;
-
-      if (dot.current) {
-        dot.current.style.transform = `translate3d(${point.x}px, ${point.y}px, 0)`;
-      }
-      if (ring.current) {
-        ring.current.style.transform = `translate3d(${trail.x}px, ${trail.y}px, 0)`;
-      }
-      frame = requestAnimationFrame(loop);
-    };
-
-    window.addEventListener("pointermove", move, { passive: true });
-    frame = requestAnimationFrame(loop);
-
-    return () => {
-      window.removeEventListener("pointermove", move);
-      cancelAnimationFrame(frame);
-      document.documentElement.classList.remove("has-cursor");
-    };
-  }, []);
-
-  return (
-    <>
-      <div ref={ring} className="bl-cursor-ring" aria-hidden="true" />
-      <div ref={dot} className="bl-cursor-dot" aria-hidden="true" />
-    </>
-  );
-}
-
-/**
  * Reveals its lines from behind a mask as they scroll in. Each child line is
  * wrapped so it can slide up independently.
  */

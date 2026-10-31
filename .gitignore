@@ -44,3 +44,9 @@ next-env.d.ts
 
 # typescript build cache
 tsconfig.tsbuildinfo
+
+# local working files, not part of the site
+/.claude/
+Users:.fileloc
+/dhruv.png
+/grok-bot-avatar-react.zip

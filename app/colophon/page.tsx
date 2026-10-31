@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LampProvider } from "@/components/buildlog/lamp";
 import { profile } from "@/lib/portfolio-data";
 
 export const metadata: Metadata = {
@@ -11,9 +10,7 @@ export const metadata: Metadata = {
 
 export default function ColophonPage() {
   return (
-    <LampProvider>
       <div className="bl-root">
-        <div className="bl-paper" aria-hidden="true" />
         <div className="bl-grain-layer" aria-hidden="true" />
 
         <article className="bl-doc">
@@ -145,6 +142,5 @@ export default function ColophonPage() {
           </p>
         </article>
       </div>
-    </LampProvider>
   );
 }

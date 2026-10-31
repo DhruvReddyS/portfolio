@@ -1,9 +1,9 @@
 "use client";
 
 import { studio } from "@/lib/portfolio-data";
-import { Ink, Reveal } from "./ink";
+import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
-import { ActHeader } from "./sections";
+import { SectionHeader } from "./sections";
 import { MarkArrow, MarkMail } from "./marks";
 
 /**
@@ -13,17 +13,10 @@ import { MarkArrow, MarkMail } from "./marks";
 export function StudioSection() {
   return (
     <section className="bl-section bl-studio" id="studio">
-      <ActHeader
-        act="VI"
-        title={
-          <>
-            And a studio he{" "}
-            <Ink type="circle" delay={400} padding={8} strokeWidth={2}>
-              runs
-            </Ink>
-          </>
-        }
-        note="clients, not coursework"
+      <SectionHeader
+        label="06 / Independent"
+        title="And a studio he runs"
+        lead="Clients, not coursework. Seven brands on the books."
       />
 
       <Reveal>
@@ -72,7 +65,7 @@ export function StudioSection() {
             </div>
 
             <div className="bl-studio-services">
-              <p className="bl-eyebrow">Handled end to end</p>
+              <p className="bl-head-label">Handled end to end</p>
               <ul>
                 {studio.services.map((service) => (
                   <li key={service}>{service}</li>
@@ -94,7 +87,7 @@ export function StudioSection() {
 
           <div className="bl-studio-clients">
             <div className="bl-quests-head">
-              <p className="bl-eyebrow">On the books</p>
+              <p className="bl-head-label">On the books</p>
               <i aria-hidden="true" />
               <span className="bl-studio-count">{studio.clients.length} brands</span>
             </div>
