@@ -5,13 +5,13 @@ import test from "node:test";
 const projectRoot = new URL("../", import.meta.url);
 const clientRoot = new URL("../dist/client/", import.meta.url);
 
-async function render() {
+async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("https://portfolio.test/", {
+    new Request(`https://portfolio.test${path}`, {
       headers: {
         accept: "text/html",
         host: "portfolio.test",
@@ -31,53 +31,113 @@ async function render() {
   );
 }
 
-test("server-renders the complete portfolio experience", async () => {
+test("server-renders the build log", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(
-    html,
-    /<title>Dhruv Reddy — Full-stack &amp; AI Engineer · Dhruv Reddy<\/title>/i,
-  );
-  assert.match(html, /Ready to take a look\?/);
-  assert.match(html, /A flight through what I’ve[\s\S]{0,160}built\./);
-  assert.match(html, /Open details for CodeSync/);
-  assert.match(html, /AI Research Intern &amp; Team Lead/);
-  assert.match(html, /THE CAREER SIGNAL/);
-  assert.match(html, /View chapter/);
-  assert.match(html, /DR \/ SIGNAL/);
-  assert.match(html, /OBJECT FIELD \/ 07/);
-  assert.match(html, /TOOLKIT \/ VERIFIED/);
-  assert.match(html, /TYPICALLY REPLIES WITHIN 24 HOURS/);
-  assert.match(html, /00H[\s\S]*24H/);
-  assert.match(html, /LEARNING IN MOTION/);
-  assert.match(
-    html,
-    /Correct tools\.[\s\S]{0,200}Correct colors\.[\s\S]{0,200}Zero filler\./,
-  );
-  assert.match(html, /Meet Pixel, Dhruv’s portfolio guide/);
-  assert.match(html, /pixel-mascot\.png/);
-  assert.match(html, /LET’S/);
-  assert.match(html, /BUILD/);
+
+  assert.match(html, /<title>The Build Log · Dhruv Reddy<\/title>/i);
+  assert.match(html, /Dhruv/);
+  assert.match(html, /Reddy\./);
+  assert.match(html, /hold up after the demo/);
+
+  // every act is present, in order
+  for (const act of ["Where it", "happened", "actually shipped", "won", "next"]) {
+    assert.match(html, new RegExp(act.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
-test("build emits the portfolio client module and required public assets", async () => {
-  const response = await render();
+test("renders all five log entries with their metrics", async () => {
+  const html = await (await render()).text();
+
+  for (const company of [
+    "SimpleHire.ai",
+    "Axon Development",
+    "Paper Foundation India",
+    "Sai Enterprises",
+    "Osmania Technology Business Incubator",
+  ]) {
+    assert.match(html, new RegExp(company.replace(/\./g, "\\.")), `renders ${company}`);
+  }
+
+  assert.match(html, /3,997/);
+  assert.match(html, /2,305/);
+  assert.match(html, /10,000\+/);
+  assert.match(html, /Oct 2026 to now/);
+});
+
+test("renders all six case files and the side quests", async () => {
+  const html = await (await render()).text();
+
+  for (const project of [
+    "Corpusil",
+    "CodeSync",
+    "TRINETRA",
+    "Ascend",
+    "HMS",
+    "QuizMaster",
+  ]) {
+    assert.match(html, new RegExp(project), `renders ${project}`);
+  }
+
+  assert.match(html, /Side quests/i);
+  assert.match(html, /ReconAI/);
+  assert.match(html, /SnapFix/);
+  assert.match(html, /26,777/);
+  assert.match(html, /Open case file/i);
+});
+
+test("renders all four wins and the education strip", async () => {
+  const html = await (await render()).text();
+
+  assert.match(html, /Data Dynamo 2\.0/);
+  assert.match(html, /ASTRA Tech Club/);
+  assert.match(html, /DEVloop/);
+  assert.match(html, /Project Expo 2026/);
+  assert.match(html, /MVSR Engineering College/);
+  assert.match(html, /IIT Madras/);
+  assert.match(html, /9\.34/);
+});
+
+test("every section anchor the nav points at exists", async () => {
+  const html = await (await render()).text();
+  for (const id of ["top", "log", "work", "stack", "wins", "contact"]) {
+    assert.match(html, new RegExp(`id="${id}"`), `has #${id}`);
+  }
+});
+
+test("the rendered page contains no em dashes", async () => {
+  // The design brief bans them; this keeps them from creeping back into copy.
+  const html = await (await render()).text();
+  assert.doesNotMatch(html, /—/);
+});
+
+test("serves the colophon with its privacy and terms sections", async () => {
+  const response = await render("/colophon");
+  assert.equal(response.status, 200);
+
   const html = await response.text();
-  const moduleMatch = html.match(
-    /href="(\/assets\/portfolio-experience-[^"]+\.js)"/,
-  );
+  assert.match(html, /Colophon/);
+  assert.match(html, /Privacy/);
+  assert.match(html, /Terms/);
+  assert.match(html, /There is no analytics on this site/);
+  assert.match(html, /buildlog-lamp/);
+  assert.match(html, /no cookies|sets no cookies/i);
+});
+
+test("build emits the client module and the referenced assets", async () => {
+  const html = await (await render()).text();
+  const moduleMatch = html.match(/href="(\/assets\/portfolio-experience-[^"]+\.js)"/);
 
   assert.ok(moduleMatch, "portfolio client module preload is present");
   await access(new URL(`.${moduleMatch[1]}`, clientRoot));
-  await access(new URL("og.png", clientRoot));
 
   const requiredAssets = [
     "dhruv-hero.png",
-    "pixel-mascot.png",
     "healthcare-3d.png",
     "rag-3d.png",
     "ml-groundwater-3d.png",
@@ -92,34 +152,44 @@ test("build emits the portfolio client module and required public assets", async
     assert.ok(emittedAssets.includes(asset), `emits ${asset}`);
   }
 
-  const source = await readFile(
+  // the social card sits at the public root rather than under assets/
+  await access(new URL("og.png", clientRoot));
+});
+
+test("the avatar is kept out of the server bundle", async () => {
+  // The avatar package compiles a JSON schema with `new Function`, which the
+  // Workers runtime refuses, so it must only ever load in the browser.
+  const grok = await readFile(new URL("components/buildlog/grok.tsx", projectRoot), "utf8");
+  assert.match(grok, /dynamic\(\(\) => import\("\.\/grok-avatar"\)/);
+  assert.match(grok, /ssr:\s*false/);
+
+  const page = await readFile(
     new URL("app/portfolio-experience.tsx", projectRoot),
     "utf8",
   );
-  assert.match(source, /setActiveProject\(project\)/);
-  assert.match(source, /role="dialog"/);
-  assert.match(source, /aria-label=\{`Open details for \$\{project\.name\}`\}/);
-  assert.match(source, /id="orbit"/);
-  assert.match(source, /id="skills"/);
-  assert.match(source, /id="contact"/);
-  assert.match(source, /id="footer"/);
-  assert.match(source, /const journeySections/);
+  assert.doesNotMatch(page, /@bible-strong/);
+});
 
-  const pixel = await readFile(
-    new URL("components/portfolio-pet.tsx", projectRoot),
+test("the source avoids the icon library and keeps the hand-drawn marks", async () => {
+  const files = [
+    "components/buildlog/sections.tsx",
+    "components/buildlog/nav.tsx",
+    "components/buildlog/grok.tsx",
+    "components/buildlog/stack.tsx",
+    "components/buildlog/film.tsx",
+    "components/buildlog/smooth.tsx",
+  ];
+
+  for (const file of files) {
+    const source = await readFile(new URL(file, projectRoot), "utf8");
+    assert.doesNotMatch(source, /lucide-react/, `${file} uses no icon library`);
+    assert.doesNotMatch(source, /—/, `${file} has no em dashes`);
+  }
+
+  const marks = await readFile(
+    new URL("components/buildlog/marks.tsx", projectRoot),
     "utf8",
   );
-  assert.match(pixel, /Hi, I’m/);
-  assert.match(pixel, /8 SIGNALS LOADED/);
-  assert.match(pixel, /Meet your portfolio guide/);
-  assert.match(pixel, /setTimeout\(enterChat, 3200\)/);
-
-  const keyboard = await readFile(
-    new URL("components/ui/typing-keyboard.tsx", projectRoot),
-    "utf8",
-  );
-  assert.match(keyboard, /loop = false/);
-  assert.match(keyboard, /full-stcak/);
-  assert.match(keyboard, /backspace/);
-  assert.match(keyboard, /Press Enter to enter the portfolio/);
+  assert.match(marks, /export function MarkArrow/);
+  assert.match(marks, /export function MarkLamp/);
 });
