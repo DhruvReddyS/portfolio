@@ -8,7 +8,7 @@ import { MarkPaper } from "./marks";
 import { Plate } from "./plate";
 
 /**
- * Two degrees, running at the same time. Laid out as a pair of tall plates so
+ * A dual degree, both running at once. Laid out as a pair of tall plates so
  * the act reads differently from the stacked log and the sideways case files.
  */
 export function EducationSection() {
@@ -16,7 +16,7 @@ export function EducationSection() {
     <section className="bl-section bl-study" id="education">
       <SectionHeader
         label="03 / Study"
-        title="Two degrees at once"
+        title="A dual degree, run in parallel"
         lead="One on campus at MVSR, one online with IIT Madras."
       />
 

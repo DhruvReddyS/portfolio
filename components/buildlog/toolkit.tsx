@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   SiCloudflare,
   SiCloudinary,
@@ -34,12 +36,13 @@ import {
   SiVercel,
   SiVuedotjs,
 } from "react-icons/si";
-import { Reveal } from "./reveal";
 import { SectionHeader } from "./sections";
 
-type Group = "Interface" | "Server" | "Applied AI" | "Data" | "Delivery";
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
-const GROUPS: Group[] = ["Interface", "Server", "Applied AI", "Data", "Delivery"];
+type Group = "Interface" | "Server" | "Applied AI" | "Data" | "Delivery";
 
 type Tool = {
   name: string;
@@ -87,63 +90,73 @@ const tools: Tool[] = [
   { name: "GitHub", group: "Delivery", color: "var(--bl-ink)", icon: <SiGithub /> },
 ];
 
+const GROUPS: Group[] = ["Interface", "Server", "Applied AI", "Data", "Delivery"];
+
+/**
+ * The toolkit, as the key to a map.
+ *
+ * This is the layout the project had before the rebuild: brand-coloured marks
+ * on pills, wrapped and centred, with a strip of category labels ruled
+ * underneath. It beats both the watch face and the web for one reason:
+ * thirty-one tools is a legend, not a diagram, and a legend should be
+ * scannable in one pass rather than explored.
+ */
 export function ToolkitSection() {
-  const [group, setGroup] = useState<Group | null>(null);
+  const key = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = key.current;
+    if (!node) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const context = gsap.context(() => {
+      gsap.from(".bl-key > div", {
+        y: 18,
+        opacity: 0,
+        scale: 0.94,
+        duration: 0.55,
+        ease: "power3.out",
+        stagger: { each: 0.028, from: "start" },
+        scrollTrigger: { trigger: node, start: "top 82%", once: true },
+      });
+
+      gsap.from(".bl-key-strip i", {
+        scaleX: 0,
+        transformOrigin: "left",
+        duration: 0.9,
+        ease: "power2.out",
+        stagger: 0.09,
+        scrollTrigger: { trigger: ".bl-key-strip", start: "top 90%", once: true },
+      });
+    }, node);
+
+    return () => context.revert();
+  }, []);
 
   return (
     <section className="bl-section bl-toolkit" id="stack">
       <SectionHeader
         label="04 / Toolkit"
         title="Thirty-one things I build with"
-        lead="Every one of these has shipped in something on this page."
+        lead="Correct tools, correct colours, zero filler. Every one has shipped in something on this page."
       />
 
-      <Reveal className="bl-toolkit-filters">
-        <button
-          type="button"
-          className="bl-toolkit-filter"
-          data-active={group === null}
-          onClick={() => setGroup(null)}
-        >
-          Everything
-          <small>{tools.length}</small>
-        </button>
-        {GROUPS.map((name) => (
-          <button
-            key={name}
-            type="button"
-            className="bl-toolkit-filter"
-            data-active={group === name}
-            onClick={() => setGroup(group === name ? null : name)}
-          >
-            {name}
-            <small>{tools.filter((tool) => tool.group === name).length}</small>
-          </button>
+      <div className="bl-key" ref={key} aria-label="Technology toolkit">
+        {tools.map((tool) => (
+          <div key={tool.name} style={{ "--tool": tool.color } as React.CSSProperties}>
+            <span aria-hidden="true">{tool.icon}</span>
+            <strong>{tool.name}</strong>
+          </div>
         ))}
-      </Reveal>
+      </div>
 
-      <div className="bl-toolkit-wall">
-        {tools.map((tool, index) => {
-          const dim = group !== null && tool.group !== group;
-
-          return (
-            <div
-              key={tool.name}
-              className="bl-tool"
-              data-dim={dim}
-              style={
-                {
-                  "--tool": tool.color,
-                  "--tool-delay": `${(index % 12) * 60}ms`,
-                } as React.CSSProperties
-              }
-            >
-              <span className="bl-tool-icon">{tool.icon}</span>
-              <strong>{tool.name}</strong>
-              <em>{tool.group}</em>
-            </div>
-          );
-        })}
+      <div className="bl-key-strip" aria-hidden="true">
+        {GROUPS.map((group, index) => (
+          <Fragment key={group}>
+            <span>{group}</span>
+            {index < GROUPS.length - 1 && <i />}
+          </Fragment>
+        ))}
       </div>
     </section>
   );

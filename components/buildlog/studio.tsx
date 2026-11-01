@@ -4,6 +4,7 @@ import { studio } from "@/lib/portfolio-data";
 import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
 import { SectionHeader } from "./sections";
+import { MarkedLine } from "./marked";
 import { MarkArrow, MarkMail } from "./marks";
 
 /**
@@ -16,7 +17,7 @@ export function StudioSection() {
       <SectionHeader
         label="06 / Independent"
         title="And a studio he runs"
-        lead="Clients, not coursework. Seven brands on the books."
+        lead="Clients, not coursework."
       />
 
       <Reveal>
@@ -36,7 +37,9 @@ export function StudioSection() {
 
           <div className="bl-studio-body">
             <div className="bl-studio-lead">
-              <p>{studio.summary}</p>
+              <p>
+                <MarkedLine text={studio.summary} mark="no templates" />
+              </p>
 
               <div className="bl-studio-marks">
                 {studio.marks.map((mark) => (
@@ -85,23 +88,6 @@ export function StudioSection() {
             ))}
           </div>
 
-          <div className="bl-studio-clients">
-            <div className="bl-quests-head">
-              <p className="bl-head-label">On the books</p>
-              <i aria-hidden="true" />
-              <span className="bl-studio-count">{studio.clients.length} brands</span>
-            </div>
-
-            <ul>
-              {studio.clients.map((client) => (
-                <li key={client.name} data-status={client.status}>
-                  <strong>{client.name}</strong>
-                  <p>{client.note}</p>
-                  <em>{client.status}</em>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </Reveal>
     </section>

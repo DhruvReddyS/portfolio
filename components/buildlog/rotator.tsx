@@ -25,16 +25,28 @@ export function Rotator({
     return () => window.clearInterval(timer);
   }, [words.length, every]);
 
+  // "a" or "an" follows the sound, and every word in this list is regular
+  // enough for the first letter to decide it.
+  const article = /^[aeiou]/i.test(words[index] ?? "") ? "an" : "a";
+
+  // The article sits OUTSIDE .bl-rotator: that box is a positioning context
+  // for the absolutely placed word, and anything inside it gets taken out of
+  // the line with it.
   return (
-    <span className="bl-rotator">
-      {/* reserves the width of the longest word so nothing jumps */}
-      <span className="bl-rotator-ghost" aria-hidden="true">
-        {words.reduce((a, b) => (b.length > a.length ? b : a))}
+    <>
+      <span className="bl-rotator-article" aria-hidden="true">
+        {article}{" "}
       </span>
-      <span className="bl-rotator-word" key={index} aria-hidden="true">
-        {words[index]}
+      <span className="bl-rotator">
+        {/* reserves the width of the longest word so nothing jumps */}
+        <span className="bl-rotator-ghost" aria-hidden="true">
+          {words.reduce((a, b) => (b.length > a.length ? b : a))}
+        </span>
+        <span className="bl-rotator-word" key={index} aria-hidden="true">
+          {words[index]}
+        </span>
+        <span className="bl-sr">{words.join(", ")}</span>
       </span>
-      <span className="bl-sr">{words.join(", ")}</span>
-    </span>
+    </>
   );
 }

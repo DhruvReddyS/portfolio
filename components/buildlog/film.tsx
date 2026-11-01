@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
-import { MarkArrow, MarkRosette } from "./marks";
+import { MarkGithub, MarkPaper, MarkRosette, MarkWindow } from "./marks";
 import { Plate } from "./plate";
 import { SectionHeader } from "./sections";
+import { MarkedLine } from "./marked";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -103,28 +104,42 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                   <p className="bl-panel-domain">{file.domain}</p>
                   <h3 className="bl-panel-name">{file.name}</h3>
                   <p className="bl-panel-tagline">{file.tagline}</p>
-                  <p className="bl-panel-thesis">{file.thesis}</p>
+                  <p className="bl-panel-thesis">
+                    <MarkedLine text={file.thesis} mark={file.mark} />
+                  </p>
 
                   <p className="bl-panel-stack">{file.stack.slice(0, 6).join("  /  ")}</p>
 
+                  {/* three ways in: the live site, the source, the write-up.
+                      A link only appears when there is a real one to follow. */}
                   <div className="bl-panel-actions">
-                    <button
-                      type="button"
-                      className="bl-btn bl-btn-solid"
-                      onClick={() => onOpen(file)}
-                    >
-                      Open case file <MarkArrow size={13} />
-                    </button>
                     {file.link && (
                       <a
-                        className="bl-btn"
+                        className="bl-btn bl-btn-solid"
                         href={file.link.href}
                         target="_blank"
                         rel="noreferrer"
                       >
-                        Live site <MarkArrow size={12} />
+                        <MarkWindow size={13} /> Visit site
                       </a>
                     )}
+                    {file.repo && (
+                      <a
+                        className="bl-btn"
+                        href={file.repo}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <MarkGithub size={13} /> Source
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      className={file.link ? "bl-btn" : "bl-btn bl-btn-solid"}
+                      onClick={() => onOpen(file)}
+                    >
+                      <MarkPaper size={13} /> Case file
+                    </button>
                     {file.awards && (
                       <span className="bl-panel-award">
                         <MarkRosette size={13} /> Winner, twice

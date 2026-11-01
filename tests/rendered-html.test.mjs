@@ -57,7 +57,7 @@ test("server-renders the build log", async () => {
   for (const head of [
     "Where it happened",
     "Six things I shipped",
-    "Two degrees at once",
+    "A dual degree, run in parallel",
     "Thirty-one things I build with",
     "What it won",
     "And a studio he runs",
@@ -69,7 +69,7 @@ test("server-renders the build log", async () => {
   assert.doesNotMatch(html, /Your site is taking shape|Building your site/);
 });
 
-test("renders all five log entries with their metrics", async () => {
+test("renders all five log entries with what each one was", async () => {
   const html = await (await render()).text();
 
   for (const company of [
@@ -82,10 +82,16 @@ test("renders all five log entries with their metrics", async () => {
     assert.match(html, new RegExp(company.replace(/\./g, "\\.")), `renders ${company}`);
   }
 
-  assert.match(html, /3,997/);
-  assert.match(html, /2,305/);
-  assert.match(html, /10,000\+/);
+  // the card carries when, who and the brief; the full account is behind it
   assert.match(html, /Oct 2026 to now/);
+  assert.match(html, /Full Stack Developer Intern/);
+  assert.match(html, /AI-powered recruitment and candidate screening/);
+  assert.match(html, /Read the entry/);
+
+  // every entry is on the grid, marked with its monogram
+  for (const monogram of ["SH", "AX", "PF", "SE", "OT"]) {
+    assert.match(html, new RegExp(`>${monogram}</span>`), `grid carries ${monogram}`);
+  }
 });
 
 test("renders all six case files and the side quests", async () => {
@@ -106,7 +112,10 @@ test("renders all six case files and the side quests", async () => {
   assert.match(html, /ReconAI/);
   assert.match(html, /SnapFix/);
   assert.match(html, /26,777/);
-  assert.match(html, /Open case file/i);
+
+  // Three ways into a project: the live site, the source, the write-up.
+  assert.match(html, /Case file/i);
+  assert.match(html, /Visit site/i);
 });
 
 test("renders all four wins", async () => {

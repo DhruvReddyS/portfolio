@@ -2,11 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   awards,
   logEntries,
+  logStories,
   profile,
   sections,
+  type Award,
   type CaseFile,
   type LogEntry,
 } from "@/lib/portfolio-data";
@@ -14,18 +18,22 @@ import { Reveal } from "./reveal";
 import { Counter, Magnetic } from "./smooth";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
+import { Marked, MarkedLine } from "./marked";
+import { AsciiArt } from "@/components/ui/ascii-art";
 import {
   MarkArrow,
-  MarkPin,
   MarkWindow,
   MarkClose,
-  MarkCross,
   MarkGithub,
   MarkLinkedin,
   MarkMail,
   MarkPaper,
   MarkRosette,
 } from "./marks";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 /* ------------------------------------------------------------- section head */
 
@@ -50,26 +58,13 @@ export function SectionHeader({
 /* -------------------------------------------------------------------- hero */
 
 /** The credentials that belong beside the name, not buried in a section. */
+/* Read as a spec sheet, so the left column stays short and the right column
+   carries the substance. The icons went with the boxes. */
 const CREDENTIALS = [
-  { icon: <MarkRosette size={18} />, label: "CGPA", value: "9.34 / 10", note: "MVSR" },
-  {
-    icon: <MarkPin size={18} />,
-    label: "MVSR Engineering College",
-    value: "B.E. CSIT",
-    note: "Hyderabad",
-  },
-  {
-    icon: <MarkPaper size={18} />,
-    label: "IIT Madras",
-    value: "BS Data Science",
-    note: "Diploma stage",
-  },
-  {
-    icon: <MarkWindow size={18} />,
-    label: "Freelancer",
-    value: "ByUsForU",
-    note: "7 brands",
-  },
+  { label: "CGPA", value: "9.34 / 10", note: "MVSR" },
+  { label: "Degree", value: "B.E. CSIT", note: "MVSR, Hyderabad" },
+  { label: "Second degree", value: "BS Data Science", note: "IIT Madras" },
+  { label: "Freelance", value: "ByUsForU", note: "Founder · 5+ shipped" },
 ];
 
 /** Words that fill the space around the figure, at a whisper. */
@@ -114,7 +109,6 @@ const ROLES = [
 const SOCIALS = [
   { label: "GitHub", href: profile.github, icon: <MarkGithub size={15} /> },
   { label: "LinkedIn", href: profile.linkedin, icon: <MarkLinkedin size={15} /> },
-  { label: "Email", href: `mailto:${profile.email}`, icon: <MarkMail size={15} /> },
 ];
 
 export function Hero({ time }: { time: string }) {
@@ -172,14 +166,21 @@ export function Hero({ time }: { time: string }) {
 
           <Reveal delay={150}>
             <p className="bl-hero-am">
-              I&apos;m a <Rotator words={ROLES} />
+              I&apos;m <Rotator words={ROLES} />
             </p>
           </Reveal>
 
           <Reveal delay={210}>
             <p className="bl-hero-blurb">
-              Building real-world products at the intersection of web, applied AI
-              and problem solving. Things that hold up after the demo.
+              Building real-world products at the intersection of web,{" "}
+              <Marked kind="circle" delay={900}>
+                applied AI
+              </Marked>{" "}
+              and problem solving. Things that{" "}
+              <Marked kind="underline" delay={1500}>
+                hold up after the demo
+              </Marked>
+              .
             </p>
           </Reveal>
 
@@ -229,20 +230,18 @@ export function Hero({ time }: { time: string }) {
         </div>
 
         {/* the credentials, each given room to breathe */}
-        <ul className="bl-hero-creds">
+        <dl className="bl-specs">
           {CREDENTIALS.map((item, index) => (
-            <Reveal as="li" key={item.label} delay={360 + index * 70}>
-              <span className="bl-cred-icon" aria-hidden="true">
-                {item.icon}
-              </span>
-              <span className="bl-cred-text">
-                <strong>{item.value}</strong>
-                <small>{item.label}</small>
-              </span>
-              <em>{item.note}</em>
+            <Reveal as="div" className="bl-spec" key={item.label} delay={360 + index * 70}>
+              <dt>{item.label}</dt>
+              <i aria-hidden="true" />
+              <dd>
+                {item.value}
+                <em>{item.note}</em>
+              </dd>
             </Reveal>
           ))}
-        </ul>
+        </dl>
       </div>
     </section>
   );
@@ -250,272 +249,537 @@ export function Hero({ time }: { time: string }) {
 
 /* --------------------------------------------------------------- the log */
 
-function LogPreview({ listRef }: { listRef: React.RefObject<HTMLDivElement | null> }) {
+/* ----------------------------------------------------------------- the log */
+
+const LINK_MARK = {
+  site: MarkWindow,
+  demo: MarkArrow,
+  repo: MarkGithub,
+} as const;
+
+/**
+ * One internship, as a stop on the line.
+ *
+ * The logo sits on the axis as a medallion and the card hangs off it. Drop a
+ * file at /public/assets/log/<id>.png and it appears on the next load; until
+ * then the monogram holds the same space, so the line never looks broken
+ * while the logos are still being gathered.
+ *
+ * The spotlight follows the pointer across the card through two custom
+ * properties rather than React state, so moving the mouse never re-renders.
+ */
+function LogStop({
+  entry,
+  index,
+  onOpen,
+}: {
+  entry: LogEntry;
+  index: number;
+  onOpen: () => void;
+}) {
   const card = useRef<HTMLDivElement>(null);
-  const [entry, setEntry] = useState<LogEntry | null>(null);
+  const story = logStories[entry.id];
 
-  useEffect(() => {
-    const list = listRef.current;
-    if (!list) return;
-    if (!window.matchMedia("(pointer: fine)").matches) return;
-
-    const onOver = (event: PointerEvent) => {
-      const row = (event.target as HTMLElement)?.closest?.("[data-entry]");
-      const id = row instanceof HTMLElement ? row.dataset.entry : undefined;
-      setEntry(logEntries.find((item) => item.id === id) ?? null);
-    };
-    const onLeave = () => setEntry(null);
-
-    list.addEventListener("pointerover", onOver);
-    list.addEventListener("pointerleave", onLeave);
-    return () => {
-      list.removeEventListener("pointerover", onOver);
-      list.removeEventListener("pointerleave", onLeave);
-    };
-  }, [listRef]);
-
-  useEffect(() => {
+  const track = (event: React.PointerEvent<HTMLDivElement>) => {
     const node = card.current;
     if (!node) return;
-    if (!window.matchMedia("(pointer: fine)").matches) return;
-
-    const at = { x: 0, y: 0 };
-    const to = { x: 0, y: 0 };
-    let frame = 0;
-
-    const onMove = (event: PointerEvent) => {
-      to.x = event.clientX;
-      to.y = event.clientY;
-    };
-    const loop = () => {
-      at.x += (to.x - at.x) * 0.14;
-      at.y += (to.y - at.y) * 0.14;
-      node.style.transform = `translate3d(${at.x}px, ${at.y}px, 0)`;
-      frame = requestAnimationFrame(loop);
-    };
-
-    window.addEventListener("pointermove", onMove, { passive: true });
-    frame = requestAnimationFrame(loop);
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      cancelAnimationFrame(frame);
-    };
-  }, []);
+    const box = node.getBoundingClientRect();
+    node.style.setProperty("--px", `${event.clientX - box.left}px`);
+    node.style.setProperty("--py", `${event.clientY - box.top}px`);
+  };
 
   return (
-    <div className="bl-log-preview" ref={card} data-on={Boolean(entry)} aria-hidden="true">
-      {entry && (
-        <>
-          <Plate dir="log" name={entry.id} src={entry.image} monogram={entry.monogram} alt="" />
-          <p>
-            <strong>{entry.company}</strong>
-            <span>{entry.period}</span>
+    <article className="bl-stop" data-status={entry.status} data-index={index}>
+      <div className="bl-stop-axis">
+        <span className="bl-stop-badge">
+          <Plate
+            dir="log"
+            name={entry.id}
+            src={entry.image}
+            monogram={entry.monogram}
+            alt={`${entry.company} logo`}
+            bare
+          />
+        </span>
+        <span className="bl-stop-when">
+          {entry.period}
+          <em>{entry.location}</em>
+        </span>
+      </div>
+
+      <div
+        ref={card}
+        className="bl-stop-card"
+        onPointerMove={track}
+        onClick={onOpen}
+        role="button"
+        tabIndex={0}
+        aria-label={`Open the full entry for ${entry.company}`}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onOpen();
+          }
+        }}
+      >
+        <span className="bl-job-glow" aria-hidden="true" />
+
+        <header className="bl-stop-head">
+          <h3 className="bl-stop-name">
+            {entry.company}
+            {entry.org && <small>{entry.org}</small>}
+          </h3>
+          {entry.status === "current" && (
+            <span className="bl-entry-flag">
+              <i aria-hidden="true" /> Current
+            </span>
+          )}
+        </header>
+
+        <p className="bl-job-role">{entry.role}</p>
+        <p className="bl-stop-brief">{story?.brief ?? entry.headline}</p>
+
+        <div className="bl-job-chips">
+          {entry.stack.slice(0, 4).map((tech) => (
+            <span className="bl-chip" key={tech}>
+              {tech}
+            </span>
+          ))}
+        </div>
+
+        <footer className="bl-job-foot">
+          <span className="bl-job-read">
+            Read the entry <MarkArrow size={12} />
+          </span>
+
+          {story?.links && story.links.length > 0 && (
+            <span className="bl-job-links">
+              {story.links.map((link) => {
+                const Icon = LINK_MARK[link.kind];
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    title={link.label}
+                    aria-label={link.label}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <Icon size={14} />
+                  </a>
+                );
+              })}
+            </span>
+          )}
+        </footer>
+      </div>
+    </article>
+  );
+}
+
+/** The whole account, over the page. */
+export function LogModal({
+  entry,
+  onClose,
+}: {
+  entry: LogEntry;
+  onClose: () => void;
+}) {
+  const story = logStories[entry.id];
+
+  useEffect(() => {
+    document.documentElement.classList.add("bl-locked");
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", escape);
+    return () => {
+      document.documentElement.classList.remove("bl-locked");
+      window.removeEventListener("keydown", escape);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="bl-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${entry.company}, full entry`}
+      onClick={onClose}
+    >
+      <article
+        className="bl-modal-sheet bl-job-sheet"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="bl-modal-head">
+          <span className="bl-mono">
+            {entry.period} · {entry.location}
+          </span>
+          <button
+            className="bl-modal-close"
+            type="button"
+            onClick={onClose}
+            aria-label="Close this entry"
+          >
+            <MarkClose size={14} />
+          </button>
+        </header>
+
+        <div className="bl-modal-body">
+          <div className="bl-job-sheet-head">
+            <span className="bl-job-mark" aria-hidden="true">
+              {entry.monogram}
+            </span>
+            <div>
+              <h3 className="bl-modal-title">{entry.company}</h3>
+              <p className="bl-job-role">{entry.role}</p>
+            </div>
+          </div>
+
+          <p className="bl-job-sheet-lead">
+            <MarkedLine text={entry.headline} mark={entry.mark} />
           </p>
-        </>
-      )}
+
+          <div
+            className="bl-metrics"
+            style={{ gridTemplateColumns: "repeat(auto-fit,minmax(9rem,1fr))" }}
+          >
+            {entry.metrics.map((metric) => (
+              <div className="bl-metric" key={metric.label}>
+                <strong>
+                  <Counter value={metric.value} />
+                </strong>
+                <span>{metric.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {story?.blocks.map((block) => (
+            <section className="bl-job-block" key={block.heading}>
+              <h4>{block.heading}</h4>
+              <p>{block.body}</p>
+            </section>
+          ))}
+
+          <section className="bl-job-block">
+            <h4>Everything it covered</h4>
+            <ul className="bl-stack-work">
+              {entry.work.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+
+          <div className="bl-chips">
+            {entry.stack.map((tech) => (
+              <span className="bl-chip" key={tech}>
+                {tech}
+              </span>
+            ))}
+          </div>
+
+          {story?.links && story.links.length > 0 && (
+            <div className="bl-job-sheet-links">
+              {story.links.map((link) => {
+                const Icon = LINK_MARK[link.kind];
+                return (
+                  <a
+                    className="bl-btn"
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Icon size={13} /> {link.label}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </article>
     </div>
   );
 }
 
-function LogRow({ entry, index }: { entry: LogEntry; index: number }) {
-  const [open, setOpen] = useState(index === 0);
-
-  return (
-    <Reveal as="article" delay={index * 60}>
-      <div
-        className="bl-entry"
-        data-entry={entry.id}
-        data-open={open}
-        onClick={() => setOpen((value) => !value)}
-        role="button"
-        tabIndex={0}
-        aria-expanded={open}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            setOpen((value) => !value);
-          }
-        }}
-      >
-        <div className="bl-entry-meta">
-          <span className="bl-entry-year">{entry.period}</span>
-          {entry.status === "current" ? (
-            <span className="bl-entry-flag">
-              <i aria-hidden="true" /> Current
-            </span>
-          ) : (
-            <span className="bl-mono">{entry.location}</span>
-          )}
-        </div>
-
-        <div className="bl-entry-body">
-          <h3 className="bl-entry-company">
-            {entry.company}
-            {entry.org && <small>{entry.org}</small>}
-          </h3>
-          <p className="bl-entry-role">{entry.role}</p>
-          <p className="bl-entry-headline">{entry.headline}</p>
-        </div>
-
-        <span className="bl-entry-ghost" aria-hidden="true">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-
-        <span className="bl-entry-toggle" aria-hidden="true">
-          <MarkCross size={15} />
-        </span>
-
-        <div
-          className="bl-entry-detail"
-          style={{
-            display: "grid",
-            gridTemplateRows: open ? "1fr" : "0fr",
-            transition: "grid-template-rows 0.6s cubic-bezier(0.22,1,0.36,1)",
-          }}
-        >
-          <div style={{ minHeight: 0, overflow: "hidden" }}>
-            <div className="bl-entry-detail-inner">
-              <div>
-                <p className="bl-entry-summary">{entry.summary}</p>
-                <ul className="bl-list">
-                  {entry.work.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bl-entry-side">
-                <Plate
-                  dir="log"
-                  name={entry.id}
-                  src={entry.image}
-                  monogram={entry.monogram}
-                  alt={`${entry.company}, ${entry.role}`}
-                />
-                <div className="bl-metrics">
-                  {entry.metrics.map((metric) => (
-                    <div className="bl-metric" key={metric.label}>
-                      <strong>
-                        <Counter value={metric.value} />
-                      </strong>
-                      <span>{metric.label}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="bl-chips">
-                  {entry.stack.map((tech) => (
-                    <span className="bl-chip" key={tech}>
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-                <p className="bl-note">{entry.highlight}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Reveal>
-  );
-}
-
 export function LogSection() {
-  const list = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState<LogEntry | null>(null);
+  const track = useRef<HTMLDivElement>(null);
+
+  // The line draws itself as the act is read, and each stop lights when it
+  // reaches the reading line, so the section reports your own progress back.
+  useEffect(() => {
+    const node = track.current;
+    if (!node) return;
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const context = gsap.context(() => {
+      const fill = node.querySelector(".bl-line-fill");
+
+      if (fill && !still.matches) {
+        gsap.fromTo(
+          fill,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: node,
+              start: "top 72%",
+              end: "bottom 62%",
+              scrub: 0.5,
+            },
+          },
+        );
+      } else if (fill) {
+        gsap.set(fill, { scaleY: 1 });
+      }
+
+      gsap.utils.toArray<HTMLElement>(".bl-stop").forEach((stop) => {
+        ScrollTrigger.create({
+          trigger: stop,
+          start: "top 72%",
+          end: "bottom 30%",
+          onToggle: (self) => stop.setAttribute("data-live", String(self.isActive)),
+        });
+
+        if (still.matches) return;
+
+        gsap.from(stop.querySelector(".bl-stop-card"), {
+          y: 30,
+          opacity: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          scrollTrigger: { trigger: stop, start: "top 82%", once: true },
+        });
+      });
+    }, node);
+
+    return () => context.revert();
+  }, []);
 
   return (
-    <section className="bl-section" id="log">
+    <section className="bl-section bl-log" id="log">
       <SectionHeader
         label="01 / Experience"
         title="Where it happened"
-        lead="Five rooms, five different problems, and what came out of each."
+        lead="Five rooms, five different problems. Open any stop for the whole account."
       />
 
-      <div className="bl-log-list" ref={list}>
+      <div className="bl-line" ref={track}>
+        <span className="bl-line-rail" aria-hidden="true">
+          <i className="bl-line-fill" />
+        </span>
+
         {logEntries.map((entry, index) => (
-          <LogRow key={entry.id} entry={entry} index={index} />
+          <LogStop
+            key={entry.id}
+            entry={entry}
+            index={index}
+            onOpen={() => setOpen(entry)}
+          />
         ))}
       </div>
 
-      <LogPreview listRef={list} />
+      {open && <LogModal entry={open} onClose={() => setOpen(null)} />}
     </section>
   );
 }
 
 /* ------------------------------------------------------------------ wins */
 
-export function WinsSection() {
-  const [hero, ...rest] = awards;
+/**
+ * The wins, hung as a wall.
+ *
+ * Each one is a framed piece: a mat, a plate inside it, and a plaque screwed
+ * on underneath. The frames are set at slightly different sizes and tilts so
+ * the wall reads as hung rather than laid out, and a light follows the pointer
+ * across the glass. Clicking a frame gives the brief behind it.
+ */
+function WinFrame({
+  award,
+  index,
+  onOpen,
+}: {
+  award: Award;
+  index: number;
+  onOpen: () => void;
+}) {
+  const frame = useRef<HTMLDivElement>(null);
+
+  const track = (event: React.PointerEvent<HTMLDivElement>) => {
+    const node = frame.current;
+    if (!node) return;
+    const box = node.getBoundingClientRect();
+    node.style.setProperty("--px", `${event.clientX - box.left}px`);
+    node.style.setProperty("--py", `${event.clientY - box.top}px`);
+  };
 
   return (
-    <section className="bl-section" id="wins">
-      <SectionHeader
-        label="05 / Recognition"
-        title="What it won"
-        lead="Competitions, and the people it was built for."
-      />
+    <Reveal delay={index * 80}>
+      <div
+        ref={frame}
+        className="bl-bento-tile"
+        data-lead={index === 0}
+        onPointerMove={track}
+        onClick={onOpen}
+        role="button"
+        tabIndex={0}
+        aria-label={`See the brief for ${award.title}`}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onOpen();
+          }
+        }}
+      >
+        <div className="bl-bento-art">
+        <Plate
+          dir="wins"
+          name={award.id}
+          src={award.image}
+          monogram={award.monogram}
+          alt={award.title}
+          bare
+        />
+        <span className="bl-bento-scrim" aria-hidden="true" />
+        <span className="bl-frame-glass" aria-hidden="true" />
+      </div>
 
-      <div className="bl-wins-grid">
-        <article className="bl-win bl-win-hero">
-          <div className="bl-win-inner">
-            <span className="bl-win-kind">{hero.kind}</span>
-            <h3 className="bl-win-title">{hero.title}</h3>
-            <p className="bl-win-org">
-              {hero.org} · {hero.place}
+      <div className="bl-bento-copy">
+        <span className="bl-frame-kind">{award.kind}</span>
+        <strong>{award.title}</strong>
+        <em>
+          {award.org} · {award.place}
+        </em>
+        <span className="bl-bento-open">
+          Read it <MarkArrow size={11} />
+        </span>
+      </div>
+      </div>
+    </Reveal>
+  );
+}
+
+/** The brief behind the frame. */
+function WinModal({ award, onClose }: { award: Award; onClose: () => void }) {
+  useEffect(() => {
+    document.documentElement.classList.add("bl-locked");
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", escape);
+    return () => {
+      document.documentElement.classList.remove("bl-locked");
+      window.removeEventListener("keydown", escape);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="bl-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={award.title}
+      onClick={onClose}
+    >
+      <article
+        className="bl-modal-sheet bl-job-sheet"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="bl-modal-head">
+          <span className="bl-mono">
+            {award.kind} · {award.year}
+          </span>
+          <button
+            className="bl-modal-close"
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <MarkClose size={14} />
+          </button>
+        </header>
+
+        <div className="bl-modal-body">
+          <div className="bl-modal-hero">
+            <p className="bl-head-label">
+              {award.org} · {award.place}
             </p>
-            <p className="bl-win-body">{hero.body}</p>
-            <ul className="bl-win-facts">
-              {hero.facts.map((fact) => (
-                <li key={fact}>{fact}</li>
-              ))}
-            </ul>
-            <div className="bl-metrics" style={{ maxWidth: "22rem" }}>
-              {hero.metrics.map((metric) => (
-                <div className="bl-metric" key={metric.label}>
-                  <strong>
-                    <Counter value={metric.value} />
-                  </strong>
-                  <span>{metric.label}</span>
-                </div>
-              ))}
-            </div>
+            <h3 className="bl-modal-title">{award.title}</h3>
+            <p className="bl-job-sheet-lead">
+              <MarkedLine text={award.headline} mark={award.mark} kind="circle" />
+            </p>
           </div>
 
-          {hero.image && (
-            <div className="bl-win-shot">
-              <Image
-                src={hero.image}
-                alt="Dhruv Reddy and team Error404 receiving the Data Dynamo 2.0 award"
-                fill
-                sizes="(max-width: 880px) 100vw, 50vw"
-              />
-            </div>
-          )}
-        </article>
-
-        {rest.map((award) => (
-          <article className="bl-win" key={award.id}>
+          {award.image && (
             <Plate
               dir="wins"
               name={award.id}
               src={award.image}
               monogram={award.monogram}
               alt={award.title}
-              className="bl-plate-slot--wide"
+              className="bl-modal-art"
             />
-            <span className="bl-win-kind">{award.kind}</span>
-            <h3 className="bl-win-title">{award.title}</h3>
-            <p className="bl-win-org">
-              {award.org} · {award.year}
-            </p>
-            <p className="bl-win-body">{award.body}</p>
-            <ul className="bl-win-facts">
+          )}
+
+          <div
+            className="bl-metrics"
+            style={{ gridTemplateColumns: "repeat(auto-fit,minmax(9rem,1fr))" }}
+          >
+            {award.metrics.map((metric) => (
+              <div className="bl-metric" key={metric.label}>
+                <strong>
+                  <Counter value={metric.value} />
+                </strong>
+                <span>{metric.label}</span>
+              </div>
+            ))}
+          </div>
+
+          <section className="bl-job-block">
+            <h4>The brief</h4>
+            <p>{award.body}</p>
+          </section>
+
+          <section className="bl-job-block">
+            <h4>For the record</h4>
+            <ul className="bl-list">
               {award.facts.map((fact) => (
                 <li key={fact}>{fact}</li>
               ))}
             </ul>
-          </article>
+          </section>
+        </div>
+      </article>
+    </div>
+  );
+}
+
+export function WinsSection() {
+  const [open, setOpen] = useState<Award | null>(null);
+
+  return (
+    <section className="bl-section bl-wall-act" id="wins">
+      <SectionHeader
+        label="05 / Recognition"
+        title="What it won"
+        lead="Four of them. Open any tile for the story behind it."
+      />
+
+      <div className="bl-bento">
+        {awards.map((award, index) => (
+          <WinFrame
+            key={award.id}
+            award={award}
+            index={index}
+            onOpen={() => setOpen(award)}
+          />
         ))}
       </div>
+
+      {open && <WinModal award={open} onClose={() => setOpen(null)} />}
     </section>
   );
 }
@@ -537,8 +801,12 @@ export function ContactSection() {
 
       <Reveal delay={120}>
         <p className="bl-lede">
-          Bring the hard problem. I will bring the architecture, the awkward
-          questions, and an unreasonable number of browser tabs.
+          Bring the{" "}
+          <Marked kind="circle" delay={320}>
+            hard problem
+          </Marked>
+          . I will bring the architecture, the awkward questions, and an
+          unreasonable number of browser tabs.
         </p>
       </Reveal>
 
@@ -547,8 +815,8 @@ export function ContactSection() {
           <a className="bl-cta" href={`mailto:${profile.email}`}>
             <span className="bl-cta-ring" aria-hidden="true" />
             <span className="bl-cta-label">
-              <span>Email me</span>
-              <span>Email me</span>
+              <span>Hire the guy</span>
+              <span>Hire the guy</span>
             </span>
             <span className="bl-cta-mark" aria-hidden="true">
               <MarkArrow size={22} />
@@ -560,7 +828,7 @@ export function ContactSection() {
       <Reveal delay={260}>
         <p className="bl-cta-sub">
           <a href={`mailto:${profile.email}`}>{profile.email}</a>
-          <span>Typically replies within a day</span>
+          <span>Replies within a day. Usually sooner.</span>
         </p>
       </Reveal>
 
@@ -632,6 +900,22 @@ export function BuildLogFooter({ time }: { time: string }) {
             <i aria-hidden="true" /> Hyderabad · {time}
           </p>
           <p className="bl-footer-coords">{profile.coords}</p>
+        </div>
+
+        {/* the portrait, signed off in characters */}
+        <div className="bl-footer-art">
+          <AsciiArt
+            src="/assets/dhruv.png"
+            resolution={62}
+            charset="standard"
+            color="var(--bl-ink-soft)"
+            backgroundColor="transparent"
+            animationStyle="fade"
+            animationDuration={1.4}
+            animateOnView={false}
+            objectFit="contain"
+            className="bl-ascii"
+          />
         </div>
       </div>
 

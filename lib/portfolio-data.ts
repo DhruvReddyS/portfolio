@@ -207,6 +207,8 @@ export type CaseFile = {
   awards?: string[];
   note?: string;
   link?: { label: string; href: string };
+  /** Public source, when there is one. Left unset rather than guessed at. */
+  repo?: string;
   status?: string;
   visual: string;
   /** Drop a file at /assets/work/<id>.png and it is picked up. */
@@ -746,8 +748,8 @@ export const studio = {
   email: "team.byusforu@gmail.com",
   logo: "/assets/byusforu-logo.png",
   marks: [
+    { value: "5+", label: "projects shipped" },
     { value: "100%", label: "custom builds" },
-    { value: "24h", label: "response time" },
     { value: "1 yr", label: "support included" },
   ],
   services: [
@@ -806,3 +808,124 @@ export const profile = {
     awards: awards.length,
   },
 };
+
+/* ---------------------------------------------------------------- the log,
+ * in long form.
+ *
+ * The cards carry a title, a brief and the links. Opening one gives the whole
+ * account: why the room existed, what he actually built in it, and what
+ * changed because he was there. Every sentence here is drawn from the entry
+ * above it, so there is one set of facts, written out twice at two lengths.
+ */
+
+export type LogLink = {
+  kind: "site" | "demo" | "repo";
+  href: string;
+  label: string;
+};
+
+export type LogStory = {
+  /** The one or two lines the card carries under the title. */
+  brief: string;
+  blocks: { heading: string; body: string }[];
+  /** Only rendered when there is something real to point at. */
+  links?: LogLink[];
+};
+
+export const logStories: Record<string, LogStory> = {
+  simplehire: {
+    brief:
+      "AI-powered recruitment and candidate screening, built and shipped with the testing and deployment work that keeps it standing up.",
+    blocks: [
+      {
+        heading: "The room",
+        body: "SimpleHire.ai is Task Consulting's recruitment product: it reads résumés, scores candidates against a role and runs the campaign around them. I joined as a full stack developer intern in October 2026 and I am still on it.",
+      },
+      {
+        heading: "What I built",
+        body: "Résumé analysis, evaluation and ranking. Candidate matching against job requirements. Recruitment campaign management, with AI interview and voice-calling integrations and automated interview invitations layered on top. The work ran across both ends of the stack, and I owned the security hardening, the automated testing, and the deployment and production-readiness passes that went with it.",
+      },
+      {
+        heading: "What changed",
+        body: "Screening used to stop at the first qualifying applicants. I reworked it to evaluate and rank candidates across the whole applicant pool, so a late application gets the same reading as an early one. Twenty screening tasks shipped, four migration rehearsals, and the suite sits at 3,997 backend and 2,305 frontend tests passing.",
+      },
+    ],
+  },
+
+  axon: {
+    brief:
+      "WestBrookHomes, a real estate platform taken from first prototype to a live production deployment.",
+    blocks: [
+      {
+        heading: "The room",
+        body: "Axon Development, remote to the United States, December 2025 to February 2026. The brief was a production-oriented real estate web platform, WestBrookHomes, and I was on it from the first prototype through to the live site.",
+      },
+      {
+        heading: "What I built",
+        body: "Multiple website prototypes, then the responsive interfaces that came out of them. Frontend and backend work, PHP backend integration, and the UI and UX improvements I pushed for along the way. I handled the deployment on DreamHost and the client-requested modifications that followed it, and managed the project milestones.",
+      },
+      {
+        heading: "What changed",
+        body: "I contributed across the full development lifecycle rather than a slice of it: initial prototypes, UI design, backend integration and live deployment were all mine to carry.",
+      },
+    ],
+  },
+
+  paper: {
+    brief:
+      "Led four developers to ship a foundation's public site and the custom CMS running behind it.",
+    blocks: [
+      {
+        heading: "The room",
+        body: "Paper Foundation India, June to August 2026. I came in as a full stack developer intern and led a four-member development team through to launch.",
+      },
+      {
+        heading: "What I built",
+        body: "The organisation's website, an interactive Paper Journey, and a custom content management system with its own content-management APIs so the team could run the site without us. Educational and interactive components throughout, and an SEO and loading-performance pass over the whole thing.",
+      },
+      {
+        heading: "What changed",
+        body: "Both halves landed: the public website and the CMS behind it, delivered together, with reported load times of roughly two to three seconds. I managed development through launch rather than handing it off.",
+      },
+    ],
+  },
+
+  sai: {
+    brief:
+      "Four systems that took the repetitive work out of a business, from lead generation to the chatbot answering for it.",
+    blocks: [
+      {
+        heading: "The room",
+        body: "Sai Enterprises, Hyderabad, April to May 2026, as a full stack and AI developer intern. The work was whatever the business was still doing by hand.",
+      },
+      {
+        heading: "What I built",
+        body: "The company portfolio website. A statistical analysis tool. Lead-generation automation. A customised AI chatbot integrated into the site. Then a pass over website performance and SEO, and the broader business workflows that could be automated.",
+      },
+      {
+        heading: "What changed",
+        body: "The lead-generation automation reportedly cut manual lead handling by around sixty per cent. Four systems delivered inside two months.",
+      },
+    ],
+  },
+
+  otbi: {
+    brief:
+      "Groundwater prediction and mapping from more than ten thousand field readings, leading a three-person research team.",
+    blocks: [
+      {
+        heading: "The room",
+        body: "Osmania Technology Business Incubator, Hyderabad, June 2025. AI research, and I led the three-member team on it.",
+      },
+      {
+        heading: "What I built",
+        body: "Groundwater prediction and mapping from field data captured on PQWT GT500 detection equipment. More than ten thousand readings analysed, then interpolated and smoothed into prediction maps a surveyor can actually read.",
+      },
+      {
+        heading: "What changed",
+        body: "The method reached roughly eighty-five per cent reported prediction accuracy across the full set of analysed readings.",
+      },
+    ],
+  },
+};
+
