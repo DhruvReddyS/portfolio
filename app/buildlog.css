@@ -6198,48 +6198,146 @@ html.bl-locked body { overflow: hidden; }
   white-space: nowrap;
 }
 
-/* ---- the case files, as a grid ------------------------------------------
+
+/* ---- the case files, as a bento wall ------------------------------------
    They used to pin this act and run sideways. The log does that now, and
    two pinned acts back to back is the same trick twice: a reader gets two
    consecutive stretches where scrolling down does not move the page down.
-   Six cards on a grid, scrolling the way the rest of the page does.     */
+
+   So the six sit on a wall instead, in four slot sizes. The sizes are
+   fixed per slot rather than measured from the content, which is what
+   keeps the wall a shape and not a pile; the cards were written in an
+   order that puts each build in the slot its artwork suits.
+
+   A tile shows what its size can hold and no more. Shrinking a card is
+   not hiding it: the whole case file is one click away from every tile,
+   and a small tile that tried to carry the same six lines as the big one
+   would only prove the sizes were decoration.                          */
 
 .bl-film-viewport { overflow: visible; }
 
 .bl-film-track {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
-  gap: clamp(0.9rem, 2vw, 1.6rem);
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: clamp(12.5rem, 16vw, 15rem);
+  gap: clamp(0.7rem, 1.1vw, 1.1rem);
   width: 100%;
-  padding: 0;
+  padding-inline: var(--bl-gutter);
   transform: none !important;
 }
 
+/* the grid owns the measure now; the strip's own sizing is off */
 .bl-panel {
-  width: 100%;
-  height: clamp(20rem, 42vh, 25rem);
+  width: auto;
+  height: auto;
+  min-height: 0;
+  flex: initial;
+  border-radius: 18px;
 }
 
-/* the one with the awards takes the wide slot */
-.bl-film-track > *:first-child { grid-column: span 2; }
+.bl-panel[data-size="big"] { grid-column: span 2; grid-row: span 2; }
+.bl-panel[data-size="wide"] { grid-column: span 2; }
+.bl-panel[data-size="small"] { grid-column: span 1; }
 
-.bl-film-track > *:first-child .bl-panel { height: clamp(22rem, 48vh, 28rem); }
+/* ---- what each size says ---- */
 
-@media (max-width: 900px) {
-  .bl-film-track > *:first-child { grid-column: auto; }
-  .bl-film-track > *:first-child .bl-panel { height: clamp(20rem, 42vh, 25rem); }
+.bl-panel-copy { padding: clamp(1.1rem, 1.6vw, 1.5rem); gap: 0.45rem; }
+
+.bl-panel[data-size="big"] .bl-panel-copy {
+  padding: clamp(1.5rem, 2.6vw, 2.4rem);
+  gap: 0.7rem;
+}
+
+.bl-panel-name { font-size: clamp(1.55rem, 2.3vw, 2.1rem); }
+.bl-panel[data-size="wide"] .bl-panel-name { font-size: clamp(1.8rem, 2.9vw, 2.7rem); }
+.bl-panel[data-size="big"] .bl-panel-name { font-size: clamp(2.6rem, 4.6vw, 4.6rem); }
+
+.bl-panel-thesis { font-size: 0.95rem; max-width: 40ch; }
+.bl-panel[data-size="big"] .bl-panel-thesis {
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  max-width: 34ch;
+}
+
+/* only the big tile has the room for the build's parts list */
+.bl-panel:not([data-size="big"]) .bl-panel-stack { display: none; }
+
+/* a small tile keeps the name, the one-line what-it-is, and the way in */
+.bl-panel[data-size="small"] .bl-panel-domain,
+.bl-panel[data-size="small"] .bl-panel-thesis { display: none; }
+
+/* the ghost numeral is sized off its tile, or it swamps the small ones */
+.bl-panel-index { font-size: clamp(2.6rem, 4vw, 3.6rem); bottom: auto; top: 0.9rem; }
+.bl-panel[data-size="wide"] .bl-panel-index { font-size: clamp(3.4rem, 5.5vw, 5rem); }
+.bl-panel[data-size="big"] .bl-panel-index {
+  font-size: clamp(5rem, 9vw, 8.5rem);
+  top: auto;
+  bottom: 34%;
+}
+
+/* ---- the wall at narrower widths ---- */
+
+/* two columns: the big one goes full width and stays double height, the
+   wide ones go full width, and the small pair sit side by side */
+@media (max-width: 1180px) {
+  .bl-film-track {
+    grid-template-columns: repeat(2, 1fr);
+    /* a wide tile is the full width here, so it is carrying the same copy
+       across a much longer measure and needs the row to grow with it */
+    grid-auto-rows: clamp(14.5rem, 30vw, 17rem);
+  }
+
+  .bl-panel[data-size="wide"] { grid-column: span 2; }
+}
+
+/* one column: nothing is small any more, so every tile says everything */
+@media (max-width: 680px) {
+  .bl-film-track {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+
+  .bl-panel,
+  .bl-panel[data-size="big"],
+  .bl-panel[data-size="wide"],
+  .bl-panel[data-size="small"] {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: clamp(17rem, 46vh, 21rem);
+  }
+
+  .bl-panel[data-size="big"] { min-height: clamp(20rem, 54vh, 24rem); }
+
+  .bl-panel[data-size] .bl-panel-domain,
+  .bl-panel[data-size] .bl-panel-stack,
+  .bl-panel[data-size] .bl-panel-thesis { display: block; }
+
+  .bl-panel-name { font-size: clamp(2.1rem, 9vw, 3rem); }
+  .bl-panel-index { font-size: clamp(3.4rem, 14vw, 5rem); }
 }
 
 /* the act no longer has to hold one screen exactly */
 .bl-film {
+  height: auto;
   min-height: 0;
   padding-top: clamp(4rem, 10vh, 7rem);
   padding-bottom: clamp(4rem, 10vh, 7rem);
 }
 
 /* The act was full-bleed on purpose while it was a strip running off both
-   edges. As a grid it needs the page's own gutter, or the cards sit hard
-   against the screen edge. */
-.bl-film-track { padding-inline: var(--bl-gutter); }
-
+   edges. As a wall it needs the page's own gutter. */
 .bl-film .bl-head { padding-inline: var(--bl-gutter); }
+
+/* The ghosted title that stands in for a missing screenshot was sized off
+   the viewport, from the days when a card was most of one. On a tile it
+   has to be sized off the tile, or it outgrows the name it stands behind. */
+.bl-panel .bl-plate-bare > span { font-size: clamp(1.9rem, 4vw, 3.4rem); padding: 0 1rem; }
+.bl-panel[data-size="small"] .bl-plate-bare > span { font-size: clamp(1.5rem, 2.8vw, 2.3rem); }
+.bl-panel[data-size="big"] .bl-plate-bare > span { font-size: clamp(3rem, 6.5vw, 5.6rem); }
+
+@media (max-width: 680px) {
+  .bl-panel .bl-plate-bare > span,
+  .bl-panel[data-size="small"] .bl-plate-bare > span,
+  .bl-panel[data-size="big"] .bl-plate-bare > span {
+    font-size: clamp(2.2rem, 11vw, 3.6rem);
+  }
+}

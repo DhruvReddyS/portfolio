@@ -14,17 +14,32 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * The six builds, run through horizontally while the section is pinned.
- * Below the breakpoint it falls back to a native snap-scrolling strip, which
- * is both simpler and better on a touch screen.
+ * The six builds, laid out as a bento.
+ *
+ * Tiles come in four sizes and the sizes are fixed per slot, not per card,
+ * so the wall keeps its shape whatever the content does. The order is the
+ * order of the data, which keeps the ghosted numerals reading 01 to 06 down
+ * the wall, and each build landed in the slot its artwork suits: the lead
+ * one takes the big square, the one with a wide photograph takes a wide
+ * slot, and the two with no screenshot at all take the small ones, where a
+ * monogram is all a tile has room for anyway.
+ *
+ * A tile shows as much as its size can hold. The big one carries the whole
+ * card; the small ones carry a name and a way in. That is the point of the
+ * layout: were every tile to say the same amount, the sizes would be
+ * decoration.
  */
+
+/** Slot sizes, in the order the cards are written. */
+const SLOTS = ["big", "wide", "small", "small", "wide", "wide"] as const;
+
 export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
   const track = useRef<HTMLDivElement>(null);
 
   // The cards used to pin this act and turn vertical scroll sideways. The
   // log does that now, and two pinned acts back to back is the same trick
   // twice: a reader gets two consecutive stretches where scrolling down
-  // does not move the page down. These lay out as a grid and simply scroll.
+  // does not move the page down. The wall lays out and simply scrolls.
   useEffect(() => {
     const trackNode = track.current;
     if (!trackNode) return;
@@ -55,8 +70,12 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
 
       <div className="bl-film-viewport">
           <div className="bl-film-track" ref={track}>
-            {caseFiles.map((file) => (
-              <article className="bl-panel" key={file.id}>
+            {caseFiles.map((file, index) => (
+              <article
+                className="bl-panel"
+                key={file.id}
+                data-size={SLOTS[index] ?? "wide"}
+              >
                 <div className="bl-panel-media">
                   <Plate
                     bare
