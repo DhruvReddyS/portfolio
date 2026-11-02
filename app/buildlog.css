@@ -7366,3 +7366,526 @@ html[data-over="paper"] .bl-grain-layer {
   .bl-cover-sheet,
   .bl-grain-layer { transition: none; }
 }
+
+/* ==========================================================================
+   THE MEASURE
+   ------------------------------------------------------------------------
+   Three acts of light, one type scale, one spacing scale.
+
+   The page was dark end to end with a single lit spread in the middle, and
+   dark pages hide bad spacing: you cannot see the air, so there is never
+   enough of it. Measured against a reference the acts had 81px above and
+   below them, the section heads had their own margin cancelled, and the work
+   entries had no internal padding at all. None of that is a colour problem,
+   but light is what makes it visible, and the fix is the same either way.
+
+   So: the cover, the hero and the log stay dark, because that is the opening
+   and it is the one part of this page that was already working. Everything
+   that is a document rather than a performance runs on paper. Contact and
+   the colophon go dark again to close it. Dark, light, dark.
+
+   And two scales, used everywhere, so that spacing stops being a decision
+   made once per section by whoever was looking at it that day.
+   ========================================================================== */
+
+:root,
+[data-lamp="off"] {
+  /* ---- paper is the default now; dark is the thing you ask for ---- */
+  --bl-bg: #efece4;
+  --bl-bg-deep: #e4e0d5;
+  --bl-surface: #f6f4ee;
+  --bl-surface-2: #e7e3d8;
+  --bl-ink: #15130f;
+  --bl-ink-soft: #4e4941;
+  --bl-ink-dim: #847d72;
+  --bl-rule: rgba(21, 19, 15, 0.16);
+  --bl-rule-soft: rgba(21, 19, 15, 0.075);
+  --bl-accent: #c23c1b;
+  --bl-accent-ink: #fbf8f2;
+  --bl-accent-soft: rgba(194, 60, 27, 0.1);
+  --bl-amber: #9a6c18;
+  --bl-hand: #c23c1b;
+  --bl-hand-2: #9a6c18;
+  --bl-stamp: #3a564b;
+  --bl-stamp-soft: rgba(58, 86, 75, 0.12);
+  --bl-grain: 0.02;
+  --bl-lift: 0 1rem 2.5rem rgba(46, 37, 24, 0.1);
+  color-scheme: light;
+
+  /* ---- the spacing scale ---- */
+  /* the air above and below an act */
+  --bl-s-act: clamp(5.5rem, 12vh, 9rem);
+  /* between an act's head and the first thing under it */
+  --bl-s-head: clamp(2.75rem, 5.5vh, 4.25rem);
+  /* inside a card */
+  --bl-s-card: clamp(1.35rem, 2vw, 2rem);
+  /* between cards */
+  --bl-s-gap: clamp(0.9rem, 1.4vw, 1.35rem);
+
+  /* ---- the type scale ---- */
+  --bl-t-title: clamp(1.85rem, 3.1vw, 2.9rem);
+  --bl-t-sub: clamp(1.05rem, 1.45vw, 1.3rem);
+  --bl-t-body: clamp(0.875rem, 1vw, 0.95rem);
+  --bl-t-small: 0.8rem;
+  --bl-t-label: 0.62rem;
+}
+
+/* The acts that keep the lights off: the opening and the close. */
+[data-light="dark"],
+.bl-hero,
+.bl-log,
+.bl-contact,
+.bl-footer {
+  --bl-bg: #0a0908;
+  --bl-bg-deep: #050504;
+  --bl-surface: #121010;
+  --bl-surface-2: #191615;
+  --bl-ink: #f2efe6;
+  --bl-ink-soft: #a39c8e;
+  --bl-ink-dim: #6e675b;
+  --bl-rule: rgba(242, 239, 230, 0.14);
+  --bl-rule-soft: rgba(242, 239, 230, 0.06);
+  --bl-accent: #e05a2b;
+  --bl-accent-ink: #0b0a09;
+  --bl-accent-soft: rgba(224, 90, 43, 0.16);
+  --bl-amber: #e0a33f;
+  --bl-hand: #e05a2b;
+  --bl-hand-2: #e0a33f;
+  --bl-stamp: #7f9d8e;
+  --bl-stamp-soft: rgba(127, 157, 142, 0.16);
+  --bl-grain: 0.045;
+  --bl-lift: 0 1rem 2.5rem rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+  background: var(--bl-bg);
+  color: var(--bl-ink);
+}
+
+html,
+body,
+.bl-root { background: var(--bl-bg); color: var(--bl-ink); }
+
+/* The grade set per act is gone: an act is dark or it is paper, and the
+   difference between two near-blacks was never worth the rule. */
+.bl-log,
+.bl-work,
+.bl-wall-act,
+.bl-studio,
+.bl-contact { background: var(--bl-bg); }
+
+/* The lit spread was a sheet laid on the dark. Now that the document is the
+   paper, there is nothing to lay it on. */
+.bl-leaf { background: transparent; }
+.bl-leaf::before,
+.bl-leaf::after { content: none; }
+
+/* ---- the one rhythm every act keeps ---- */
+
+.bl-section { padding-block: var(--bl-s-act); }
+
+.bl-head { margin-bottom: var(--bl-s-head); }
+
+/* the log's spread supplies its own air under the head */
+.bl-log .bl-head { margin-bottom: clamp(1.75rem, 3.5vh, 2.75rem); }
+
+/* ---------- how an act announces itself -------------------------------- */
+
+/*
+ * The reference sets its section titles as one word, heavy, upper case,
+ * left, and not very large, with a great deal of air under them. That is
+ * what makes them read as structure rather than as decoration, and it is
+ * also the hero's own voice, so the page stops speaking in two accents.
+ *
+ * The serif keeps the places where the page is talking rather than filing:
+ * the cover, the hero's line, and "Let's build." at the end.
+ */
+.bl-head-title {
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-variation-settings: normal;
+  font-size: var(--bl-t-title);
+  line-height: 1.0;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  max-width: 18ch;
+}
+
+.bl-head-lead {
+  font-size: var(--bl-t-body);
+  line-height: 1.72;
+  max-width: 38ch;
+}
+
+/* ---------- the work, as cards on paper -------------------------------- */
+
+/*
+ * Back inside a box, which is where they belong now there is a ground to sit
+ * on. A hairline, a real amount of padding and nothing else: no fill that
+ * differs from the page by two percent, no shadow at rest, no gradient.
+ */
+.bl-work-wall { gap: var(--bl-s-gap); }
+
+.bl-card {
+  overflow: hidden;
+  border: 1px solid var(--bl-rule);
+  border-radius: 12px;
+  background: var(--bl-surface);
+  padding: 0;
+  transition:
+    border-color 0.35s var(--bl-ease),
+    transform 0.45s var(--bl-ease),
+    box-shadow 0.45s var(--bl-ease);
+}
+
+.bl-card:hover,
+.bl-card:focus-within {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--bl-accent) 45%, transparent);
+  box-shadow: var(--bl-lift);
+}
+
+.bl-card-shot {
+  margin-bottom: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--bl-rule);
+  /* ruled, for the five builds with no screenshot: paper now, not a dark
+     field with a glow on it */
+  background:
+    repeating-linear-gradient(
+      180deg,
+      var(--bl-rule-soft) 0 1px,
+      transparent 1px 1.45rem
+    ),
+    var(--bl-surface-2);
+}
+
+.bl-card-set { color: var(--bl-ink-soft); }
+
+.bl-card[data-plate="set"] .bl-card-shot::before {
+  background: color-mix(in srgb, var(--bl-accent) 34%, transparent);
+}
+
+.bl-card-body { padding: var(--bl-s-card); gap: 0.5rem; }
+
+.bl-card-name {
+  font-size: var(--bl-t-sub);
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+
+.bl-card-line { font-size: var(--bl-t-body); line-height: 1.6; }
+
+.bl-card-foot { padding-top: 0.9rem; margin-top: auto; }
+
+/* the chips were filing tabs on a dark plate; on paper they are a tab and a
+   caption, and the caption no longer needs a bar behind it */
+.bl-card-num {
+  top: 0;
+  left: 0;
+  border-bottom-right-radius: 8px;
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+}
+
+.bl-card-tag {
+  background: color-mix(in srgb, var(--bl-bg) 82%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--bl-ink-soft);
+  border-bottom-left-radius: 8px;
+}
+
+.bl-card-tag[data-win="true"] {
+  background: var(--bl-amber);
+  color: var(--bl-accent-ink);
+}
+
+/* ---------- the arrow answers the pointer ------------------------------ */
+
+.bl-card-open,
+.bl-card-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-card-open svg,
+.bl-card-side svg {
+  transition: transform 0.3s var(--bl-ease);
+}
+
+.bl-card:hover .bl-card-open svg { transform: translate(2px, -2px); }
+.bl-card-side:hover svg { transform: translate(1px, -1px); }
+
+/* ---------- the wins, as cards rather than a bento ---------------------- */
+
+/*
+ * These were four tiles of unequal size with the caption printed over the
+ * photograph behind a scrim. The scrim was built to fade into a dark page,
+ * so on paper it turned every photograph to mud, and the unequal sizes are
+ * the thing that was wrong with this section the first time.
+ *
+ * Four of the same card, photograph above the caption, nothing printed over
+ * anything. The same object as the work wall, because they are the same kind
+ * of thing: a picture, a name, and a way in.
+ */
+
+.bl-bento {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: auto;
+  gap: var(--bl-s-gap);
+}
+
+.bl-bento > *:nth-child(1),
+.bl-bento > *:nth-child(2) {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.bl-bento-tile {
+  justify-content: flex-start;
+  overflow: hidden;
+  border: 1px solid var(--bl-rule);
+  border-radius: 12px;
+  background: var(--bl-surface);
+  transition:
+    border-color 0.35s var(--bl-ease),
+    transform 0.45s var(--bl-ease),
+    box-shadow 0.45s var(--bl-ease);
+}
+
+.bl-bento-tile:hover,
+.bl-bento-tile:focus-visible {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--bl-accent) 45%, transparent);
+  box-shadow: var(--bl-lift);
+}
+
+.bl-bento-art {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-bottom: 1px solid var(--bl-rule);
+  background: var(--bl-surface-2);
+}
+
+/* nothing is printed over the photograph any more, so nothing has to be
+   darkened to keep it readable */
+.bl-bento-scrim { display: none; }
+
+.bl-bento-copy {
+  position: static;
+  padding: var(--bl-s-card);
+  gap: 0.3rem;
+}
+
+.bl-bento-copy strong,
+.bl-bento > *:nth-child(1) .bl-bento-copy strong {
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-size: var(--bl-t-sub);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bl-ink);
+}
+
+.bl-bento-copy em {
+  font-style: normal;
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-bento-open {
+  margin-top: 0.7rem;
+  opacity: 1;
+  transform: none;
+  color: var(--bl-accent);
+}
+
+.bl-bento-open svg { transition: transform 0.3s var(--bl-ease); }
+.bl-bento-tile:hover .bl-bento-open svg { transform: translate(2px, -2px); }
+
+@media (max-width: 1100px) {
+  .bl-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  .bl-bento { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- the degrees speak in the same voice as the cards ----------- */
+
+.bl-degree-name {
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-variation-settings: normal;
+  font-size: var(--bl-t-sub);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1.18;
+  max-width: 18ch;
+}
+
+/* ---------- the reading line, quieter ---------------------------------- */
+
+.bl-nav-read {
+  height: 1px;
+  opacity: 0.8;
+}
+
+/* the head's own margin is the rhythm now; this was a second helping of it */
+.bl-bento { margin-top: 0; }
+
+/* the margin note is a card in the wall, so it is built like one */
+.bl-note-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: var(--bl-s-card);
+  background: var(--bl-ink);
+  border-color: var(--bl-ink);
+}
+
+.bl-note-card .bl-note-label,
+.bl-note-card .bl-note-foot { color: color-mix(in srgb, var(--bl-bg) 62%, transparent); }
+.bl-note-card .bl-note-line { color: var(--bl-bg); }
+.bl-note-card .bl-note-mark { color: var(--bl-accent); }
+.bl-note-card:hover { transform: none; box-shadow: none; border-color: var(--bl-ink); }
+
+/* the annotated word sits inside the inverted card, so it takes the card's
+   ink rather than the page's */
+.bl-note-card .bl-marked,
+.bl-note-card .bl-marked-text { color: inherit; }
+
+/* ==========================================================================
+   MOTION
+   The reveals only started working this week, so this is the first time any
+   of it has been worth tuning. The rule is that motion reports something:
+   the folio rule draws because the act is starting, a card lifts because it
+   can be opened, an arrow leans because it leads somewhere. Nothing moves
+   to prove that it can.
+   ========================================================================== */
+
+/* ---- the folio rule draws itself as the act arrives ---- */
+
+.bl-head-rule {
+  position: relative;
+  border-bottom: 0;
+}
+
+.bl-head-rule::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--bl-rule);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+@media (scripting: enabled) {
+  .bl-head-rule::after {
+    transition: transform 1.15s var(--bl-ease) 0.08s;
+  }
+  .bl-head[data-in="true"] .bl-head-rule::after { transform: scaleX(1); }
+}
+
+/* ---- the reveal itself: shorter travel, so it reads as settling ---- */
+
+@media (scripting: enabled) {
+  .bl-reveal {
+    transform: translateY(16px);
+    transition:
+      opacity 0.72s var(--bl-ease) var(--bl-reveal-delay, 0ms),
+      transform 0.72s var(--bl-ease) var(--bl-reveal-delay, 0ms);
+  }
+}
+
+/* ---- links answer the pointer by drawing, not by changing colour ---- */
+
+.bl-colo-links a,
+.bl-contents-foot a,
+.bl-degree-certs a,
+.bl-card-side {
+  position: relative;
+}
+
+.bl-colo-links a::after,
+.bl-contents-foot a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 0.35s var(--bl-ease);
+}
+
+.bl-colo-links a:hover::after,
+.bl-contents-foot a:hover::after {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+
+/* ---- the picture leans in when the card is reached for ---- */
+
+.bl-card-shot .bl-plate-bare,
+.bl-bento-art .bl-plate-bare {
+  transition: transform 0.8s var(--bl-ease);
+}
+
+.bl-card:hover .bl-card-shot .bl-plate-bare,
+.bl-bento-tile:hover .bl-bento-art .bl-plate-bare {
+  transform: scale(1.04);
+}
+
+/* ---- the résumé pill and the brand ---- */
+
+.bl-resume {
+  transition:
+    background 0.3s var(--bl-ease),
+    color 0.3s var(--bl-ease),
+    transform 0.3s var(--bl-ease);
+}
+
+.bl-resume:hover { transform: translateY(-1px); }
+
+.bl-brand-mark i {
+  transition: color 0.3s var(--bl-ease), opacity 0.3s var(--bl-ease);
+  opacity: 0.45;
+}
+
+.bl-brand:hover .bl-brand-mark i { opacity: 1; color: var(--bl-accent); }
+
+/* ---- the shelf, one name at a time ---- */
+
+.bl-shelf dd span {
+  position: relative;
+  transition: color 0.22s var(--bl-ease);
+}
+
+.bl-shelf:hover dd span { color: var(--bl-ink-dim); }
+.bl-shelf dd span:hover { color: var(--bl-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-head-rule::after { transform: scaleX(1) !important; transition: none; }
+  .bl-card,
+  .bl-bento-tile,
+  .bl-card-shot .bl-plate-bare,
+  .bl-bento-art .bl-plate-bare { transition: none; }
+  .bl-card:hover,
+  .bl-bento-tile:hover { transform: none; }
+}

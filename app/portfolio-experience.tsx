@@ -93,8 +93,8 @@ function useHyderabadTime() {
   return time;
 }
 
-/** The acts that run with the lamp on. */
-const LIT = new Set(["education", "stack"]);
+/** The acts that keep the lights off: the opening and the close. */
+const UNLIT = new Set(["top", "log", "contact"]);
 
 function BuildLog() {
   const active = useActiveSection();
@@ -109,7 +109,7 @@ function BuildLog() {
   // The nav is fixed over whichever act is being read, so it has to know
   // which side of the page that act is on.
   useEffect(() => {
-    document.documentElement.dataset.over = LIT.has(active) ? "paper" : "dark";
+    document.documentElement.dataset.over = UNLIT.has(active) ? "dark" : "paper";
   }, [active]);
 
   return (
@@ -127,14 +127,8 @@ function BuildLog() {
         <LogSection />
         <WorkIndex onOpen={setOpenCase} />
 
-        {/* The lamp comes on. Study and the toolkit run together as one lit
-            sheet laid on the dark, so the page cuts into the light once and
-            back out of it once rather than flickering act by act. */}
-        <div className="bl-leaf" data-light="paper">
-          <EducationSection />
-          <ToolkitSection />
-        </div>
-
+        <EducationSection />
+        <ToolkitSection />
         <WinsSection />
         <StudioSection />
         <ContactSection />
