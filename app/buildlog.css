@@ -4997,3 +4997,80 @@ html.bl-locked body { overflow: hidden; }
   }
   .bl-key-strip i { min-width: 1.5rem; }
 }
+
+/* ---- the rail, now that it carries real marks ----------------------------
+   A circle cropping to `cover` ate a wordmark like Simplehire's, and the
+   logos all arrive on white, which reads as a blank disc against the page.
+   Each stop is a paper plate instead, square-ish with the logo set whole
+   inside it, which is how a logo wall works and what the marks expect.
+
+   At rest a plate is dimmed and drained of colour. It comes up to full as
+   its stop reaches the reading line, so scrolling the act lights the brands
+   one after another down the rail. That is the thing the timeline was
+   missing: it had nothing to light.                                       */
+
+.bl-stop-badge {
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 16px;
+  padding: 0;
+  background: #f3f1ea;
+  border-color: rgba(243, 241, 234, 0.18);
+  opacity: 0.62;
+  transition:
+    opacity 0.45s var(--bl-ease),
+    border-color 0.45s var(--bl-ease),
+    scale 0.45s var(--bl-ease),
+    box-shadow 0.45s var(--bl-ease);
+}
+
+/* the mark sits inside the plate with room around it, never cropped */
+.bl-stop-badge .bl-plate-bare img {
+  inset: 0.5rem;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 1rem);
+  max-height: calc(100% - 1rem);
+  margin: auto;
+  object-fit: contain;
+  filter: saturate(0.2) contrast(0.92);
+  transition: filter 0.45s var(--bl-ease);
+}
+
+/* the monogram is the fallback, and on paper it has to be dark */
+.bl-stop-badge .bl-plate-bare > span {
+  color: #2a2721;
+  font-size: 0.88rem;
+}
+
+/* full colour once you reach it */
+.bl-stop[data-live="true"] .bl-stop-badge {
+  opacity: 1;
+  scale: 1.04;
+  border-color: var(--bl-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--bl-accent) 16%, transparent);
+}
+
+.bl-stop[data-live="true"] .bl-stop-badge .bl-plate-bare img { filter: none; }
+
+.bl-stop[data-live="true"] .bl-stop-badge .bl-plate-bare > span { color: var(--bl-accent-ink); }
+
+/* The one he is in now sits brighter at rest than the rest, but this must not
+   out-rank the live rule above it: same specificity, written later, so without
+   the guard it kept the current stop dimmed even while it was being read. */
+.bl-stop[data-status="current"]:not([data-live="true"]) .bl-stop-badge { opacity: 0.85; }
+
+/* the rail runs through the middle of a wider plate now */
+.bl-line-rail { left: calc(2.3rem - 1px); }
+.bl-stop { grid-template-columns: 4.6rem minmax(0, 1fr); }
+
+@media (max-width: 760px) {
+  .bl-line-rail { left: calc(1.75rem - 1px); }
+  .bl-stop { grid-template-columns: 3.5rem minmax(0, 1fr); }
+  .bl-stop-badge { width: 3.5rem; height: 3.5rem; border-radius: 12px; }
+  .bl-stop-badge .bl-plate-bare img {
+    inset: 0.35rem;
+    max-width: calc(100% - 0.7rem);
+    max-height: calc(100% - 0.7rem);
+  }
+}

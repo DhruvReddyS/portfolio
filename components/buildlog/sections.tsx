@@ -539,8 +539,9 @@ export function LogSection() {
       gsap.utils.toArray<HTMLElement>(".bl-stop").forEach((stop) => {
         ScrollTrigger.create({
           trigger: stop,
-          start: "top 72%",
-          end: "bottom 30%",
+          start: "top 80%",
+          end: "bottom 25%",
+          invalidateOnRefresh: true,
           onToggle: (self) => stop.setAttribute("data-live", String(self.isActive)),
         });
 
@@ -555,6 +556,27 @@ export function LogSection() {
         });
       });
     }, node);
+
+    // The logos change every card's height as they decode, and ScrollTrigger
+    // measured the act before that happened: every stop ended up with a range
+    // that no scroll position satisfied, so none of them ever lit. Recompute
+    // once the last one is in.
+    const images = Array.from(node.querySelectorAll("img"));
+    let pending = images.length;
+    const settle = () => {
+      pending -= 1;
+      if (pending <= 0) ScrollTrigger.refresh();
+    };
+
+    if (!images.length) {
+      ScrollTrigger.refresh();
+    } else {
+      for (const image of images) {
+        if (image.complete) settle();
+        else image.addEventListener("load", settle, { once: true });
+        image.addEventListener("error", settle, { once: true });
+      }
+    }
 
     return () => context.revert();
   }, []);

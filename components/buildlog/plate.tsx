@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 /**
  * An image slot that needs no wiring.
@@ -50,6 +50,15 @@ export function Plate({
   const [loaded, setLoaded] = useState(false);
   const exhausted = attempt >= candidates.length;
 
+  // A cached file can finish decoding before React attaches onLoad, and then
+  // the event never fires and the monogram sits over a perfectly good logo.
+  // The ref callback settles it from the element's own state instead.
+  const settle = useCallback((node: HTMLImageElement | null) => {
+    if (!node || !node.complete) return;
+    if (node.naturalWidth > 0) queueMicrotask(() => setLoaded(true));
+    else queueMicrotask(() => setAttempt((value) => value + 1));
+  }, []);
+
   return (
     <div
       className={[bare ? "bl-plate-bare" : "bl-plate-slot", className]
@@ -62,6 +71,8 @@ export function Plate({
       {!exhausted && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
+          ref={settle}
+          key={candidates[attempt]}
           src={candidates[attempt]}
           alt={alt}
           loading="lazy"
