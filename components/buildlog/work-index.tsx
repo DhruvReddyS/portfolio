@@ -97,6 +97,7 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
 
       <Coverflow
         className="bl-work-rack"
+        cardWidth={520}
         ariaLabel="Six builds and two side quests"
         slides={rows.map((row) => ({
           key: row.id,
