@@ -16,17 +16,17 @@ if (typeof window !== "undefined") {
 /**
  * The work, set as the index of a book rather than a wall of cards.
  *
- * Cards were the wrong instrument. Eight of them want eight pictures, and
- * five of these builds have no picture to give; they want eight equal
- * sentences, and these have one strong one each; they want a shape, and the
- * shape kept being the subject. A list has none of those appetites. It says
- * what there is, in the order it happened, and it is read the way a contents
- * page is read: down the left, stopping where something catches.
+ * Cards were the wrong instrument. Eight of them want eight pictures and
+ * five of these builds have none; they want eight equally weighted
+ * sentences and these have one strong one each; and they want a shape,
+ * which kept turning into the subject. A list has none of those appetites.
+ * It says what there is, in the order it happened, and it is read the way
+ * a contents page is read: down the left, stopping where something catches.
  *
- * What a list cannot do is show the work, so the margin does that instead.
- * The plate alongside follows whichever row is under the pointer, and on a
- * narrow screen it goes away entirely and each row carries its own line.
- * Nothing is duplicated for a reader on a phone; it is simply fewer things.
+ * What a list cannot do is show the work, so the picture follows the
+ * pointer instead of sitting in a column of its own. That costs the layout
+ * nothing, which is the point: the list gets the whole width, and the
+ * artwork is only there while someone is actually looking for it.
  */
 
 /** The figure a row is filed under, or what kind of build it was. */
@@ -82,11 +82,15 @@ const rows: Row[] = [
 ];
 
 export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
-  const list = useRef<HTMLDivElement>(null);
+  const body = useRef<HTMLDivElement>(null);
+  const follower = useRef<HTMLDivElement>(null);
+  const aimAt = useRef<((clientX: number, clientY: number) => void) | null>(null);
+
   const [at, setAt] = useState(0);
+  const [showing, setShowing] = useState(false);
 
   useEffect(() => {
-    const node = list.current;
+    const node = body.current;
     if (!node) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -104,7 +108,83 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
     return () => context.revert();
   }, []);
 
-  const current = rows[at];
+  /* The follower is placed against the list's own box rather than the
+     viewport. A fixed element would be at the mercy of any transformed
+     ancestor, and this page has plenty: a transform on a parent makes it
+     the containing block and the thing lands somewhere else entirely.
+
+     The pointer's position is written straight onto the element and the
+     easing is left to a CSS transition, rather than being chased round a
+     frame loop. One statement per event instead of sixty a second, and it
+     still holds its place in a tab nobody is looking at, where a frame
+     loop is simply not called. */
+  useEffect(() => {
+    const node = body.current;
+    const plate = follower.current;
+    if (!node || !plate) return;
+    if (!window.matchMedia("(hover: hover)").matches) return;
+
+    let placed = false;
+
+    const aim = (clientX: number, clientY: number) => {
+      const box = node.getBoundingClientRect();
+      const half = plate.offsetWidth / 2;
+      // kept inside the list's own width, so it never hangs off the page
+      const x = Math.min(box.width - half, Math.max(half, clientX - box.left));
+      const y = clientY - box.top;
+
+      // the first reading is a jump, not a glide: otherwise the picture
+      // sails in from wherever it was left the last time
+      if (!placed) {
+        placed = true;
+        plate.style.transition = "none";
+        plate.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+        void plate.offsetHeight;
+        plate.style.transition = "";
+        return;
+      }
+
+      plate.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+    };
+
+    aimAt.current = aim;
+
+    const onMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      aim(event.clientX, event.clientY);
+    };
+
+    const onEnter = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      setShowing(true);
+    };
+
+    const onLeave = () => {
+      placed = false;
+      setShowing(false);
+    };
+
+    node.addEventListener("pointermove", onMove);
+    node.addEventListener("pointerenter", onEnter);
+    node.addEventListener("pointerleave", onLeave);
+
+    return () => {
+      node.removeEventListener("pointermove", onMove);
+      node.removeEventListener("pointerenter", onEnter);
+      node.removeEventListener("pointerleave", onLeave);
+      aimAt.current = null;
+    };
+  }, []);
+
+  /** Keyboard has no pointer, so the plate is put beside the focused row. */
+  const placeAt = (element: HTMLElement) => {
+    const node = body.current;
+    const plate = follower.current;
+    if (!node || !plate || !aimAt.current) return;
+    const box = node.getBoundingClientRect();
+    const row = element.getBoundingClientRect();
+    aimAt.current(box.right - plate.offsetWidth / 2, row.top + row.height / 2);
+  };
 
   return (
     <section className="bl-section bl-index" id="work">
@@ -114,7 +194,7 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
         lead="Six builds and two side quests, in the order they happened. Open any of the six for the case file."
       />
 
-      <div className="bl-index-body" ref={list}>
+      <div className="bl-index-body" ref={body}>
         <ol className="bl-index-list">
           {rows.map((row, index) => (
             <Fragment key={row.id}>
@@ -130,7 +210,7 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                 className="bl-index-row"
                 data-on={at === index}
                 data-quest={row.quest ? "true" : undefined}
-                onMouseEnter={() => setAt(index)}
+                onPointerEnter={() => setAt(index)}
               >
                 <span className="bl-index-num">{row.index}</span>
 
@@ -139,7 +219,12 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                     <button
                       type="button"
                       onClick={() => onOpen(row.file as CaseFile)}
-                      onFocus={() => setAt(index)}
+                      onFocus={(event) => {
+                        setAt(index);
+                        setShowing(true);
+                        placeAt(event.currentTarget);
+                      }}
+                      onBlur={() => setShowing(false)}
                     >
                       {row.name}
                       <MarkArrow size={16} />
@@ -150,12 +235,17 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                 </h3>
 
                 <p className="bl-index-field">{row.field}</p>
-                <p className="bl-index-filed">{row.filed}</p>
 
-                {/* the sentence lives in the margin on a wide screen; on a
-                    narrow one there is no margin, so it lives here */}
                 <p className="bl-index-line">
                   <MarkedLine text={row.line} mark={row.mark} />
+                </p>
+
+                <p className="bl-index-filed">{row.filed}</p>
+
+                {/* the parts list is the one thing held back for the row
+                    being read: eight of them at once is a wall of nouns */}
+                <p className="bl-index-stack">
+                  {row.stack.slice(0, 7).join("  /  ")}
                 </p>
 
                 <div className="bl-index-links">
@@ -180,48 +270,43 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
           ))}
         </ol>
 
-        {/* the margin: what the list cannot say, for the row being read */}
-        <aside className="bl-index-margin" aria-hidden="true">
-          {/* every plate is mounted and only one is shown. Swapping the
-              source of a single plate instead would send it back through
-              its own lookup on each hover, so the artwork would drop out
-              and fade in again every time the pointer crossed a row. */}
-          <div className="bl-index-plate">
-            {rows.map((row, index) => (
-              <figure key={row.id} data-on={at === index}>
-                <Plate
-                  bare
-                  dir="work"
-                  name={row.id}
-                  src={row.image}
-                  monogram={row.name}
-                  alt=""
-                />
-              </figure>
-            ))}
-          </div>
+        {/* Every plate is mounted and one is shown. Swapping the source of
+            a single plate would send it back through its own file lookup
+            on each hover, so the artwork would drop out and fade in again
+            every time the pointer crossed a row. */}
+        <div
+          className="bl-index-follow"
+          ref={follower}
+          data-on={showing}
+          aria-hidden="true"
+        >
+          {rows.map((row, index) => (
+            <figure key={row.id} data-on={at === index}>
+              <Plate
+                bare
+                dir="work"
+                name={row.id}
+                src={row.image}
+                monogram={row.name}
+                alt=""
+              />
+            </figure>
+          ))}
+        </div>
+      </div>
 
-          <p className="bl-index-sentence">
-            <MarkedLine text={current.line} mark={current.mark} />
-          </p>
-
-          <p className="bl-index-stack">
-            {current.stack.slice(0, 7).join("  /  ")}
-          </p>
-
-          <div className="bl-note bl-note-margin">
-            <p className="bl-note-label">Margin note</p>
-            <MarkPaper className="bl-note-mark" size={22} />
-            <p className="bl-note-line">
-              A demo proves it <Marked kind="circle">runs</Marked>. A case file
-              proves it holds.
-            </p>
-            <p className="bl-note-foot">
-              Every numbered row opens one: the architecture, the figures, what
-              broke.
-            </p>
-          </div>
-        </aside>
+      {/* the note, set out in the margin the way one would be on paper */}
+      <div className="bl-note bl-note-end">
+        <p className="bl-note-label">Margin note</p>
+        <MarkPaper className="bl-note-mark" size={22} />
+        <p className="bl-note-line">
+          A demo proves it <Marked kind="circle">runs</Marked>. A case file
+          proves it holds.
+        </p>
+        <p className="bl-note-foot">
+          Every numbered row opens one: the architecture, the figures, what
+          broke.
+        </p>
       </div>
     </section>
   );

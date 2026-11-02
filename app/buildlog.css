@@ -5927,18 +5927,17 @@ html.bl-locked body { overflow: hidden; }
    A list has none of those appetites. It says what there is, in the order
    it happened, and it is read the way a contents page is read: down the
    left, stopping where something catches. What it cannot do is show the
-   work, so the margin does that, and follows whichever row is being read.
+   work, so the picture follows the pointer rather than sitting in a column
+   of its own. That costs the layout nothing, which is the point: the list
+   gets the whole width and the artwork is only there while somebody is
+   looking for it.
    ------------------------------------------------------------------------- */
 
 .bl-index { scroll-margin-top: 4.5rem; }
 
-.bl-index-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: start;
-  padding: 0 var(--bl-gutter);
-}
+/* the section already carries the page gutter; a second one here put the
+   list a gutter further in than everything else on the page */
+.bl-index-body { position: relative; }
 
 /* ---- the list ---- */
 
@@ -5952,20 +5951,20 @@ html.bl-locked body { overflow: hidden; }
 .bl-index-row {
   position: relative;
   display: grid;
-  grid-template-columns: 3.1rem minmax(0, 1fr) auto;
+  grid-template-columns: 3.4rem minmax(0, 1.35fr) minmax(0, 1fr);
   grid-template-areas:
     "num name  filed"
-    "num field links";
+    "num field stack"
+    "num line  links";
   align-items: baseline;
-  column-gap: clamp(0.75rem, 2vw, 1.75rem);
-  row-gap: 0.3rem;
-  padding: clamp(0.95rem, 1.8vh, 1.35rem) 0;
+  column-gap: clamp(1rem, 3vw, 3rem);
+  row-gap: 0.4rem;
+  padding: clamp(1.1rem, 2.2vh, 1.65rem) 0;
   border-bottom: 1px solid var(--bl-rule-soft);
-  transition: background 0.35s var(--bl-ease);
 }
 
-/* the rule that marks the row being read, drawn from the left as a pen
-   would draw it rather than switched on */
+/* the rule that marks the row being read, drawn from the left the way a
+   pen would draw it rather than switched on */
 .bl-index-row::after {
   content: "";
   position: absolute;
@@ -5984,7 +5983,7 @@ html.bl-locked body { overflow: hidden; }
 .bl-index-num {
   grid-area: num;
   align-self: start;
-  padding-top: 0.45rem;
+  padding-top: 0.5rem;
   font-family: var(--bl-mono);
   font-size: 0.6rem;
   letter-spacing: 0.16em;
@@ -5999,7 +5998,7 @@ html.bl-locked body { overflow: hidden; }
   margin: 0;
   font-family: var(--bl-display);
   font-weight: 400;
-  font-size: clamp(1.65rem, 2.7vw, 2.6rem);
+  font-size: clamp(1.7rem, 3vw, 2.9rem);
   line-height: 1.02;
   letter-spacing: -0.028em;
 }
@@ -6024,8 +6023,8 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-index-row[data-on="true"] .bl-index-name button { color: var(--bl-accent); }
 
-/* the arrow is the whole of the invitation, so it is only there when the
-   row is the one being read */
+/* the arrow is the whole of the invitation, so it is only on the row being
+   read */
 .bl-index-name button svg {
   opacity: 0;
   transform: translateX(-0.4rem);
@@ -6055,13 +6054,25 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-ink-dim);
 }
 
+.bl-index-line {
+  grid-area: line;
+  margin: 0.2rem 0 0;
+  max-width: 44ch;
+  font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+  line-height: 1.5;
+  color: var(--bl-ink-soft);
+  transition: color 0.3s var(--bl-ease);
+}
+
+.bl-index-row[data-on="true"] .bl-index-line { color: var(--bl-ink); }
+
 /* what the build is filed under: a figure off the project where there is
    one, and what kind of build it was where there is not */
 .bl-index-filed {
   grid-area: filed;
   margin: 0;
   justify-self: end;
-  max-width: 13rem;
+  max-width: 15rem;
   text-align: right;
   font-family: var(--bl-mono);
   font-size: 0.58rem;
@@ -6070,9 +6081,36 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-ink-soft);
 }
 
+/* eight parts lists at once is a wall of nouns, so only the row being read
+   shows its own */
+.bl-index-stack {
+  grid-area: stack;
+  margin: 0;
+  justify-self: end;
+  max-width: 22rem;
+  text-align: right;
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  color: var(--bl-ink-dim);
+  opacity: 0;
+  transform: translateY(-0.2rem);
+  transition:
+    opacity 0.35s var(--bl-ease),
+    transform 0.35s var(--bl-ease);
+}
+
+.bl-index-row[data-on="true"] .bl-index-stack {
+  opacity: 1;
+  transform: none;
+}
+
 .bl-index-links {
   grid-area: links;
   justify-self: end;
+  align-self: end;
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -6096,7 +6134,7 @@ html.bl-locked body { overflow: hidden; }
 .bl-index-award { color: var(--bl-amber); }
 
 /* a side quest has no case file behind it, so its name is not a door */
-.bl-index-row[data-quest="true"] .bl-index-name { font-size: clamp(1.3rem, 1.9vw, 1.75rem); }
+.bl-index-row[data-quest="true"] .bl-index-name { font-size: clamp(1.35rem, 2.1vw, 2rem); }
 .bl-index-row[data-quest="true"] .bl-index-name span { color: var(--bl-ink-soft); }
 
 /* where the numbered builds end */
@@ -6121,24 +6159,27 @@ html.bl-locked body { overflow: hidden; }
   background: var(--bl-rule-soft);
 }
 
-/* the sentence belongs in the margin while there is a margin to put it in */
-.bl-index-line { display: none; }
+/* ---- the picture, following the pointer ----
 
-/* ---- the margin ---- */
+   Placed against the list's own box rather than the viewport: a fixed
+   element is at the mercy of any transformed ancestor, and this page has
+   plenty. It takes no space and nothing under it is clickable, so it can
+   sit over the list without costing the list anything.                  */
 
-.bl-index-margin {
-  position: sticky;
-  top: clamp(5rem, 13vh, 7.5rem);
-  display: grid;
-  gap: clamp(0.9rem, 2vh, 1.4rem);
-}
-
-.bl-index-plate {
-  position: relative;
+.bl-index-follow {
+  position: absolute;
+  top: 0;
+  /* zero, because the pointer's x is measured from this same box. Any
+     offset here is one the maths does not know about, and the picture
+     trails the cursor by exactly that much. */
+  left: 0;
+  z-index: 4;
+  width: clamp(15rem, 23vw, 24rem);
   aspect-ratio: 4 / 3;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--bl-rule);
+  pointer-events: none;
   background:
     repeating-linear-gradient(
       180deg,
@@ -6146,75 +6187,79 @@ html.bl-locked body { overflow: hidden; }
       transparent 1px 1.5rem
     ),
     linear-gradient(205deg, #15120f 0%, #0a0908 80%);
+  box-shadow: 0 1.6rem 3.5rem -1rem rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  visibility: hidden;
+  /* the trailing is this transition re-aiming on each pointer event, not a
+     frame loop: the same easing, and none of it runs when nobody is
+     pointing at anything */
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s var(--bl-ease),
+    visibility 0s linear 0.3s;
 }
 
-.bl-index-plate figure {
+.bl-index-follow[data-on="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s var(--bl-ease),
+    visibility 0s;
+}
+
+.bl-index-follow figure {
   position: absolute;
   inset: 0;
   margin: 0;
   opacity: 0;
-  transform: scale(1.015);
+  transform: scale(1.02);
   transition:
-    opacity 0.4s var(--bl-ease),
+    opacity 0.38s var(--bl-ease),
     transform 0.5s var(--bl-ease);
 }
 
-.bl-index-plate figure[data-on="true"] {
+.bl-index-follow figure[data-on="true"] {
   opacity: 1;
   transform: none;
 }
 
-/* a build with no screenshot keeps the ruled field, and its name is set
-   over it rather than filling it */
-.bl-index-plate .bl-plate-bare > span {
-  font-size: clamp(1.5rem, 3vw, 2.3rem);
+/* a build with no screenshot shows its name on the ruled field instead */
+.bl-index-follow .bl-plate-bare > span {
+  font-size: clamp(1.4rem, 2.6vw, 2.1rem);
 }
 
-.bl-index-sentence {
-  margin: 0;
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-size: clamp(1.1rem, 1.55vw, 1.45rem);
-  line-height: 1.35;
-  letter-spacing: -0.012em;
-  color: var(--bl-ink);
+/* no pointer, nothing to follow */
+@media (hover: none) {
+  .bl-index-follow { display: none; }
 }
 
-.bl-index-stack {
-  margin: 0;
-  font-family: var(--bl-mono);
-  font-size: 0.54rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  line-height: 1.6;
-  color: var(--bl-ink-dim);
+/* ---- the note at the end of the page ---- */
+
+.bl-note-end {
+  margin: clamp(2rem, 5vh, 3.25rem) 0 0 auto;
+  max-width: 30rem;
+  padding: clamp(1.1rem, 1.8vw, 1.5rem);
 }
 
-.bl-note-margin {
-  margin-top: clamp(0.5rem, 1.5vh, 1rem);
-  padding: clamp(1rem, 1.6vw, 1.35rem);
-}
-
-.bl-note-margin .bl-note-line { font-size: clamp(1.05rem, 1.5vw, 1.35rem); }
-.bl-note-margin .bl-note-foot { font-size: 0.74rem; }
+.bl-note-end .bl-note-line { font-size: clamp(1.1rem, 1.6vw, 1.45rem); }
+.bl-note-end .bl-note-foot { font-size: 0.78rem; }
 
 @media (prefers-reduced-motion: reduce) {
-  .bl-index-plate figure { transition: none; transform: none; }
-  .bl-index-row::after { transition: none; }
+  .bl-index-row::after,
+  .bl-index-stack,
+  .bl-index-follow,
+  .bl-index-follow figure { transition: none; }
   .bl-index-name button svg { opacity: 1; transform: none; }
+  .bl-index-stack { opacity: 1; transform: none; }
 }
 
 /* ---- one column ---------------------------------------------------------
-   There is no margin on a narrow screen, so there is nothing to put the
-   picture in and nowhere to keep it while you read past it. It goes, and
-   the sentence it was standing next to comes into the row instead. The
-   section is lighter on a phone than on a desktop, which is the right way
-   round for a list.                                                      */
+   The figure, the parts list and the links were ranged right against a
+   second column. There is no second column here, so they fall in under
+   the name in the order they are read.                                  */
 
-@media (max-width: 1024px) {
-  .bl-index-body { grid-template-columns: minmax(0, 1fr); }
-  .bl-index-margin { display: none; }
-
+@media (max-width: 900px) {
   .bl-index-row {
     grid-template-columns: 2.6rem minmax(0, 1fr);
     grid-template-areas:
@@ -6224,7 +6269,6 @@ html.bl-locked body { overflow: hidden; }
       "num filed"
       "num links";
     row-gap: 0.45rem;
-    padding: clamp(1.1rem, 2.4vh, 1.6rem) 0;
   }
 
   .bl-index-filed,
@@ -6234,16 +6278,15 @@ html.bl-locked body { overflow: hidden; }
     max-width: none;
   }
 
-  .bl-index-line {
-    grid-area: line;
-    display: block;
-    margin: 0.15rem 0 0;
-    max-width: 46ch;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: var(--bl-ink-soft);
-  }
+  /* the parts list and the picture both belong to a pointer. One may still
+     be there on a narrow window on a desktop, but by then the list is a
+     single column and a picture the width of a third of it, floating over
+     the thing being read, is in the way rather than alongside it. */
+  .bl-index-stack,
+  .bl-index-follow { display: none; }
 
   /* nothing hovers on a touch screen, so the arrow is simply always there */
   .bl-index-name button svg { opacity: 1; transform: none; }
+
+  .bl-note-end { max-width: none; margin-left: 0; }
 }
