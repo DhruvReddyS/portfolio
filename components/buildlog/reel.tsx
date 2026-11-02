@@ -173,6 +173,22 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
 
                 <p className="bl-spread-body">{story?.brief ?? entry.headline}</p>
 
+                {/* one number off the entry, so a column carries a fact and
+                    not only a description. Worded figures are skipped: they
+                    read as a second title next to the company name. */}
+                {(() => {
+                  const figure = entry.metrics.find((metric) =>
+                    /\d/.test(metric.value),
+                  );
+                  if (!figure) return null;
+                  return (
+                    <p className="bl-spread-figure">
+                      <strong>{figure.value}</strong>
+                      <span>{figure.label}</span>
+                    </p>
+                  );
+                })()}
+
                 <figure className="bl-spread-shot">
                   <Plate
                     dir="log"
