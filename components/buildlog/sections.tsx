@@ -19,6 +19,7 @@ import { Counter, Magnetic } from "./smooth";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
+import { Reel } from "./reel";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import {
   MarkArrow,
@@ -663,6 +664,9 @@ export function LogSection() {
         title="Where it happened"
         lead="Five rooms, five different problems. Open any stop for the whole account."
       />
+
+      {/* sideways on a wide screen, stacked on a narrow one */}
+      <Reel onOpen={setOpen} />
 
       <div className="bl-line" ref={track}>
         <span className="bl-line-rail" aria-hidden="true">
