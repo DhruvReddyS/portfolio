@@ -8653,3 +8653,126 @@ body,
   .bl-line-cap > * { animation: none; }
   .bl-print-sheet { transition: none; }
 }
+
+/* ==========================================================================
+   THE LAST PAGE
+   The name pressed into it, with the site's own marks drifting down.
+   ========================================================================== */
+
+.bl-stamp {
+  position: relative;
+  isolation: isolate;
+  margin: 0 0 clamp(2rem, 5vh, 3.5rem);
+  padding-bottom: clamp(0.5rem, 1.5vh, 1rem);
+}
+
+.bl-stamp-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bl-stamp-svg text { fill: var(--bl-ink); }
+
+.bl-stamp-ground {
+  fill: none;
+  stroke: color-mix(in srgb, var(--bl-ink) 40%, transparent);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.bl-stamp-dust {
+  fill: none;
+  stroke: var(--bl-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.bl-stamp-letter {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* the sky the marks fall through, over the type but under the pointer */
+.bl-stamp-sky {
+  position: absolute;
+  inset: -6% -1% 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bl-stamp-drift {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--bl-accent) 76%, var(--bl-ink));
+  will-change: transform;
+  touch-action: manipulation;
+  filter: drop-shadow(1px 2px 0 color-mix(in srgb, var(--bl-ink) 22%, transparent));
+}
+
+.bl-stamp-drift svg { width: 100%; height: 100%; display: block; }
+
+/* ---- the storyboard: nothing until it is scrolled to ---- */
+
+@media (scripting: enabled) {
+  .bl-stamp[data-play="0"] .bl-stamp-letter,
+  .bl-stamp[data-play="0"] .bl-stamp-drift { opacity: 0; }
+
+  .bl-stamp[data-play="0"] .bl-stamp-ground {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .bl-stamp[data-play="1"] .bl-stamp-letter {
+    animation: bl-stamp-down 0.62s cubic-bezier(0.2, 0.8, 0.25, 1.15) var(--d) both;
+  }
+
+  .bl-stamp[data-play="1"] .bl-stamp-dust {
+    animation: bl-stamp-dust 0.5s ease-out calc(var(--d) + 0.22s) both;
+  }
+
+  .bl-stamp[data-play="1"] .bl-stamp-ground {
+    stroke-dasharray: 1;
+    animation: bl-stamp-draw 1.1s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both;
+  }
+
+  .bl-stamp[data-play="1"] .bl-stamp-drift {
+    animation: bl-stamp-fade 0.6s ease-out var(--d) both;
+  }
+}
+
+@keyframes bl-stamp-down {
+  0% { opacity: 0; transform: translateY(-32%) scale(1.26) rotate(var(--r)); }
+  55% { opacity: 1; transform: translateY(2%) scale(0.95, 1.05) rotate(0deg); }
+  75% { transform: translateY(0) scale(1.04, 0.95); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes bl-stamp-dust {
+  0% { opacity: 0; stroke-dasharray: 0 40; }
+  30% { opacity: 0.85; }
+  100% { opacity: 0; stroke-dasharray: 14 40; stroke-dashoffset: -16; }
+}
+
+@keyframes bl-stamp-draw { to { stroke-dashoffset: 0; } }
+@keyframes bl-stamp-fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-stamp .bl-stamp-letter,
+  .bl-stamp .bl-stamp-drift { opacity: 1 !important; animation: none !important; }
+  .bl-stamp .bl-stamp-ground { stroke-dashoffset: 0 !important; animation: none !important; }
+  .bl-stamp .bl-stamp-dust { opacity: 0 !important; animation: none !important; }
+}
+
+/* the colophon now sits under a name, so it needs a rule rather than a gap */
+.bl-colo { border-top: 1px solid var(--bl-rule); padding-top: clamp(1.75rem, 4vh, 2.75rem); }

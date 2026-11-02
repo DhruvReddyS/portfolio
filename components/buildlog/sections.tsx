@@ -22,6 +22,7 @@ import { Reel } from "./reel";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import { CrowdCanvas } from "@/components/ui/skiper39";
 import { PolaroidLine } from "@/components/ui/polaroid-line";
+import { StampedWordmark } from "@/components/ui/stamped-wordmark";
 import {
   MarkArrow,
   MarkWindow,
@@ -729,6 +730,20 @@ export function ContactSection() {
 export function BuildLogFooter({ time }: { time: string }) {
   return (
     <footer className="bl-footer" id="footer">
+      {/* the name, pressed into the last page */}
+      <StampedWordmark
+        word="Dhruv Reddy"
+        count={11}
+        marks={[
+          <MarkRosette key="r" size={20} />,
+          <MarkPaper key="p" size={20} />,
+          <MarkWindow key="w" size={20} />,
+          <MarkGithub key="g" size={20} />,
+          <MarkArrow key="a" size={20} />,
+          <MarkMail key="m" size={20} />,
+        ]}
+      />
+
       <div className="bl-colo">
         <div className="bl-colo-say">
           <p className="bl-colo-kicker">Say hello</p>
