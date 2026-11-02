@@ -5169,329 +5169,6 @@ html.bl-locked body { overflow: hidden; }
   .bl-stop[data-live="true"] .bl-stop-badge { transform: none; }
 }
 
-/* ---- the ascent: five rooms as a flight of slabs -------------------------
-   CSS 3D, not WebGL. One rotated stage with preserve-3d, and every slab is
-   four faces of a box standing in it. The angle is a gentle three-quarter
-   rather than a true isometric: at a real isometric the text on a face
-   shears far enough to stop being readable, and the text is the point.
-
-   Wide screens only. The stacked rail below it is a better shape for a
-   phone than any amount of perspective, so one or the other shows.      */
-
-.bl-scene { display: none; }
-
-@media (min-width: 1040px) {
-  .bl-scene {
-    display: block;
-    position: relative;
-    height: 36rem;
-    margin-top: clamp(2rem, 5vh, 3rem);
-    perspective: 1700px;
-    perspective-origin: 52% 42%;
-  }
-
-  /* the rail is the narrow-screen view; the flight replaces it here */
-  .bl-line { display: none; }
-
-  .bl-stage {
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-    transform: rotateX(13deg) rotateY(-22deg);
-  }
-
-  /* the dark ground everything stands on */
-  /* The plane lies flat going away from the viewer, pivoted on the line the
-     slabs stand on. Pivoting on its top edge instead sent it up and back,
-     where it painted a wedge straight over the section heading. */
-  .bl-floor {
-    position: absolute;
-    left: -14%;
-    right: -14%;
-    bottom: 5.5rem;
-    height: 26rem;
-    transform: rotateX(90deg);
-    transform-origin: bottom;
-    background:
-      radial-gradient(
-        60% 55% at 50% 0%,
-        rgba(243, 241, 234, 0.05),
-        transparent 72%
-      ),
-      linear-gradient(180deg, #0f0e0d, #080807 70%);
-  }
-
-  /* ---- one slot on the floor ---- */
-
-  .bl-slot {
-    position: absolute;
-    bottom: 5.5rem;
-    left: calc(6% + var(--i) * 19.5%);
-    transform: translateZ(calc(var(--i) * -34px));
-    transform-style: preserve-3d;
-  }
-
-  /* the steps up to this slab from the one before */
-  .bl-flight {
-    position: absolute;
-    bottom: 0;
-    right: calc(100% + 0.35rem);
-    width: 4.6rem;
-    height: calc(2.6rem + var(--i) * 1.1rem);
-    transform-origin: bottom right;
-    transform: rotateY(0deg);
-    background:
-      repeating-linear-gradient(
-        180deg,
-        rgba(168, 196, 220, 0.85) 0,
-        rgba(168, 196, 220, 0.85) 4px,
-        rgba(120, 150, 176, 0.9) 4px,
-        rgba(120, 150, 176, 0.9) 5px,
-        transparent 5px,
-        transparent 9px
-      );
-    opacity: 0.7;
-  }
-
-  /* ---- the slab itself ---- */
-
-  .bl-slab {
-    position: relative;
-    display: block;
-    width: 13.5rem;
-    height: calc(11rem + var(--i) * 2.9rem);
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: linear-gradient(170deg, #171614, #0d0c0b 72%);
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-    transform-style: preserve-3d;
-    box-shadow: inset 0 1px 0 rgba(243, 241, 234, 0.07);
-    transition: transform 0.5s var(--bl-ease);
-  }
-
-  .bl-slab[data-on="true"] { transform: translateY(-10px); }
-
-  /* its right-hand side, which gives it thickness */
-  .bl-slab-side {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 2.6rem;
-    height: 100%;
-    transform-origin: right;
-    transform: rotateY(-90deg);
-    background: linear-gradient(170deg, #0c0b0a, #070706);
-  }
-
-  /* and its top */
-  .bl-slab-cap {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2.6rem;
-    transform-origin: top;
-    transform: rotateX(90deg);
-    background: linear-gradient(100deg, #201e1b, #141311);
-  }
-
-  /* the lit strip along the base, in the room's own colour */
-  .bl-slab-strip {
-    position: absolute;
-    left: 0.9rem;
-    right: 0.9rem;
-    bottom: 0.9rem;
-    height: 3px;
-    border-radius: 3px;
-    background: var(--tint);
-    box-shadow: 0 0 1.6rem 0.3rem color-mix(in srgb, var(--tint) 55%, transparent);
-    opacity: 0.85;
-    transition: opacity 0.4s var(--bl-ease);
-  }
-
-  .bl-slab[data-on="true"] .bl-slab-strip { opacity: 1; }
-
-  /* ---- the mark, hanging above the slab ---- */
-
-  .bl-slab-mark {
-    position: absolute;
-    left: 50%;
-    bottom: calc(100% + 3.1rem);
-    width: 4.4rem;
-    height: 4.4rem;
-    translate: -50% 0;
-    border-radius: 14px;
-    background: #f3f1ea;
-    overflow: hidden;
-    box-shadow:
-      0 0 2.2rem 0.4rem color-mix(in srgb, var(--tint) 45%, transparent),
-      0 0.7rem 1.2rem rgba(0, 0, 0, 0.6);
-    animation: bl-hover-mark calc(4.5s + var(--i) * 0.4s) var(--bl-ease) infinite;
-  }
-
-  .bl-slab-mark .bl-plate-bare img {
-    position: absolute;
-    inset: 0.45rem;
-    width: auto;
-    height: auto;
-    max-width: calc(100% - 0.9rem);
-    max-height: calc(100% - 0.9rem);
-    margin: auto;
-    object-fit: contain;
-  }
-
-  .bl-slab-mark .bl-plate-bare > span {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-    font-family: var(--bl-mono);
-    font-size: 0.9rem;
-    letter-spacing: 0.06em;
-    color: #2a2721;
-    -webkit-text-stroke: 0;
-    -webkit-text-fill-color: currentColor;
-    padding: 0;
-  }
-
-  @keyframes bl-hover-mark {
-    0%, 100% { translate: -50% 0; }
-    50% { translate: -50% -9px; }
-  }
-
-  /* the light it pools on the slab's top */
-  .bl-slab-pool {
-    position: absolute;
-    left: 50%;
-    bottom: calc(100% + 0.2rem);
-    width: 7rem;
-    height: 2rem;
-    translate: -50% 0;
-    border-radius: 50%;
-    background: radial-gradient(
-      closest-side,
-      color-mix(in srgb, var(--tint) 80%, transparent),
-      transparent 72%
-    );
-    filter: blur(11px);
-    opacity: 0.55;
-    transition: opacity 0.4s var(--bl-ease);
-  }
-
-  .bl-slab[data-on="true"] .bl-slab-pool { opacity: 0.9; }
-
-  /* ---- what is printed on the face ---- */
-
-  .bl-slab-face {
-    position: absolute;
-    inset: auto 1rem 1.7rem;
-    display: grid;
-    gap: 0.22rem;
-  }
-
-  .bl-slab-face strong {
-    font-family: var(--bl-display);
-    font-weight: 400;
-    font-size: 1.32rem;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    color: var(--bl-ink);
-  }
-
-  .bl-slab-face em {
-    font-family: var(--bl-mono);
-    font-style: normal;
-    font-size: 0.5rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--bl-ink-soft);
-    line-height: 1.5;
-  }
-
-  .bl-slab-face small {
-    font-family: var(--bl-mono);
-    font-size: 0.46rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--bl-ink-dim);
-  }
-
-  .bl-slab-now {
-    justify-self: start;
-    margin-top: 0.2rem;
-    padding: 0.14rem 0.4rem;
-    border: 1px solid color-mix(in srgb, var(--bl-accent) 55%, transparent);
-    border-radius: 999px;
-    font-family: var(--bl-mono);
-    font-style: normal;
-    font-size: 0.44rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--bl-accent);
-  }
-
-  .bl-slab-open {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    margin-top: 0.35rem;
-    font-family: var(--bl-mono);
-    font-size: 0.44rem;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--bl-ink-dim);
-    opacity: 0;
-    transition: opacity 0.35s var(--bl-ease), color 0.35s var(--bl-ease);
-  }
-
-  .bl-slab[data-on="true"] .bl-slab-open { opacity: 1; color: var(--tint); }
-
-  .bl-slab:focus-visible { outline: 2px solid var(--bl-accent); outline-offset: 4px; }
-
-  /* ---- the readout beside the flight ---- */
-
-  .bl-scene-read {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    display: grid;
-    gap: 0.3rem;
-    max-width: 26rem;
-    margin: 0;
-  }
-
-  .bl-scene-read strong {
-    font-family: var(--bl-display);
-    font-weight: 400;
-    font-size: 1.5rem;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: var(--bl-ink);
-  }
-
-  .bl-scene-read em {
-    font-style: normal;
-    font-size: 0.86rem;
-    line-height: 1.55;
-    color: var(--bl-ink-soft);
-  }
-}
-
-@media (min-width: 1040px) and (prefers-reduced-motion: reduce) {
-  .bl-slab-mark { animation: none; }
-  .bl-slab[data-on="true"] { transform: none; }
-}
-
-/* the heading sits in front of the scene, whatever the floor plane does */
-@media (min-width: 1040px) {
-  .bl-log .bl-head { position: relative; z-index: 3; }
-  .bl-scene { z-index: 0; isolation: isolate; }
-}
-
 /* ---- the wins, with depth ------------------------------------------------
    Square to the reader, which is what a photograph wants. The depth is in
    the layers rather than the angle: the art sits back behind the glass,
@@ -5588,3 +5265,197 @@ html.bl-locked body { overflow: hidden; }
 /* these photographs are dark rooms to begin with; the scrim does the work
    of keeping the copy readable, so the art need not be held back as far */
 .bl-bento-art .bl-plate-bare img { filter: saturate(0.78) brightness(0.88); }
+
+/* ---- the log, as a timeline that alternates -----------------------------
+   The line runs down the middle and fills as the act is read. Each room
+   takes a side of it: the mark sits on the line, an arm reaches out to the
+   card, and the card arrives from its own side. Below the breakpoint the
+   line moves to the left margin and every card sits to the right of it,
+   because alternating needs width that a phone does not have.           */
+
+@media (min-width: 900px) {
+  .bl-line { gap: clamp(2rem, 5vh, 3.5rem); }
+
+  /* the line, down the centre */
+  .bl-line-rail {
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .bl-stop {
+    grid-template-columns: minmax(0, 1fr) 4.6rem minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1rem, 2.4vw, 2rem);
+  }
+
+  .bl-stop-axis {
+    grid-column: 2;
+    grid-row: 1;
+    position: static;
+    justify-self: center;
+  }
+
+  /* the card takes the side its index gives it */
+  .bl-stop[data-side="left"] .bl-stop-card { grid-column: 1; grid-row: 1; }
+  .bl-stop[data-side="right"] .bl-stop-card { grid-column: 3; grid-row: 1; }
+
+  .bl-stop[data-side="left"] .bl-stop-card { text-align: right; }
+  .bl-stop[data-side="left"] .bl-stop-head { justify-content: flex-end; }
+  .bl-stop[data-side="left"] .bl-stop-brief { margin-left: auto; }
+  .bl-stop[data-side="left"] .bl-job-chips { justify-content: flex-end; }
+  .bl-stop[data-side="left"] .bl-job-foot { flex-direction: row-reverse; }
+  .bl-stop[data-side="left"] .bl-job-links { margin-left: 0; margin-right: auto; }
+
+  /* the arm reaching from the line to the card */
+  .bl-stop-arm {
+    grid-row: 1;
+    align-self: center;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--tint) 70%, transparent)
+    );
+    transform-origin: right;
+  }
+
+  .bl-stop[data-side="left"] .bl-stop-arm {
+    grid-column: 1;
+    justify-self: end;
+    width: clamp(1rem, 2.4vw, 2rem);
+    margin-right: calc(clamp(1rem, 2.4vw, 2rem) * -1);
+    transform-origin: right;
+  }
+
+  .bl-stop[data-side="right"] .bl-stop-arm {
+    grid-column: 3;
+    justify-self: start;
+    width: clamp(1rem, 2.4vw, 2rem);
+    margin-left: calc(clamp(1rem, 2.4vw, 2rem) * -1);
+    transform-origin: left;
+    background: linear-gradient(
+      270deg,
+      transparent,
+      color-mix(in srgb, var(--tint) 70%, transparent)
+    );
+  }
+
+  /* the dates sit opposite the card, across the line */
+  .bl-stop-when {
+    grid-row: 1;
+    align-self: center;
+    justify-items: start;
+    text-align: left;
+    padding: 0;
+    background: none;
+  }
+
+  .bl-stop[data-side="left"] .bl-stop-when {
+    grid-column: 3;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .bl-stop[data-side="right"] .bl-stop-when {
+    grid-column: 1;
+    justify-items: end;
+    text-align: right;
+  }
+
+  .bl-stop-when em { display: block; }
+}
+
+/* the mark, centred on the line and lit by its own colour */
+@media (min-width: 900px) {
+  .bl-stop-glow {
+    top: 50%;
+    translate: -50% -50%;
+    width: 7rem;
+    height: 7rem;
+    filter: blur(16px);
+  }
+}
+
+/* ---- a stop assembling itself -------------------------------------------
+   In the order it would be drawn: the node lands on the line, the arm
+   reaches out, the card slides in from its own side, and the dates arrive
+   last. Driven by data-seen, which an observer sets, so nothing depends on
+   a scroll position being measured correctly while images are still
+   changing the height of the page. Hidden only where there is script to
+   reveal it again.                                                       */
+
+@media (scripting: enabled) {
+  .bl-stop:not([data-seen="true"]) .bl-stop-badge {
+    opacity: 0;
+    scale: 0.4;
+  }
+
+  .bl-stop:not([data-seen="true"]) .bl-stop-arm { scale: 0 1; }
+
+  .bl-stop:not([data-seen="true"]) .bl-stop-card { opacity: 0; }
+
+  .bl-stop:not([data-seen="true"]) .bl-stop-when {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  .bl-stop-badge {
+    transition:
+      opacity 0.5s var(--bl-ease),
+      scale 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+      border-color 0.45s var(--bl-ease),
+      box-shadow 0.45s var(--bl-ease);
+  }
+
+  .bl-stop-arm {
+    transition: scale 0.45s var(--bl-ease) 0.18s;
+    transform-origin: inherit;
+  }
+
+  .bl-stop-card {
+    transition:
+      opacity 0.7s var(--bl-ease) 0.26s,
+      translate 0.7s var(--bl-ease) 0.26s,
+      border-color 0.35s var(--bl-ease),
+      transform 0.45s var(--bl-ease);
+  }
+
+  .bl-stop-when {
+    transition:
+      opacity 0.5s var(--bl-ease) 0.38s,
+      translate 0.5s var(--bl-ease) 0.38s;
+  }
+}
+
+/* the card comes in from the side it lives on */
+@media (min-width: 900px) and (scripting: enabled) {
+  .bl-stop[data-side="left"]:not([data-seen="true"]) .bl-stop-card {
+    translate: -54px 0;
+  }
+  .bl-stop[data-side="right"]:not([data-seen="true"]) .bl-stop-card {
+    translate: 54px 0;
+  }
+}
+
+@media (max-width: 899px) and (scripting: enabled) {
+  .bl-stop:not([data-seen="true"]) .bl-stop-card { translate: 28px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-stop:not([data-seen="true"]) .bl-stop-badge,
+  .bl-stop:not([data-seen="true"]) .bl-stop-arm,
+  .bl-stop:not([data-seen="true"]) .bl-stop-card,
+  .bl-stop:not([data-seen="true"]) .bl-stop-when {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+/* The arm only exists to bridge a centre line to a card beside it. Below
+   the breakpoint the line is in the margin and the card sits right against
+   it, so there is nothing to bridge; left in the flow it took a grid cell
+   of its own and squeezed every card down to the width of the rail. */
+@media (max-width: 899px) {
+  .bl-stop-arm { display: none; }
+}

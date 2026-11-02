@@ -19,7 +19,6 @@ import { Counter, Magnetic } from "./smooth";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
-import { Ascent } from "./ascent";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import {
   MarkArrow,
@@ -346,8 +345,11 @@ function LogStop({
       className="bl-stop"
       data-status={entry.status}
       data-index={index}
+      data-side={index % 2 === 0 ? "left" : "right"}
       style={{ "--tint": entry.tint } as React.CSSProperties}
     >
+      <span className="bl-stop-arm" aria-hidden="true" />
+
       <div className="bl-stop-axis">
         <span className="bl-stop-glow" aria-hidden="true" />
         <span className="bl-stop-badge">
@@ -606,15 +608,26 @@ export function LogSection() {
 
         if (still.matches) return;
 
-        gsap.from(stop.querySelector(".bl-stop-card"), {
-          y: 30,
-          opacity: 0,
-          duration: 0.7,
-          ease: "power3.out",
-          scrollTrigger: { trigger: stop, start: "top 82%", once: true },
-        });
+        // The entrance is CSS keyed on data-seen, set by an observer below,
+        // not a GSAP .from(). A .from() applies its start state immediately
+        // and then waits for a trigger that has to be measured; when the
+        // logos resized the cards and the refresh landed after the stop was
+        // already scrolled past, the trigger never ran and five badges sat
+        // at opacity 0 for good. An observer cannot lose that race.
       });
     }, node);
+
+    const seen = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.setAttribute("data-seen", "true");
+          seen.unobserve(entry.target);
+        }
+      },
+      { rootMargin: "0px 0px -14% 0px", threshold: 0.12 },
+    );
+    for (const stop of node.querySelectorAll(".bl-stop")) seen.observe(stop);
 
     // The logos change every card's height as they decode, and ScrollTrigger
     // measured the act before that happened: every stop ended up with a range
@@ -637,7 +650,10 @@ export function LogSection() {
       }
     }
 
-    return () => context.revert();
+    return () => {
+      seen.disconnect();
+      context.revert();
+    };
   }, []);
 
   return (
@@ -647,9 +663,6 @@ export function LogSection() {
         title="Where it happened"
         lead="Five rooms, five different problems. Open any stop for the whole account."
       />
-
-      {/* the flight, on a wide screen; the rail below it on a narrow one */}
-      <Ascent onOpen={setOpen} />
 
       <div className="bl-line" ref={track}>
         <span className="bl-line-rail" aria-hidden="true">
