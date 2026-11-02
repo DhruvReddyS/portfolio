@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
 import { MarkGithub, MarkPaper, MarkRosette, MarkWindow } from "./marks";
 import { Plate } from "./plate";
 import { SectionHeader } from "./sections";
-import { MarkedLine } from "./marked";
+import { Marked, MarkedLine } from "./marked";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -33,6 +33,37 @@ if (typeof window !== "undefined") {
 /** Slot sizes, in the order the cards are written. */
 const SLOTS = ["big", "wide", "small", "small", "wide", "wide"] as const;
 
+/** Slot sizes for the two side quests, which follow the note. */
+const QUEST_SLOTS = ["small", "small"] as const;
+
+/**
+ * The note pinned up among the cards.
+ *
+ * A wall of nothing but cards asks to be skimmed, and skimming is how a
+ * reader comes away thinking all eight were the same kind of thing. One
+ * tile that is not a card breaks the run and says what the cards are for.
+ * It is pinned paper, not a card: kraft rather than dark, dashed rather
+ * than ruled, and set in the display face the headings use.
+ */
+function WallNote() {
+  return (
+    <aside className="bl-note" data-size="wide">
+      <p className="bl-note-label">Margin note</p>
+
+      <MarkPaper className="bl-note-mark" size={26} />
+
+      <p className="bl-note-line">
+        A demo proves it <Marked kind="circle">runs</Marked>. A case file
+        proves it holds.
+      </p>
+
+      <p className="bl-note-foot">
+        Every card here opens one: the architecture, the numbers, what broke.
+      </p>
+    </aside>
+  );
+}
+
 export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
   const track = useRef<HTMLDivElement>(null);
 
@@ -46,7 +77,7 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const context = gsap.context(() => {
-      gsap.from(".bl-panel", {
+      gsap.from(".bl-film-track > *", {
         y: 42,
         opacity: 0,
         duration: 0.8,
@@ -71,9 +102,9 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
       <div className="bl-film-viewport">
           <div className="bl-film-track" ref={track}>
             {caseFiles.map((file, index) => (
+              <Fragment key={file.id}>
               <article
                 className="bl-panel"
-                key={file.id}
                 data-size={SLOTS[index] ?? "wide"}
               >
                 <div className="bl-panel-media">
@@ -139,29 +170,39 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                   </div>
                 </div>
               </article>
+
+              {/* the note sits mid-wall, where the run of cards would
+                  otherwise be at its most uniform */}
+              {index === 3 && <WallNote />}
+              </Fragment>
+            ))}
+
+            {/* the side quests used to be a list of names under the wall,
+                which read as a footnote to the work rather than part of it.
+                They are tiles now, at the size their story needs: a name, a
+                sentence, and where it was built. There is no case file
+                behind either, so neither tile offers one. */}
+            {sideQuests.map((quest, index) => (
+              <article
+                className="bl-panel"
+                key={quest.id}
+                data-size={QUEST_SLOTS[index] ?? "small"}
+                data-kind="quest"
+              >
+                <div className="bl-panel-media">
+                  <Plate bare dir="work" name={quest.id} monogram={quest.name} alt="" />
+                </div>
+
+                <div className="bl-panel-copy">
+                  <p className="bl-panel-domain">Side quest · {quest.context}</p>
+                  <h3 className="bl-panel-name">{quest.name}</h3>
+                  <p className="bl-panel-blurb">{quest.blurb}</p>
+                </div>
+              </article>
             ))}
           </div>
         </div>
 
-      </section>
-
-      <section className="bl-section bl-quests-section">
-        <div className="bl-quests">
-          <div className="bl-quests-head">
-            <p className="bl-head-label">Side quests</p>
-            <i aria-hidden="true" />
-            <span className="bl-mono">Built because it bugged me</span>
-          </div>
-          <ul className="bl-quest-list">
-            {sideQuests.map((quest) => (
-              <li className="bl-quest" key={quest.id}>
-                <strong>{quest.name}</strong>
-                <p>{quest.blurb}</p>
-                <em>{quest.context}</em>
-              </li>
-            ))}
-          </ul>
-        </div>
       </section>
     </>
   );

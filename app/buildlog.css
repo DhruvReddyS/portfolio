@@ -722,51 +722,6 @@ body {
   color: var(--bl-amber);
 }
 
-/* side quests, kept as a written index rather than cards */
-.bl-quests { margin-top: clamp(2.5rem, 6vh, 3.75rem); }
-
-.bl-quests-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 0.5rem; }
-.bl-quests-head i { flex: 1; height: 1px; background: var(--bl-rule); }
-
-.bl-quest-list { display: grid; margin: 0; padding: 0; list-style: none; }
-
-.bl-quest {
-  display: grid;
-  grid-template-columns: 13.5rem minmax(0, 1fr) auto;
-  gap: 0.4rem 1.5rem;
-  align-items: baseline;
-  padding: 0.95rem 0;
-  border-bottom: 1px solid var(--bl-rule-soft);
-}
-
-.bl-quest strong {
-  font-family: var(--bl-display);
-  font-size: 1.25rem;
-  font-weight: 400;
-}
-
-.bl-quest p {
-  margin: 0;
-  font-size: 0.88rem;
-  line-height: 1.55;
-  color: var(--bl-ink-soft);
-  max-width: 62ch;
-}
-
-.bl-quest em {
-  font-family: var(--bl-mono);
-  font-style: normal;
-  font-size: 0.54rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  white-space: nowrap;
-}
-
-@media (max-width: 760px) {
-  .bl-quest { grid-template-columns: 1fr; gap: 0.3rem; }
-  .bl-quest em { white-space: normal; }
-}
 
 /* ---------- case modal ------------------------------------------------------ */
 
@@ -1477,9 +1432,6 @@ html.bl-locked body { overflow: hidden; }
   transform: scaleX(0);
 }
 
-.bl-quests-section { padding-top: clamp(3rem, 8vh, 5rem); }
-.bl-quests-section .bl-quests { margin-top: 0; }
-
 /* touch screens get a native snapping strip instead of the pinned run */
 @media (max-width: 860px) {
   .bl-film-viewport {
@@ -1601,16 +1553,14 @@ html.bl-locked body { overflow: hidden; }
 
 /* ---------- lean into the scroll ------------------------------------------ */
 
-.bl-log-list,
-.bl-quest-list {
+.bl-log-list {
   transform: skewY(var(--bl-skew, 0deg));
   transform-origin: center;
   will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bl-log-list,
-  .bl-quest-list { transform: none; }
+  .bl-log-list { transform: none; }
 }
 
 /* ---------- log rows answer the pointer ----------------------------------- */
@@ -2410,8 +2360,6 @@ html.bl-locked body { overflow: hidden; }
 .bl-chip { transition: border-color 0.25s var(--bl-ease), color 0.25s var(--bl-ease); }
 .bl-chip:hover { border-color: var(--bl-accent); color: var(--bl-ink); }
 
-.bl-quest { transition: background 0.3s var(--bl-ease); }
-.bl-quest:hover { background: var(--bl-surface); }
 
 .bl-studio-clients li { transition: background 0.3s var(--bl-ease); }
 .bl-studio-clients li:hover { background: var(--bl-surface); }
@@ -6341,3 +6289,159 @@ html.bl-locked body { overflow: hidden; }
     font-size: clamp(2.2rem, 11vw, 3.6rem);
   }
 }
+
+/* ---- the log, out of its box --------------------------------------------
+   The spread sat inside a ruled frame with a bar of chrome across the top:
+   a brand mark, a meter, a counter, three flags. None of it was the work.
+   It read as a device the rooms had been put inside, and the device was
+   the loudest thing in the act. The rooms sit on the page now, with the
+   strip underneath them as the only furniture, because that one is a
+   control and earns its keep.                                           */
+
+.bl-spread {
+  grid-template-rows: minmax(0, 1fr) auto;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  height: min(62vh, 34rem);
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+}
+
+/* without the frame there is no inside edge to hold the columns off, so
+   they take the page's own gutter instead, which also lines the first room
+   up with the heading above it */
+.bl-spread-track { padding-inline: var(--bl-gutter); }
+
+.bl-spread-viewport {
+  overflow: hidden;
+  /* the columns run to the edge of the act and fade out there rather than
+     stopping against a border that is no longer drawn */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 clamp(0.6rem, 1.6vw, 1.2rem),
+    #000 calc(100% - clamp(0.6rem, 1.6vw, 1.2rem)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 clamp(0.6rem, 1.6vw, 1.2rem),
+    #000 calc(100% - clamp(0.6rem, 1.6vw, 1.2rem)),
+    transparent 100%
+  );
+}
+
+/* the strip was reading as the bottom edge of the box; on the page it needs
+   a rule of its own above it to sit under something */
+.bl-spread-strip {
+  border-top: 1px solid var(--bl-rule-soft);
+  padding-top: 0.6rem;
+  margin-top: clamp(0.5rem, 1.5vh, 1rem);
+}
+
+/* ---- the note pinned up among the cards ---------------------------------
+   A wall of nothing but cards asks to be skimmed, and skimming is how a
+   reader comes away thinking all eight were the same kind of thing. One
+   tile that is not a card breaks the run and says what the cards are for.
+
+   So it is not built like one. Where a card is a dark slide with a ruled
+   edge and a photograph behind it, this is kraft paper with a dashed edge
+   and nothing behind it at all.                                          */
+
+.bl-note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  padding: clamp(1.2rem, 2.1vw, 2rem);
+  border-radius: 18px;
+  border: 1px dashed color-mix(in srgb, var(--bl-amber) 48%, transparent);
+  background: color-mix(in srgb, var(--bl-amber) 9%, var(--bl-surface));
+  overflow: hidden;
+}
+
+.bl-note[data-size="wide"] { grid-column: span 2; }
+
+.bl-note-label {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--bl-amber) 85%, var(--bl-ink));
+}
+
+.bl-note-mark {
+  position: absolute;
+  top: clamp(1.1rem, 2vw, 1.9rem);
+  right: clamp(1.1rem, 2vw, 1.9rem);
+  color: color-mix(in srgb, var(--bl-amber) 70%, transparent);
+}
+
+/* the display face, so the note reads as something written rather than
+   another line of interface copy */
+.bl-note-line {
+  margin: 0;
+  max-width: 24ch;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-size: clamp(1.45rem, 2.7vw, 2.3rem);
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  color: var(--bl-ink);
+}
+
+.bl-note-foot {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--bl-ink-soft);
+}
+
+/* the circled word is drawn in the amber the note is written in */
+.bl-note .bl-marked-ink { color: var(--bl-amber); }
+
+/* ---- the side quests, as tiles ------------------------------------------
+   They were a list of names under the wall, which read as a footnote to
+   the work rather than as part of it. On the wall they are cards like the
+   rest, only smaller, and the sentence is the whole of what they say: the
+   kicker a card gives to its field, these give to where it was built.   */
+
+.bl-panel[data-kind="quest"] .bl-panel-domain { display: block; }
+
+.bl-panel-blurb {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--bl-ink-soft);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+
+/* no screenshot and no case file behind it, so the mark stands in for both
+   and is allowed to be the picture rather than hide behind one */
+.bl-panel[data-kind="quest"] .bl-panel-media::after {
+  background: linear-gradient(
+    to top,
+    rgba(8, 7, 6, 0.95) 0%,
+    rgba(8, 7, 6, 0.62) 46%,
+    rgba(8, 7, 6, 0.3) 100%
+  );
+}
+
+@media (max-width: 680px) {
+  .bl-note[data-size="wide"] { grid-column: auto; }
+  .bl-note { min-height: clamp(13rem, 34vh, 16rem); }
+  .bl-panel-blurb { -webkit-line-clamp: 6; line-clamp: 6; }
+}
+
+/* Wider rooms, now that the spread steps one at a time. At the old width
+   four of the five were in the frame at once, which left the stepping with
+   almost nothing to move and the columns with more air than words. */
+.bl-spread-col { width: clamp(15rem, 38cqw, 28rem); }

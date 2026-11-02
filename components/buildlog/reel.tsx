@@ -51,16 +51,38 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
       const distance = () =>
         Math.max(0, trackNode.scrollWidth - panelNode.clientWidth + 48);
 
+      /* Five stops, evenly spaced through the pinned stretch, one per room.
+         Not the columns' own left edges: on a wide screen three rooms are
+         already in the frame at once, so most columns can never be brought
+         to the left edge and snapping to them would collapse the last two
+         stops into one. Even stops always give five. */
+      const stops = Array.from(
+        { length: logEntries.length },
+        (_, index) => index / (logEntries.length - 1),
+      );
+
       const tween = gsap.to(trackNode, {
         x: () => -distance(),
         ease: "none",
         scrollTrigger: {
           trigger: act,
           start: "top top",
-          end: () => `+=${distance()}`,
+          /* The spread used to travel its whole width in that same width of
+             scrolling, which runs five rooms past you in one flick of the
+             wheel. Stretching the pinned stretch leaves the travel alone
+             and slows the reading down to something you can follow. */
+          end: () => `+=${distance() * 1.6}`,
           pin: act,
           scrub: 0.8,
           invalidateOnRefresh: true,
+          /* and once the wheel stops, it settles on a room rather than
+             halfway between two */
+          snap: {
+            snapTo: stops,
+            duration: { min: 0.18, max: 0.5 },
+            delay: 0.05,
+            ease: "power2.out",
+          },
           onUpdate: (self) => {
             setProgress(self.progress);
             setAt(
@@ -129,27 +151,6 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
 
   return (
     <div className="bl-spread" ref={panel}>
-      <header className="bl-spread-bar">
-        <span className="bl-spread-brand">TheLog</span>
-        <p>Five rooms, June 2025 to now. Scroll, or drag the strip below.</p>
-        <span className="bl-spread-meter" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-        </span>
-        <span className="bl-spread-count">
-          {String(at + 1).padStart(2, "0")} /{" "}
-          {String(logEntries.length).padStart(2, "0")}
-        </span>
-        <span className="bl-spread-flags" aria-hidden="true">
-          <i />
-          <i />
-          <i />
-        </span>
-      </header>
-
       <div className="bl-spread-viewport">
         <div className="bl-spread-track" ref={track}>
           {logEntries.map((entry, index) => {

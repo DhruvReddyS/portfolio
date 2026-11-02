@@ -670,14 +670,6 @@ export const sideQuests: SideQuest[] = [
     stack: ["Multimodal AI", "GeoHash", "Clustering", "Routing"],
     context: "Built for SIH · submission not completed",
   },
-  {
-    id: "vendor-pipeline",
-    name: "Vendor Verification Pipeline",
-    blurb:
-      "Local AI pipeline validating official websites across 26,777 vendor records, with specialist audit agents checking each other's work.",
-    stack: ["Qwen3", "GPT-OSS", "Automation", "Audit agents"],
-    context: "26,777 records processed",
-  },
 ];
 
 export type School = {

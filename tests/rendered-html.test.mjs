@@ -94,7 +94,7 @@ test("renders all five log entries with what each one was", async () => {
   }
 });
 
-test("renders all six case files and the side quests", async () => {
+test("renders the whole wall: six case files, the note and both side quests", async () => {
   const html = await (await render()).text();
 
   for (const project of [
@@ -108,10 +108,14 @@ test("renders all six case files and the side quests", async () => {
     assert.match(html, new RegExp(project), `renders ${project}`);
   }
 
-  assert.match(html, /Side quests/i);
+  // the side quests are tiles on the same wall now, not a list under it
+  assert.match(html, /Side quest/i);
   assert.match(html, /ReconAI/);
   assert.match(html, /SnapFix/);
-  assert.match(html, /26,777/);
+
+  // the note pinned up among them
+  assert.match(html, /Margin note/i);
+  assert.match(html, /A case file proves it holds/);
 
   // Three ways into a project: the live site, the source, the write-up.
   assert.match(html, /Case file/i);
