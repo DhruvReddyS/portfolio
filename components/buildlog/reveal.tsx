@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { whenCurtainOpens } from "@/lib/curtain";
 
 /** Fires once the element has been on screen, then stops observing. */
 export function useInView<T extends HTMLElement>(
@@ -8,20 +9,39 @@ export function useInView<T extends HTMLElement>(
 ) {
   const { threshold = 0.25, rootMargin = "0px 0px -10% 0px", once = true } = options;
   const ref = useRef<T>(null);
-  // Without an observer there is nothing to wait for, so start visible.
-  const [inView, setInView] = useState(
-    () => typeof IntersectionObserver === "undefined",
-  );
+  /*
+   * Out of view on both sides of the wire.
+   *
+   * This used to start as `typeof IntersectionObserver === "undefined"`,
+   * which is true on the server and false in the browser, so every reveal on
+   * the page was server-rendered with data-in="true" and hydrated expecting
+   * "false". React reports that mismatch and does not patch attributes, so
+   * the DOM kept the server's "true" and not one reveal on this site has ever
+   * actually run. They were all simply there.
+   *
+   * Hiding is behind `@media (scripting: enabled)` in the stylesheet, so a
+   * page with no JavaScript shows everything regardless of what this says;
+   * a browser with script but no observer is handled below.
+   */
+  const [inView, setInView] = useState(false);
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    if (typeof IntersectionObserver === "undefined") return;
+    // script, but no observer to ask: show it as soon as the cover is gone
+    if (typeof IntersectionObserver === "undefined") {
+      return whenCurtainOpens(() => setInView(true));
+    }
+
+    // Everything on the first screen is already intersecting while the cover
+    // is up, so without this their transitions are over before the sheet has
+    // gone and the hero is simply there when it lifts.
+    let release = () => {};
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true);
+          release = whenCurtainOpens(() => setInView(true));
           if (once) observer.disconnect();
         } else if (!once) {
           setInView(false);
@@ -31,7 +51,10 @@ export function useInView<T extends HTMLElement>(
     );
 
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      release();
+    };
   }, [threshold, rootMargin, once]);
 
   return { ref, inView };

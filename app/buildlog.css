@@ -7310,3 +7310,59 @@ html[data-over="paper"] .bl-grain-layer {
 @media (prefers-reduced-motion: reduce) {
   .bl-crowd { display: none; }
 }
+
+/* ---------- the curtain: how the cover hands over ---------------------- */
+
+/*
+ * While the sheet is up, everything that opens on arrival is wound up and
+ * waiting. Behind the same scripting query the reveals use, so a page with
+ * no JavaScript is never left holding its own hero at zero opacity.
+ *
+ * The wordmark's opening is a CSS animation with a delay built into it;
+ * pausing it holds the delay too, so it still counts its six tenths of a
+ * second from the moment the cover lets go rather than from page load.
+ */
+
+@media (scripting: enabled) {
+  .bl-root[data-held="true"] .bl-hero-wordmark span {
+    animation-play-state: paused;
+  }
+
+  .bl-root[data-held="true"] .bl-nav,
+  .bl-root[data-held="true"] .bl-bot,
+  .bl-root[data-held="true"] .bl-grain-layer {
+    opacity: 0;
+  }
+}
+
+/* the nav and the companion already transition their opacity; the grain
+   never had cause to until now */
+.bl-grain-layer {
+  transition: opacity 0.9s linear;
+}
+
+/*
+ * The sheet's own exit. Ease IN, not out: the pixels are flying apart under
+ * it and an ease-out would dim them in the first two frames and leave half a
+ * second of empty black. This holds while they go, then clears. The scale is
+ * barely there and is doing one job, which is to make the sheet read as
+ * receding rather than merely dimming.
+ */
+.bl-cover-sheet {
+  transform-origin: 50% 46%;
+  transition:
+    opacity 0.62s cubic-bezier(0.55, 0, 0.78, 0.2),
+    transform 0.72s var(--bl-ease);
+  will-change: opacity, transform;
+}
+
+.bl-cover-wrap[data-leaving="true"] .bl-cover-sheet {
+  opacity: 0;
+  transform: scale(1.035);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-cover-sheet,
+  .bl-grain-layer { transition: none; }
+}

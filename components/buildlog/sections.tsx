@@ -13,6 +13,7 @@ import {
   type LogEntry,
 } from "@/lib/portfolio-data";
 import { Reveal } from "./reveal";
+import { whenCurtainOpens } from "@/lib/curtain";
 import { Counter, Magnetic } from "./smooth";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
@@ -196,24 +197,35 @@ export function Hero({ time }: { time: string }) {
   // The opening: the ground settles, the portrait rises into it, and the
   // detail arrives after both. The wordmark has its own CSS animation, so
   // this works around it rather than fighting it for the same properties.
+  //
+  // Held until the cover starts leaving. It used to run on mount, which is
+  // three seconds before anyone could see it, so the sheet dissolved onto a
+  // hero that had already finished arriving.
   useEffect(() => {
     const node = stage.current;
     if (!node) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const context = gsap.context(() => {
-      gsap
-        .timeline({ defaults: { ease: "power3.out" } })
-        .from(".bl-field", { opacity: 0, scale: 1.08, duration: 1.3 }, 0)
-        .from(
-          ".bl-hero-figure",
-          { yPercent: 9, opacity: 0, duration: 1.25, clearProps: "opacity" },
-          0.35,
-        )
-        .from(".bl-hero-aura", { opacity: 0, scale: 0.75, duration: 1.4 }, 0.45);
-    }, node);
+    let context: gsap.Context | null = null;
 
-    return () => context.revert();
+    const release = whenCurtainOpens(() => {
+      context = gsap.context(() => {
+        gsap
+          .timeline({ defaults: { ease: "power3.out" } })
+          .from(".bl-field", { opacity: 0, scale: 1.08, duration: 1.3 }, 0)
+          .from(
+            ".bl-hero-figure",
+            { yPercent: 9, opacity: 0, duration: 1.25, clearProps: "opacity" },
+            0.35,
+          )
+          .from(".bl-hero-aura", { opacity: 0, scale: 0.75, duration: 1.4 }, 0.45);
+      }, node);
+    });
+
+    return () => {
+      release();
+      context?.revert();
+    };
   }, []);
 
   return (

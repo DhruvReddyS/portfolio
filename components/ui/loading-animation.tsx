@@ -83,6 +83,12 @@ export interface LoadingAnimationOptions {
   /** Base64-packed 66x53 1-bit frames of a full turn. Defaults to the built-in turn. */
   frames?: string[];
   onGetStarted?: () => void;
+  /**
+   * Loader mode: the exit has started and the pixels are on their way apart.
+   * Fires about two thirds of a second before `onComplete`, which is the room
+   * the page underneath needs to begin arriving while this is still leaving.
+   */
+  onLeave?: () => void;
   onComplete?: () => void;
 }
 
@@ -510,6 +516,10 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
         st.phase = "load"; st.loadStart = ts;
         loadLabel.textContent = o.readyLabel;
         barBlocks.forEach((i) => i.classList.add("on"));
+        // said now, not when the pixels have finished going: whatever is
+        // underneath should be arriving while this is still on its way out
+        opts.onLeave?.();
+        root.dispatchEvent(new CustomEvent("loadinganimation:leave", { bubbles: true }));
       }
       return;
     }
@@ -602,18 +612,18 @@ export interface LoadingAnimationProps extends LoadingAnimationOptions {
 }
 
 /** React wrapper. Renders a full-width block; give it a scrolling page to live in. */
-export function LoadingAnimation({ className, style, onComplete, onGetStarted, ready, ...rest }: LoadingAnimationProps) {
+export function LoadingAnimation({ className, style, onComplete, onGetStarted, onLeave, ready, ...rest }: LoadingAnimationProps) {
   const ref = React.useRef<HTMLDivElement>(null);
   const handle = React.useRef<ReturnType<typeof mountLoadingAnimation> | null>(null);
-  const cb = React.useRef({ onComplete, onGetStarted });
+  const cb = React.useRef({ onComplete, onGetStarted, onLeave });
   // after render, not during it: the mount effect reads this through a ref so
   // a new callback identity never tears the animation down and rebuilds it
-  React.useEffect(() => { cb.current = { onComplete, onGetStarted }; });
+  React.useEffect(() => { cb.current = { onComplete, onGetStarted, onLeave }; });
   const key = JSON.stringify([rest.name, rest.role, rest.cta, rest.loadingLabel, rest.readyLabel, rest.replayLabel, rest.scrollHeight, rest.size, rest.spread, rest.showReveal, rest.autoplay, rest.loader, rest.minDuration, rest.font, rest.footer, rest.title, rest.rows, rest.colors, rest.frames ? rest.frames.length : 0]);
   React.useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const h = mountLoadingAnimation(el, { ...rest, ready, onComplete: () => cb.current.onComplete?.(), onGetStarted: () => cb.current.onGetStarted?.() });
+    const h = mountLoadingAnimation(el, { ...rest, ready, onComplete: () => cb.current.onComplete?.(), onGetStarted: () => cb.current.onGetStarted?.(), onLeave: () => cb.current.onLeave?.() });
     handle.current = h;
     return () => { handle.current = null; h.destroy(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps

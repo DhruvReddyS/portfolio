@@ -9,6 +9,7 @@ import { StudioSection } from "@/components/buildlog/studio";
 import { WorkIndex } from "@/components/buildlog/work-index";
 import { SmoothScroll } from "@/components/buildlog/smooth";
 import { Cover } from "@/components/buildlog/cover";
+import { useCurtainHeld } from "@/lib/curtain";
 import {
   BuildLogFooter,
   CaseModal,
@@ -97,6 +98,8 @@ const LIT = new Set(["education", "stack"]);
 
 function BuildLog() {
   const active = useActiveSection();
+  // Everything that opens on arrival hangs off this one attribute.
+  const held = useCurtainHeld();
   const time = useHyderabadTime();
   const [openCase, setOpenCase] = useState<CaseFile | null>(null);
 
@@ -110,7 +113,7 @@ function BuildLog() {
   }, [active]);
 
   return (
-    <div className="bl-root">
+    <div className="bl-root" data-held={held ? "true" : undefined}>
       <a className="bl-skip" href="#log">
         Skip to the log
       </a>

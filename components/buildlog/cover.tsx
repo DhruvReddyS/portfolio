@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { LoadingAnimation } from "@/components/ui/loading-animation";
 import { portraitFrames } from "@/lib/portrait-frames";
 import { profile } from "@/lib/portfolio-data";
+import { openCurtain } from "@/lib/curtain";
 
 /**
  * The cover of the book, held over the page until the page is built.
@@ -104,8 +105,8 @@ export function Cover() {
   }, []);
 
   /*
-   * Take the sheet away. The animation calls this when its pixels have blown
-   * apart, and the timer below calls it if the animation never gets there:
+   * Take the sheet away. The animation calls this as its pixels start to go,
+   * and the timer below calls it if the animation never gets there:
    * the whole thing runs on requestAnimationFrame, which a browser is free to
    * stop delivering (a background tab, a throttled frame loop, a device that
    * decided to sleep). A loader that cannot finish has locked the page behind
@@ -115,6 +116,11 @@ export function Cover() {
     if (done.current) return;
     done.current = true;
     release();
+    // The hero's opening has been wound up and waiting since the page loaded.
+    // It starts here, under a sheet that is still dissolving, so the two
+    // halves cross instead of queueing: the pixels blow apart, the ground
+    // settles through them, and the name resolves as the last of them goes.
+    openCurtain();
     setLeaving(true);
     window.setTimeout(() => setBoot(null), EXIT);
   }, [release]);
@@ -154,6 +160,7 @@ export function Cover() {
           accent: "#e05a2b",
           blue: "#7f9d8e",
         }}
+        onLeave={finish}
         onComplete={finish}
       />
     </div>
