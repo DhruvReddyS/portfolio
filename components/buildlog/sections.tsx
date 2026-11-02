@@ -19,6 +19,7 @@ import { Counter, Magnetic } from "./smooth";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
+import { Ascent } from "./ascent";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import {
   MarkArrow,
@@ -646,6 +647,9 @@ export function LogSection() {
         title="Where it happened"
         lead="Five rooms, five different problems. Open any stop for the whole account."
       />
+
+      {/* the flight, on a wide screen; the rail below it on a narrow one */}
+      <Ascent onOpen={setOpen} />
 
       <div className="bl-line" ref={track}>
         <span className="bl-line-rail" aria-hidden="true">
