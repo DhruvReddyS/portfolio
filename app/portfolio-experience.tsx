@@ -93,9 +93,6 @@ function useHyderabadTime() {
   return time;
 }
 
-/** The acts that keep the lights off: the opening and the close. */
-const UNLIT = new Set(["top", "log", "work", "wins", "studio", "contact"]);
-
 function BuildLog() {
   const active = useActiveSection();
   // Everything that opens on arrival hangs off this one attribute.
@@ -105,12 +102,6 @@ function BuildLog() {
 
   // The companion's mood map keys off "hero" rather than the "top" anchor id.
   const mood = active === "top" ? "hero" : active;
-
-  // The nav is fixed over whichever act is being read, so it has to know
-  // which side of the page that act is on.
-  useEffect(() => {
-    document.documentElement.dataset.over = UNLIT.has(active) ? "dark" : "paper";
-  }, [active]);
 
   return (
     <div className="bl-root" data-held={held ? "true" : undefined}>

@@ -6218,99 +6218,6 @@ html.bl-locked body { overflow: hidden; }
   --bl-stamp-soft: rgba(127, 157, 142, 0.16);
 }
 
-/* ---------- the lamp -------------------------------------------------- */
-
-/*
- * Everything in this project is drawn from custom properties, so a sheet of
- * paper is a block of token overrides and nothing else: no component below
- * knows which side of the page it is on.
- */
-
-[data-light="paper"],
-html[data-over="paper"] .bl-nav {
-  --bl-bg: #e8e1d2;
-  --bl-bg-deep: #dcd3c0;
-  --bl-surface: #efe9dc;
-  --bl-surface-2: #ddd4c2;
-  --bl-ink: #1b1815;
-  --bl-ink-soft: #564f45;
-  --bl-ink-dim: #8a8071;
-  --bl-rule: rgba(27, 24, 21, 0.2);
-  --bl-rule-soft: rgba(27, 24, 21, 0.085);
-  --bl-accent: #bd3317;
-  --bl-accent-ink: #f6f2e8;
-  --bl-accent-soft: rgba(189, 51, 23, 0.12);
-  --bl-amber: #a2731f;
-  --bl-hand: #bd3317;
-  --bl-hand-2: #a2731f;
-  --bl-stamp: #3d5b50;
-  --bl-stamp-soft: rgba(61, 91, 80, 0.13);
-  --bl-lift: 0 0.9rem 2.2rem rgba(52, 41, 27, 0.16);
-  color-scheme: light;
-}
-
-/* The two lit acts run together as one sheet, so there is a single cut into
-   the light and a single cut back out of it rather than four. */
-.bl-leaf {
-  position: relative;
-  z-index: 1;
-  background: var(--bl-bg);
-  color: var(--bl-ink);
-}
-
-/* the sheet is laid ON the dark: its own shadow falls at both edges */
-.bl-leaf::before,
-.bl-leaf::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 3rem;
-  z-index: 4;
-  pointer-events: none;
-}
-
-.bl-leaf::before {
-  top: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
-}
-
-.bl-leaf::after {
-  bottom: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
-}
-
-/* Film grain is light sitting on top of a dark frame. On paper the same
-   layer has to be dirt sitting in it, or the sheet glows. */
-html[data-over="paper"] .bl-grain-layer {
-  opacity: 0.028;
-  mix-blend-mode: multiply;
-}
-
-/* ---------- the dark acts, graded ------------------------------------- */
-
-/*
- * Not one black. The log is cool, because it is offices and screens; the
- * wins are warm, because they are rooms with people in them; contact is the
- * deepest, because it is the end of the reel. The steps are small on purpose:
- * they should be felt on the way past, not noticed on arrival.
- */
-
-.bl-log { background: #0a0b0d; }
-.bl-work { background: #0b0a09; }
-.bl-wall-act { background: #100c0a; }
-.bl-studio { background: #090a0c; }
-.bl-contact { background: #070606; }
-
-.bl-log,
-.bl-work,
-.bl-wall-act,
-.bl-studio,
-.bl-contact {
-  position: relative;
-  z-index: 1;
-}
-
 /* ---------- the folio: how an act opens ------------------------------- */
 
 .bl-head {
@@ -7421,38 +7328,6 @@ html[data-over="paper"] .bl-grain-layer {
 }
 
 /* The acts that keep the lights off: the opening and the close. */
-[data-light="dark"],
-.bl-hero,
-.bl-log,
-.bl-work,
-.bl-wall-act,
-.bl-studio,
-.bl-contact,
-.bl-footer {
-  --bl-bg: #0a0908;
-  --bl-bg-deep: #050504;
-  --bl-surface: #121010;
-  --bl-surface-2: #191615;
-  --bl-ink: #f2efe6;
-  --bl-ink-soft: #a39c8e;
-  --bl-ink-dim: #6e675b;
-  --bl-rule: rgba(242, 239, 230, 0.14);
-  --bl-rule-soft: rgba(242, 239, 230, 0.06);
-  --bl-accent: #e05a2b;
-  --bl-accent-ink: #0b0a09;
-  --bl-accent-soft: rgba(224, 90, 43, 0.16);
-  --bl-amber: #e0a33f;
-  --bl-hand: #e05a2b;
-  --bl-hand-2: #e0a33f;
-  --bl-stamp: #7f9d8e;
-  --bl-stamp-soft: rgba(127, 157, 142, 0.16);
-  --bl-grain: 0.045;
-  --bl-lift: 0 1rem 2.5rem rgba(0, 0, 0, 0.5);
-  color-scheme: dark;
-  background: var(--bl-bg);
-  color: var(--bl-ink);
-}
-
 html,
 body,
 .bl-root { background: var(--bl-bg); color: var(--bl-ink); }
@@ -7464,12 +7339,6 @@ body,
 .bl-wall-act,
 .bl-studio,
 .bl-contact { background: var(--bl-bg); }
-
-/* The lit spread was a sheet laid on the dark. Now that the document is the
-   paper, there is nothing to lay it on. */
-.bl-leaf { background: transparent; }
-.bl-leaf::before,
-.bl-leaf::after { content: none; }
 
 /* ---- the one rhythm every act keeps ---- */
 
@@ -9444,3 +9313,94 @@ body,
   }
   .bl-roster li span { grid-column: 1 / -1; }
 }
+
+/* ==========================================================================
+   LIGHTS OUT
+   ------------------------------------------------------------------------
+   The whole thing, dark.
+
+   This is the fourth setting of the light and it is the one that ends the
+   argument, so the mechanism goes with it: paper is no longer a chapter that
+   some acts opt into, it is simply not used. The dark values move back to
+   :root, which is what makes the modals, the contents page, the bar and the
+   colophon route follow without a single one of them being told to.
+
+   What stays light is what is physically light in the world: an instant
+   print is white card, and a logo plate is a white rectangle because that is
+   what a logo is drawn on. Those are objects on the page, not the page.
+   ========================================================================== */
+
+:root,
+[data-lamp="off"],
+.bl-modal {
+  --bl-bg: #0a0908;
+  --bl-bg-deep: #050504;
+  --bl-surface: #121010;
+  --bl-surface-2: #191615;
+  --bl-ink: #f2efe6;
+  --bl-ink-soft: #a39c8e;
+  --bl-ink-dim: #6e675b;
+  --bl-rule: rgba(242, 239, 230, 0.14);
+  --bl-rule-soft: rgba(242, 239, 230, 0.06);
+  --bl-accent: #e05a2b;
+  --bl-accent-ink: #0b0a09;
+  --bl-accent-soft: rgba(224, 90, 43, 0.16);
+  --bl-amber: #e0a33f;
+  --bl-hand: #e05a2b;
+  --bl-hand-2: #e0a33f;
+  --bl-stamp: #7f9d8e;
+  --bl-stamp-soft: rgba(127, 157, 142, 0.16);
+  --bl-grain: 0.045;
+  --bl-lift: 0 1rem 2.5rem rgba(0, 0, 0, 0.55);
+  color-scheme: dark;
+}
+
+/* every act is the same ground now, so none of them paints its own */
+.bl-hero,
+.bl-log,
+.bl-work,
+.bl-study,
+.bl-tools,
+.bl-wall-act,
+.bl-studio,
+.bl-contact,
+.bl-footer {
+  background: var(--bl-bg);
+  color: var(--bl-ink);
+}
+
+/* ---------- what the two lit acts need now the lamp is off ------------- */
+
+/*
+ * The chips were ink-on-paper: a near-white fill with a dark outline. On this
+ * ground the same two tokens give the opposite and better thing, an outlined
+ * chip on near-black, but the fill has to come off the page colour or every
+ * one of them is a hole punched in the pile.
+ */
+.bl-tool {
+  background: var(--bl-surface);
+  border-color: color-mix(in srgb, var(--bl-ink) 34%, transparent);
+}
+
+.bl-tool[data-lead="true"] {
+  border-color: var(--bl-accent);
+}
+
+/* a maker's mark drawn in flat black needs to be drawn in the page's ink */
+.bl-tool-mark { color: var(--bl-ink); }
+
+/* the rules have to be restated with the fill, or setting one colour here
+   throws away the gradient the box was ruled with */
+.bl-pile {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      var(--bl-rule-soft) 0 1px,
+      transparent 1px 1.45rem
+    ),
+    var(--bl-surface);
+}
+.bl-pile::after { opacity: 0.32; }
+
+/* the transcript plates, lifted off the ground they now share with it */
+.bl-degree { background: var(--bl-surface); }
