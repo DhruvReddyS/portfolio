@@ -7,16 +7,17 @@ import { SectionHeader } from "./sections";
 import { MarkPaper } from "./marks";
 
 /**
- * Two degrees, set as two entries on the lit sheet.
+ * Two degrees, as two transcripts, with the mark given the size it earned.
  *
- * They were a pair of tall cards, each opening with a plate for a photograph
- * of the campus. There are no photographs of either campus, so both opened
- * with an empty frame holding a letter, and an empty frame is worse than no
- * frame: it is a promise the page cannot keep.
+ * The last version set them as two tidy typographic entries, which was clean
+ * and said nothing. The strongest thing on this page is that one of these is
+ * a 9.34 and the other is two completed diplomas, and both are being carried
+ * at once; a layout that prints those at body size is burying its own lead.
  *
- * What a degree actually has is a name, a subject, a mark and a few things
- * that happened there. So that is what is printed, and the mark gets the
- * size, because it is the only number on the page that took four years.
+ * So each is a plate with its figure at display size and everything else
+ * hanging off it, stamped with where it has got to, and the two are tied
+ * together underneath, because the parallel is the point and it has to be
+ * drawn rather than asserted in the heading.
  */
 export function EducationSection() {
   return (
@@ -24,31 +25,29 @@ export function EducationSection() {
       <SectionHeader
         label="03 / Study"
         title="A dual degree, run in parallel"
-        lead="One on campus at MVSR, one online with IIT Madras. Both ongoing, at the same time, which is the whole point of the entry."
-        note="2 degrees · both running"
+        lead="One on campus at MVSR, one online with IIT Madras. Not one after the other."
+        note={`${education.length} degrees · both running`}
       />
 
       <div className="bl-degrees">
         {education.map((school, index) => (
           <Reveal key={school.id} delay={index * 110}>
             <article className="bl-degree">
-              <p className="bl-degree-kicker">
+              <p className="bl-degree-where">
                 <span>{school.period}</span>
                 <i aria-hidden="true" />
                 <span>{school.location}</span>
-                <em>{school.status}</em>
               </p>
 
-              <div className="bl-degree-head">
-                <h3 className="bl-degree-name">{school.school}</h3>
+              {/* the figure first, because it is the thing worth knowing */}
+              <p className="bl-degree-figure">
+                <strong>
+                  <Counter value={school.mark.value} />
+                </strong>
+                <span>{school.mark.label}</span>
+              </p>
 
-                <p className="bl-degree-mark">
-                  <strong>
-                    <Counter value={school.mark.value} />
-                  </strong>
-                  <span>{school.mark.label}</span>
-                </p>
-              </div>
+              <h3 className="bl-degree-name">{school.school}</h3>
 
               <p className="bl-degree-field">
                 <strong>{school.degree}</strong>
@@ -64,21 +63,28 @@ export function EducationSection() {
               {school.certificates && (
                 <div className="bl-degree-certs">
                   {school.certificates.map((cert) => (
-                    <a
-                      key={cert.href}
-                      href={cert.href}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a key={cert.href} href={cert.href} target="_blank" rel="noreferrer">
                       <MarkPaper size={11} /> {cert.label}
                     </a>
                   ))}
                 </div>
               )}
+
+              {/* where it has got to, stamped on rather than set in */}
+              <p className="bl-degree-stamp" aria-label={`Status: ${school.status}`}>
+                {school.status}
+              </p>
             </article>
           </Reveal>
         ))}
       </div>
+
+      {/* the parallel, drawn */}
+      <p className="bl-degree-tie" aria-hidden="true">
+        <i />
+        <span>Both of these are running right now</span>
+        <i />
+      </p>
     </section>
   );
 }
