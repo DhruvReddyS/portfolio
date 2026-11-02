@@ -7389,7 +7389,12 @@ html[data-over="paper"] .bl-grain-layer {
    ========================================================================== */
 
 :root,
-[data-lamp="off"] {
+[data-lamp="off"],
+/* A modal is a document, and the document voice on this page is paper. It
+   also has to stop inheriting whichever act it happens to be rendered
+   inside: the log's entries open from a dark section and came out dark
+   while everything else's came out light. */
+.bl-modal {
   /* ---- paper is the default now; dark is the thing you ask for ---- */
   --bl-bg: #efece4;
   --bl-bg-deep: #e4e0d5;
@@ -8029,3 +8034,99 @@ body,
     font-size: clamp(0.95rem, 4vw, 1.15rem);
   }
 }
+
+/* ---------- the two full-screen overlays ------------------------------ */
+
+/*
+ * A scrim darkens. Built from --bl-bg-deep it followed the page to paper
+ * and became a pale wash that lit the room instead of dimming it, leaving
+ * the sheet floating on a page you could still read.
+ */
+.bl-modal {
+  background: rgba(12, 10, 8, 0.55);
+  backdrop-filter: blur(4px) saturate(120%);
+  /* Redeclaring the tokens is not enough on its own: colour inherits as a
+     resolved value, so a modal opened from inside a dark act arrived with
+     the dark act answer already computed and its title came out bone on
+     cream. This makes it resolve again, against its own ink. */
+  color: var(--bl-ink);
+}
+
+/*
+ * The contents page is a dark surface wherever it is opened from, but it
+ * is rendered inside the bar, which now sits on paper: its ink followed the
+ * page and went dark on near-black.
+ */
+.bl-contents {
+  --bl-ink: #f2efe6;
+  --bl-ink-soft: #a39c8e;
+  --bl-ink-dim: #6e675b;
+  --bl-rule: rgba(242, 239, 230, 0.14);
+  --bl-rule-soft: rgba(242, 239, 230, 0.06);
+  --bl-accent: #e05a2b;
+  color-scheme: dark;
+}
+
+/* ---------- the log, in the page's own voice --------------------------- */
+
+/*
+ * The company names were the last entry names on the page still set in the
+ * serif. Work cards, wins and degrees all answer to the same rule now, and
+ * one exception does not read as variety, it reads as an oversight.
+ */
+.bl-spread-head {
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-variation-settings: normal;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+/*
+ * The logo plates were bare white rectangles punched into a dark page. A
+ * logo does need a light ground to be legible, so the ground stays and is
+ * given an edge and a corner, which is the difference between a plate and
+ * a hole.
+ */
+.bl-spread-shot .bl-plate-bare {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f4f1e9;
+  border: 1px solid rgba(242, 239, 230, 0.16);
+  transition: border-color 0.35s var(--bl-ease), transform 0.5s var(--bl-ease);
+}
+
+.bl-spread-col[data-on="true"] .bl-spread-shot .bl-plate-bare {
+  border-color: color-mix(in srgb, var(--bl-accent) 40%, transparent);
+}
+
+.bl-spread-col .bl-spread-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.25s var(--bl-ease), gap 0.25s var(--bl-ease);
+}
+
+.bl-spread-col .bl-spread-more:hover {
+  color: var(--bl-accent);
+  gap: 0.65rem;
+}
+
+/* ---------- the studio panel on paper ---------------------------------- */
+
+/*
+ * The corner bloom was "the way a lit screen looks", which is true of a lit
+ * screen on a dark page. On paper a warm radial in the corner of a white
+ * panel is a coffee ring.
+ */
+.bl-studio-panel::after { content: none; }
+
+.bl-studio-panel {
+  background: var(--bl-surface);
+  border: 1px solid var(--bl-rule);
+  border-radius: 12px;
+}
+
+/* the same corner the cards use, so the page has one radius and not three */
+.bl-modal-sheet { border-radius: 12px; }
