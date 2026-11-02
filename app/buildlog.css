@@ -7439,6 +7439,7 @@ html[data-over="paper"] .bl-grain-layer {
 [data-light="dark"],
 .bl-hero,
 .bl-log,
+.bl-wall-act,
 .bl-contact,
 .bl-footer {
   --bl-bg: #0a0908;
@@ -8130,3 +8131,230 @@ body,
 
 /* the same corner the cards use, so the page has one radius and not three */
 .bl-modal-sheet { border-radius: 12px; }
+
+/* ---------- the toolkit, as a heap ------------------------------------- */
+
+.bl-pile-cue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 clamp(1rem, 2.5vh, 1.6rem);
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-pile-cue span { color: var(--bl-accent); }
+.bl-pile-cue em { font-style: normal; }
+.bl-pile-cue i { width: 2rem; height: 1px; background: var(--bl-rule); }
+
+/* the box they land in: ruled, like the rest of the paper */
+.bl-pile {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--bl-rule);
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      var(--bl-rule-soft) 0 1px,
+      transparent 1px 1.45rem
+    ),
+    var(--bl-surface);
+  touch-action: pan-y;
+}
+
+/* the floor the heap rests on */
+.bl-pile::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--bl-ink);
+  opacity: 0.5;
+}
+
+/* Named bl-tool rather than bl-chip because bl-chip is already the tag in a
+   case file, and inheriting its uppercase turned every maker's name into
+   NEXT.JS and FRAMER MOTION. */
+.bl-tool {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.3rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--bl-ink);
+  border-radius: 12px;
+  background: var(--bl-bg);
+  color: var(--bl-ink);
+  font-size: 0.82rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  will-change: transform;
+}
+
+.bl-tool[data-held="true"] { cursor: grabbing; }
+
+.bl-tool[data-lead="true"] {
+  background: var(--bl-accent);
+  border-color: var(--bl-accent);
+  color: var(--bl-accent-ink);
+}
+
+.bl-tool[data-lead="true"] .bl-tool-mark { color: inherit; }
+
+.bl-tool-mark {
+  display: inline-flex;
+  font-size: 1rem;
+  /* no tone set means it takes the page's ink, which is right for the marks
+     that are a flat black wherever you find them */
+  color: var(--bl-ink);
+}
+
+.bl-tool-name { font-weight: 500; }
+
+/* ---------- the key to the heap ---------------------------------------- */
+
+.bl-shelf-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem clamp(1.25rem, 3vw, 2.5rem);
+  margin: clamp(1rem, 2.5vh, 1.5rem) 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-shelf-key > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+.bl-shelf-key dt {
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+}
+
+.bl-shelf-key dd {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  color: var(--bl-stamp);
+}
+
+@media (max-width: 700px) {
+  .bl-tool { height: 2.05rem; font-size: 0.74rem; padding: 0 0.65rem; gap: 0.4rem; }
+  .bl-tool-mark { font-size: 0.85rem; }
+}
+
+/* ---------- the close, in colour --------------------------------------- */
+
+/*
+ * The one place on the page that is allowed to be loud. Everywhere else the
+ * accent is a pen and the page is paper or ink; here the word that matters is
+ * lit from orange through gold into a warm pink, which are hues this site
+ * does not otherwise own and should not: used once, at the end, on one word,
+ * it reads as an ending rather than as a theme.
+ */
+
+.bl-contact { position: relative; }
+
+/* a bloom behind the line, so the colour has somewhere to come from */
+.bl-contact::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--bl-gutter) - 4rem);
+  top: 34%;
+  width: min(44rem, 72%);
+  aspect-ratio: 16 / 9;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 106, 44, 0.16),
+    rgba(255, 77, 109, 0.07) 56%,
+    transparent 78%
+  );
+  filter: blur(14px);
+}
+
+.bl-contact-huge em {
+  background: linear-gradient(
+    104deg,
+    #ff6a2c 0%,
+    #ffb340 44%,
+    #ff4d6d 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* the gradient clips to the glyphs, so the italic's overhang needs room or
+     the descender of the "y" is cut square */
+  padding-right: 0.08em;
+}
+
+/* the button stops being an outline and becomes the brightest thing here */
+.bl-cta {
+  background: linear-gradient(104deg, #ff6a2c 0%, #ff4d6d 128%);
+  border-color: transparent;
+  color: #140b07;
+}
+
+.bl-cta .bl-cta-ring { opacity: 0; }
+
+.bl-cta:hover {
+  filter: brightness(1.06) saturate(1.05);
+  transform: translateY(-2px);
+}
+
+.bl-cta-mark { color: inherit; }
+
+/* and the folio note on this act is the one that is actually news */
+.bl-contact .bl-head-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--bl-ink);
+}
+
+.bl-contact .bl-head-note::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-cta:hover { transform: none; }
+}
+
+/* the circled annotation on the lede needs air, or it collides with the
+   descenders of the line above it */
+.bl-contact .bl-lede { margin-top: clamp(1rem, 2.5vh, 1.75rem); }
+
+/*
+ * How deep the heap settles depends on how many chips fit across, so the box
+ * has to get taller as it gets narrower: three per row on a phone is nine
+ * rows of pile, and at the desktop height they stack straight out of the top.
+ */
+.bl-pile { height: var(--bl-pile-h, 21rem); }
+
+@media (max-width: 1100px) { .bl-pile { height: var(--bl-pile-h, 24rem); } }
+@media (max-width: 760px) { .bl-pile { height: var(--bl-pile-h, 30rem); } }
+@media (max-width: 420px) { .bl-pile { height: var(--bl-pile-h, 33rem); } }

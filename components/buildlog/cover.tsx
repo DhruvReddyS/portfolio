@@ -148,7 +148,6 @@ export function Cover() {
         font={boot.font}
         title="The Build Log"
         name={profile.full}
-        role="Full-stack & applied AI"
         loadingLabel="Setting the page"
         readyLabel="Ready"
         footer={[profile.full, profile.location, profile.coords]}

@@ -42,8 +42,6 @@ export type ChipRow = Array<[text: string, kind?: string]>;
 export interface LoadingAnimationOptions {
   /** Name shown on the selection frame in the cursor layer. */
   name?: string;
-  /** Role shown in the properties panel. */
-  role?: string;
   /** Headline, one array per row. Each piece is [text, kind?]; kind "frame" wraps the text in a selection frame with handles. Spaces inside pieces are kept. */
   rows?: ChipRow[];
   /** Label on the call-to-action button. */
@@ -195,7 +193,7 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
   opts = defined(opts);
   const col = { accent: "#FF5000", blue: "#1F3BFF", ink: "#23262F", tint: "#FFEEE6", ...defined(opts.colors || {}) };
   const rows = opts.rows && opts.rows.length ? opts.rows : DEFAULT_ROWS;
-  const o = { name: "Asha Iyer", role: "Freelance designer", cta: "Create Now", loadingLabel: "Setting up your desk", readyLabel: "Desk ready", replayLabel: "Replay", scrollHeight: "320vh", size: 0.5, spread: 1, showReveal: true, autoplay: false, loader: false, minDuration: 4400, footer: [] as string[], title: "", ...opts };
+  const o = { name: "Asha Iyer", cta: "Create Now", loadingLabel: "Setting up your desk", readyLabel: "Desk ready", replayLabel: "Replay", scrollHeight: "320vh", size: 0.5, spread: 1, showReveal: true, autoplay: false, loader: false, minDuration: 4400, footer: [] as string[], title: "", ...opts };
   const size = clamp(o.size, 0.2, 1), spread = clamp(o.spread, 0.2, 2);
   const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   let ready = Boolean(o.ready);
@@ -332,7 +330,7 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
 
   /* everything below the cursor layer's base: panels and marks that fade in as you scroll further */
   function annotations(sx: CanvasRenderingContext2D, frame: number) {
-    const { W, H, cw, ch, ox, oy, fx0, fx1, fy0, fy1 } = lay, R = 18;
+    const { W, H, cw, ch, fx0, fx1, fy0, fy1 } = lay, R = 18;
     const O = (a: number) => rgba(col.accent, a), B = (a: number) => rgba(col.blue, a), G = (a: number) => rgba(col.ink, a);
     /* On the page the layer is earned by scrolling. On a loader there is no
        scrolling to do, so it is earned by waiting: `reveal` walks 0 to 1 over
@@ -359,26 +357,22 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
     /* 0.10  layers */
     when(0.1, () => panel(fx1 + 14, fy0, 138, "Layers", [["◉ Figure", ""], ["◉ Pixels", String(GW * GH)], ["◉ Background", ""]]));
     /* 0.25  properties, with a live rotation readout */
-    when(0.25, () => panel(fx0 - 14 - 142, fy0, 142, "Properties", [["Role", o.role.length > 14 ? o.role.slice(0, 13) + "…" : o.role], ["X", `${Math.round(fx0)}`], ["Y", `${Math.round(fy0)}`], ["W × H", `${Math.round(fx1 - fx0)}×${Math.round(fy1 - fy0)}`], ["Rotate", `${rot}°`], ["Pixel", `${cw.toFixed(1)}×${ch.toFixed(1)}`], ["Frame", `${k + 1}/${n}`], ["Colour", "1-bit"]]));
+    /* Role is prose, and prose in a panel of measurements is the one line
+       that has to be truncated to fit, which is how you can tell it does
+       not belong there. */
+    when(0.25, () => panel(fx0 - 14 - 142, fy0, 142, "Properties", [["X", `${Math.round(fx0)}`], ["Y", `${Math.round(fy0)}`], ["W × H", `${Math.round(fx1 - fx0)}×${Math.round(fy1 - fy0)}`], ["Rotate", `${rot}°`], ["Pixel", `${cw.toFixed(1)}×${ch.toFixed(1)}`], ["Frame", `${k + 1}/${n}`], ["Colour", "1-bit"]]));
     /* 0.40  measurements */
     when(0.4, () => {
       const my = (fy0 + fy1) / 2, mx = (fx0 + fx1) / 2;
       ln(R, my, fx0, my, O(0.9)); ln(R, my - 4, R, my + 4, O(0.9)); ln(fx0, my - 4, fx0, my + 4, O(0.9)); pill(String(Math.round(fx0 - R)), (R + fx0) / 2 - 12, my - 20, O(1), col.ink);
       ln(mx, R, mx, fy0, O(0.9)); ln(mx - 4, R, mx + 4, R, O(0.9)); ln(mx - 4, fy0, mx + 4, fy0, O(0.9)); pill(String(Math.round(fy0 - R)), mx + 8, (R + fy0) / 2 - 8, O(1), col.ink);
     });
-    /* 0.55  pen path with anchors and handles, around the head */
-    when(0.55, () => {
-      const Wc = colsC * cw, Hc = rowsC * ch, hx = ox + ((box.x0 + box.x1 + 1) / 2) * cw, hy = oy + box.y0 * ch;
-      const pts: Array<[number, number]> = [[hx - 0.22 * Wc, hy + 0.3 * Hc], [hx - 0.13 * Wc, hy + 0.04 * Hc], [hx + 0.13 * Wc, hy + 0.04 * Hc], [hx + 0.22 * Wc, hy + 0.3 * Hc]];
-      const hd = 0.07 * Wc, hv = 0.1 * Hc;
-      sx.strokeStyle = B(0.9); sx.lineWidth = 1; sx.beginPath(); sx.moveTo(pts[0][0] + 0.5, pts[0][1] + 0.5);
-      sx.bezierCurveTo(pts[1][0] - hd, pts[1][1] - hv, pts[2][0] + hd, pts[2][1] - hv, pts[3][0] + 0.5, pts[3][1] + 0.5); sx.stroke();
-      pts.forEach(([px, py], i) => {
-        const dx = i % 2 ? hd : -hd; ln(px, py, px + dx, py - hv, B(0.5));
-        sx.fillStyle = col.tint; sx.strokeStyle = B(0.7); sx.beginPath(); sx.arc(px + dx + 0.5, py - hv + 0.5, 2.5, 0, 6.283); sx.fill(); sx.stroke();
-        sx.strokeStyle = B(1); sx.fillRect(px - 2.5, py - 2.5, 6, 6); sx.strokeRect(px - 2.5, py - 2.5, 6, 6);
-      });
-    });
+    /*
+     * 0.55 used to draw a pen path with anchors and handles over his head.
+     * A bezier curve laid across a face reads as a defect in the face, not
+     * as a tool inspecting it, and it was the one annotation that fought
+     * the portrait instead of measuring it.
+     */
     /* 0.70  tags */
     when(0.7, () => {
       pill("Layer 1 · 66 × 53", fx1 + 14, fy1 - 80, col.tint, G(1)); pill("Pixel mask", fx1 + 14, fy1 - 58, col.tint, G(1)); pill("Opacity 100%", fx0 - 96, fy1 - 80, col.tint, G(1));
@@ -619,7 +613,7 @@ export function LoadingAnimation({ className, style, onComplete, onGetStarted, o
   // after render, not during it: the mount effect reads this through a ref so
   // a new callback identity never tears the animation down and rebuilds it
   React.useEffect(() => { cb.current = { onComplete, onGetStarted, onLeave }; });
-  const key = JSON.stringify([rest.name, rest.role, rest.cta, rest.loadingLabel, rest.readyLabel, rest.replayLabel, rest.scrollHeight, rest.size, rest.spread, rest.showReveal, rest.autoplay, rest.loader, rest.minDuration, rest.font, rest.footer, rest.title, rest.rows, rest.colors, rest.frames ? rest.frames.length : 0]);
+  const key = JSON.stringify([rest.name, rest.cta, rest.loadingLabel, rest.readyLabel, rest.replayLabel, rest.scrollHeight, rest.size, rest.spread, rest.showReveal, rest.autoplay, rest.loader, rest.minDuration, rest.font, rest.footer, rest.title, rest.rows, rest.colors, rest.frames ? rest.frames.length : 0]);
   React.useEffect(() => {
     const el = ref.current;
     if (!el) return;

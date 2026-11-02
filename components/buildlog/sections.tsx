@@ -738,13 +738,23 @@ export function ContactSection() {
         />
       </div>
 
-      <SectionHeader label="07 / Contact" title="What happens next" />
+      <SectionHeader
+        label="07 / Contact"
+        title="How to start one"
+        note="Open to work"
+      />
 
+      {/*
+        Every other act on this page is an entry in the log: a room he worked
+        in, a thing he built, a degree, a win. This is the only line on the
+        site that could not be written for anybody else's portfolio, which is
+        the whole job of a closing line.
+      */}
       <Reveal>
         <p className="bl-contact-huge">
-          Let&apos;s
+          Next entry:
           <br />
-          <em>build.</em>
+          <em>yours.</em>
         </p>
       </Reveal>
 
@@ -752,10 +762,10 @@ export function ContactSection() {
         <p className="bl-lede">
           Bring the{" "}
           <Marked kind="circle" delay={320}>
-            hard problem
+            hard one
           </Marked>
-          . I will bring the architecture, the awkward questions, and an
-          unreasonable number of browser tabs.
+          . I will bring the architecture, the awkward questions nobody asked
+          in the kickoff, and an unreasonable number of open tabs.
         </p>
       </Reveal>
 
@@ -764,8 +774,8 @@ export function ContactSection() {
           <a className="bl-cta" href={`mailto:${profile.email}`}>
             <span className="bl-cta-ring" aria-hidden="true" />
             <span className="bl-cta-label">
-              <span>Hire the guy</span>
-              <span>Hire the guy</span>
+              <span>Put me on it</span>
+              <span>Put me on it</span>
             </span>
             <span className="bl-cta-mark" aria-hidden="true">
               <MarkArrow size={22} />
