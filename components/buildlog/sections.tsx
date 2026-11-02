@@ -144,6 +144,58 @@ export function Hero({ time }: { time: string }) {
     };
   }, []);
 
+  // Leaving the hero, its layers travel at different speeds and fade: the
+  // name furthest and fastest, the portrait a little behind it, the copy
+  // slowest. Scrubbed, so scrolling back up puts it all together again.
+  useEffect(() => {
+    const node = stage.current;
+    if (!node) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const context = gsap.context(() => {
+      const exit = gsap.timeline({
+        scrollTrigger: {
+          trigger: node,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.4,
+        },
+      });
+
+      exit
+        .to(".bl-hero-wordmark", { yPercent: -36, opacity: 0.1, ease: "none" }, 0)
+        .to(".bl-hero-figure", { yPercent: -16, scale: 1.05, opacity: 0.25, ease: "none" }, 0)
+        .to(".bl-hero-left", { yPercent: -8, opacity: 0, ease: "none" }, 0)
+        .to(".bl-specs", { yPercent: -5, opacity: 0, ease: "none" }, 0)
+        .to(".bl-field", { yPercent: -22, opacity: 0, ease: "none" }, 0);
+    }, node);
+
+    return () => context.revert();
+  }, []);
+
+  // The opening: the ground settles, the portrait rises into it, and the
+  // detail arrives after both. The wordmark has its own CSS animation, so
+  // this works around it rather than fighting it for the same properties.
+  useEffect(() => {
+    const node = stage.current;
+    if (!node) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const context = gsap.context(() => {
+      gsap
+        .timeline({ defaults: { ease: "power3.out" } })
+        .from(".bl-field", { opacity: 0, scale: 1.08, duration: 1.3 }, 0)
+        .from(
+          ".bl-hero-figure",
+          { yPercent: 9, opacity: 0, duration: 1.25, clearProps: "opacity" },
+          0.35,
+        )
+        .from(".bl-hero-aura", { opacity: 0, scale: 0.75, duration: 1.4 }, 0.45);
+    }, node);
+
+    return () => context.revert();
+  }, []);
+
   return (
     <section className="bl-hero" id="top" ref={stage}>
       <HeroField />
@@ -289,8 +341,14 @@ function LogStop({
   };
 
   return (
-    <article className="bl-stop" data-status={entry.status} data-index={index}>
+    <article
+      className="bl-stop"
+      data-status={entry.status}
+      data-index={index}
+      style={{ "--tint": entry.tint } as React.CSSProperties}
+    >
       <div className="bl-stop-axis">
+        <span className="bl-stop-glow" aria-hidden="true" />
         <span className="bl-stop-badge">
           <Plate
             dir="log"

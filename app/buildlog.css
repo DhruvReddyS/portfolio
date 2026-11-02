@@ -5074,3 +5074,91 @@ html.bl-locked body { overflow: hidden; }
     max-height: calc(100% - 0.7rem);
   }
 }
+
+/* ---- the rail, lit like a model --------------------------------------
+   Borrowed from the reference: each mark is an object standing off its
+   slab with its own coloured light pooled beneath it, and the slab wears a
+   bright strip along its base. The mark is tipped a few degrees so it
+   reads as a thing in space rather than a sticker, and each room's light
+   is its own brand colour rather than the page accent, so the rail is five
+   different lights instead of five copies of one.                       */
+
+.bl-stop-axis { perspective: 520px; }
+
+.bl-stop-badge {
+  transform: rotateY(-13deg) rotateX(7deg);
+  transform-style: preserve-3d;
+  box-shadow:
+    0 0.6rem 1.1rem rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.bl-stop[data-live="true"] .bl-stop-badge {
+  transform: rotateY(-7deg) rotateX(4deg) translateZ(14px);
+  box-shadow:
+    0 0.9rem 1.6rem rgba(0, 0, 0, 0.6),
+    0 0 0 4px color-mix(in srgb, var(--tint) 20%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-color: color-mix(in srgb, var(--tint) 70%, transparent);
+}
+
+/* the pool of light the mark casts down onto the rail */
+.bl-stop-glow {
+  position: absolute;
+  top: 3.4rem;
+  left: 50%;
+  width: 5.4rem;
+  height: 1.5rem;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--tint) 85%, transparent),
+    transparent 72%
+  );
+  filter: blur(9px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s var(--bl-ease), scale 0.55s var(--bl-ease);
+  scale: 0.7;
+}
+
+.bl-stop[data-live="true"] .bl-stop-glow { opacity: 0.75; scale: 1; }
+
+/* the slab: a lit strip along its base, in the room's own colour */
+.bl-stop-card::after {
+  content: "";
+  position: absolute;
+  left: clamp(1.1rem, 2.2vw, 1.75rem);
+  right: clamp(1.1rem, 2.2vw, 1.75rem);
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--tint) 18%,
+    var(--tint) 82%,
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.55s var(--bl-ease);
+}
+
+.bl-stop[data-live="true"] .bl-stop-card::after { opacity: 0.9; }
+
+/* and the light it throws on the floor under it */
+.bl-stop-card {
+  box-shadow: 0 1.4rem 2.6rem -1.4rem rgba(0, 0, 0, 0.8);
+}
+
+.bl-stop[data-live="true"] .bl-stop-card {
+  box-shadow:
+    0 1.4rem 2.6rem -1.4rem rgba(0, 0, 0, 0.8),
+    0 1.6rem 3rem -1.6rem color-mix(in srgb, var(--tint) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-stop-badge,
+  .bl-stop[data-live="true"] .bl-stop-badge { transform: none; }
+}
