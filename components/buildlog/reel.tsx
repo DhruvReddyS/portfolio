@@ -32,6 +32,8 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
   const track = useRef<HTMLDivElement>(null);
   const strip = useRef<HTMLDivElement>(null);
   const trigger = useRef<ScrollTrigger | null>(null);
+  /** The room the spread last settled on, which each step is taken from. */
+  const settled = useRef(0);
   const [progress, setProgress] = useState(0);
   const [at, setAt] = useState(0);
 
@@ -56,10 +58,7 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
          already in the frame at once, so most columns can never be brought
          to the left edge and snapping to them would collapse the last two
          stops into one. Even stops always give five. */
-      const stops = Array.from(
-        { length: logEntries.length },
-        (_, index) => index / (logEntries.length - 1),
-      );
+      const last = logEntries.length - 1;
 
       const tween = gsap.to(trackNode, {
         x: () => -distance(),
@@ -67,20 +66,38 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
         scrollTrigger: {
           trigger: act,
           start: "top top",
-          /* The spread used to travel its whole width in that same width of
-             scrolling, which runs five rooms past you in one flick of the
-             wheel. Stretching the pinned stretch leaves the travel alone
-             and slows the reading down to something you can follow. */
-          end: () => `+=${distance() * 1.6}`,
+          /* One screen of scrolling per screen of travel. The spread read
+             too fast at this length once, but that was with columns half
+             this width, which put four rooms in the frame at a time and
+             left a step barely a paragraph long. Wider rooms and the snap
+             below do the slowing down now; stretching this as well only
+             made the reader work for the same five rooms. */
+          end: () => `+=${distance()}`,
           pin: act,
           scrub: 0.8,
           invalidateOnRefresh: true,
-          /* and once the wheel stops, it settles on a room rather than
-             halfway between two */
+          /* One flick, one room.
+             Snapping to the nearest of five stops was not enough on its
+             own: ScrollTrigger projects the scroll's velocity before it
+             picks a stop, and a flick of any conviction projects past the
+             last room, so the whole log went by in one gesture. Inertia is
+             off and the step is taken from where the spread already is,
+             which is what makes a gesture worth exactly one room however
+             hard it is thrown. */
           snap: {
-            snapTo: stops,
-            duration: { min: 0.18, max: 0.5 },
-            delay: 0.05,
+            snapTo: (value) => {
+              const asked = value * last;
+              const from = settled.current;
+              /* the dead zone keeps a nudge from counting as a step */
+              let next = from;
+              if (asked > from + 0.08) next = Math.min(last, from + 1);
+              else if (asked < from - 0.08) next = Math.max(0, from - 1);
+              settled.current = next;
+              return next / last;
+            },
+            inertia: false,
+            duration: { min: 0.22, max: 0.55 },
+            delay: 0.04,
             ease: "power2.out",
           },
           onUpdate: (self) => {
@@ -124,6 +141,7 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
     const st = trigger.current;
     if (!st) return;
     const clamped = Math.min(1, Math.max(0, ratio));
+    settled.current = Math.round(clamped * (logEntries.length - 1));
     window.scrollTo({
       top: st.start + clamped * (st.end - st.start),
       behavior: "auto",
