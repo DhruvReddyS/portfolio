@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
@@ -14,22 +14,21 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * The work, set as the index of a book rather than a wall of cards.
+ * The work, as a wall of cards of one size.
  *
- * Cards were the wrong instrument. Eight of them want eight pictures and
- * five of these builds have none; they want eight equally weighted
- * sentences and these have one strong one each; and they want a shape,
- * which kept turning into the subject. A list has none of those appetites.
- * It says what there is, in the order it happened, and it is read the way
- * a contents page is read: down the left, stopping where something catches.
+ * Earlier versions of this section went looking for a shape: tiles at four
+ * sizes, then a typed index with the artwork following the pointer. Both
+ * were defensible and neither was liked, and the reason is probably that a
+ * work section has one job, which is to show the work. A shape that makes
+ * the work smaller in order to make the page more interesting has the
+ * trade backwards.
  *
- * What a list cannot do is show the work, so the picture follows the
- * pointer instead of sitting in a column of its own. That costs the layout
- * nothing, which is the point: the list gets the whole width, and the
- * artwork is only there while someone is actually looking for it.
+ * So: nine cells, one size, three across. Picture, what field it sits in,
+ * the name, the one sentence that says why it exists, then what it is
+ * filed under and the way in. The note takes the middle cell.
  */
 
-/** The figure a row is filed under, or what kind of build it was. */
+/** The figure a card is filed under, or what kind of build it was. */
 function filedUnder(file: CaseFile) {
   const figure = file.metrics.find((metric) => /\d/.test(metric.value));
   return figure ? `${figure.value} ${figure.label}` : file.kind;
@@ -40,10 +39,10 @@ type Row = {
   index: string;
   name: string;
   field: string;
+  kind: string;
   filed: string;
   line: string;
   mark?: string;
-  stack: string[];
   image?: string;
   link?: { label: string; href: string };
   repo?: string;
@@ -59,10 +58,10 @@ const rows: Row[] = [
     index: file.index,
     name: file.name,
     field: file.domain,
+    kind: file.kind,
     filed: filedUnder(file),
     line: file.thesis,
     mark: file.mark,
-    stack: file.stack,
     image: file.image,
     link: file.link,
     repo: file.repo,
@@ -73,251 +72,135 @@ const rows: Row[] = [
     id: quest.id,
     index: String(caseFiles.length + offset + 1).padStart(2, "0"),
     name: quest.name,
-    field: "Side quest",
+    field: quest.stack.slice(0, 3).join(" · "),
+    kind: "Side quest",
     filed: quest.context,
     line: quest.blurb,
-    stack: quest.stack,
     quest: true as const,
   })),
 ];
 
-export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
-  const body = useRef<HTMLDivElement>(null);
-  const follower = useRef<HTMLDivElement>(null);
-  const aimAt = useRef<((clientX: number, clientY: number) => void) | null>(null);
+/** After the fourth card, which is the middle cell of a three-across wall. */
+const NOTE_AFTER = 3;
 
-  const [at, setAt] = useState(0);
-  const [showing, setShowing] = useState(false);
+export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
+  const wall = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
-    const node = body.current;
+    const node = wall.current;
     if (!node) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const context = gsap.context(() => {
-      gsap.from(".bl-index-row", {
-        y: 22,
+      gsap.from(".bl-card", {
+        y: 26,
         opacity: 0,
-        duration: 0.55,
+        duration: 0.6,
         ease: "power3.out",
-        stagger: 0.055,
-        scrollTrigger: { trigger: node, start: "top 80%", once: true },
+        stagger: 0.06,
+        scrollTrigger: { trigger: node, start: "top 82%", once: true },
       });
     }, node);
 
     return () => context.revert();
   }, []);
 
-  /* The follower is placed against the list's own box rather than the
-     viewport. A fixed element would be at the mercy of any transformed
-     ancestor, and this page has plenty: a transform on a parent makes it
-     the containing block and the thing lands somewhere else entirely.
-
-     The pointer's position is written straight onto the element and the
-     easing is left to a CSS transition, rather than being chased round a
-     frame loop. One statement per event instead of sixty a second, and it
-     still holds its place in a tab nobody is looking at, where a frame
-     loop is simply not called. */
-  useEffect(() => {
-    const node = body.current;
-    const plate = follower.current;
-    if (!node || !plate) return;
-    if (!window.matchMedia("(hover: hover)").matches) return;
-
-    let placed = false;
-
-    const aim = (clientX: number, clientY: number) => {
-      const box = node.getBoundingClientRect();
-      const half = plate.offsetWidth / 2;
-      // kept inside the list's own width, so it never hangs off the page
-      const x = Math.min(box.width - half, Math.max(half, clientX - box.left));
-      const y = clientY - box.top;
-
-      // the first reading is a jump, not a glide: otherwise the picture
-      // sails in from wherever it was left the last time
-      if (!placed) {
-        placed = true;
-        plate.style.transition = "none";
-        plate.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-        void plate.offsetHeight;
-        plate.style.transition = "";
-        return;
-      }
-
-      plate.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-    };
-
-    aimAt.current = aim;
-
-    const onMove = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
-      aim(event.clientX, event.clientY);
-    };
-
-    const onEnter = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
-      setShowing(true);
-    };
-
-    const onLeave = () => {
-      placed = false;
-      setShowing(false);
-    };
-
-    node.addEventListener("pointermove", onMove);
-    node.addEventListener("pointerenter", onEnter);
-    node.addEventListener("pointerleave", onLeave);
-
-    return () => {
-      node.removeEventListener("pointermove", onMove);
-      node.removeEventListener("pointerenter", onEnter);
-      node.removeEventListener("pointerleave", onLeave);
-      aimAt.current = null;
-    };
-  }, []);
-
-  /** Keyboard has no pointer, so the plate is put beside the focused row. */
-  const placeAt = (element: HTMLElement) => {
-    const node = body.current;
-    const plate = follower.current;
-    if (!node || !plate || !aimAt.current) return;
-    const box = node.getBoundingClientRect();
-    const row = element.getBoundingClientRect();
-    aimAt.current(box.right - plate.offsetWidth / 2, row.top + row.height / 2);
-  };
-
   return (
-    <section className="bl-section bl-index" id="work">
+    <section className="bl-section bl-work" id="work">
       <SectionHeader
         label="02 / Selected work"
         title="What got built"
-        lead="Six builds and two side quests, in the order they happened. Open any of the six for the case file."
+        lead="Six builds and two side quests. Open any of the six for the full case file."
       />
 
-      <div className="bl-index-body" ref={body}>
-        <ol className="bl-index-list">
-          {rows.map((row, index) => (
-            <Fragment key={row.id}>
-              {/* where the numbered builds end and the rest begins */}
-              {row.quest && !rows[index - 1]?.quest && (
-                <li className="bl-index-break" aria-hidden="true">
-                  <span>Built because it bugged me</span>
-                  <i />
-                </li>
-              )}
+      <ol className="bl-work-wall" ref={wall}>
+        {rows.map((row, index) => (
+          <Fragment key={row.id}>
+            <li className="bl-card" data-quest={row.quest ? "true" : undefined}>
+              <div className="bl-card-shot">
+                <Plate
+                  bare
+                  dir="work"
+                  name={row.id}
+                  src={row.image}
+                  monogram={row.name}
+                  alt={`${row.name}, ${row.kind}`}
+                />
 
-              <li
-                className="bl-index-row"
-                data-on={at === index}
-                data-quest={row.quest ? "true" : undefined}
-                onPointerEnter={() => setAt(index)}
-              >
-                <span className="bl-index-num">{row.index}</span>
+                <span className="bl-card-num">{row.index}</span>
 
-                {/* name, leader, figure: one line, so the leader is a flex
-                    child that takes whatever is left between them. As grid
-                    areas the rows underneath inflated the auto columns and
-                    the leader got what was left of that, which was a stub */}
-                <div className="bl-index-head">
-                <h3 className="bl-index-name">
-                  {row.file ? (
-                    <button
-                      type="button"
-                      onClick={() => onOpen(row.file as CaseFile)}
-                      onFocus={(event) => {
-                        setAt(index);
-                        setShowing(true);
-                        placeAt(event.currentTarget);
-                      }}
-                      onBlur={() => setShowing(false)}
-                    >
-                      {row.name}
-                      <MarkArrow size={16} />
-                    </button>
-                  ) : (
-                    <span>{row.name}</span>
-                  )}
-                </h3>
+                {row.decorated ? (
+                  <span className="bl-card-tag" data-win="true">
+                    <MarkRosette size={11} /> Winner, twice
+                  </span>
+                ) : (
+                  <span className="bl-card-tag">{row.kind}</span>
+                )}
+              </div>
 
-                <i className="bl-index-lead" aria-hidden="true" />
-
-                <p className="bl-index-filed">{row.filed}</p>
-                </div>
-
-                <p className="bl-index-field">{row.field}</p>
-
-                <p className="bl-index-line">
+              <div className="bl-card-body">
+                <p className="bl-card-kicker">{row.field}</p>
+                <h3 className="bl-card-name">{row.name}</h3>
+                <p className="bl-card-line">
                   <MarkedLine text={row.line} mark={row.mark} />
                 </p>
 
-                <div className="bl-index-foot">
-                <div className="bl-index-links">
-                  {row.link && (
-                    <a href={row.link.href} target="_blank" rel="noreferrer">
-                      <MarkWindow size={12} /> Live
-                    </a>
-                  )}
-                  {row.repo && (
-                    <a href={row.repo} target="_blank" rel="noreferrer">
-                      <MarkGithub size={12} /> Source
-                    </a>
-                  )}
-                  {row.decorated && (
-                    <span className="bl-index-award">
-                      <MarkRosette size={12} /> Winner, twice
-                    </span>
-                  )}
-                </div>
+                <div className="bl-card-foot">
+                  <p className="bl-card-filed">{row.filed}</p>
 
-                {/* the parts list is the one thing held back for the row
-                    being read: eight of them at once is a wall of nouns */}
-                <p className="bl-index-stack">
-                  {row.stack.slice(0, 7).join("  /  ")}
+                  <div className="bl-card-acts">
+                    {row.link && (
+                      <a
+                        className="bl-card-side"
+                        href={row.link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <MarkWindow size={12} /> Live
+                      </a>
+                    )}
+                    {row.repo && (
+                      <a
+                        className="bl-card-side"
+                        href={row.repo}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <MarkGithub size={12} /> Source
+                      </a>
+                    )}
+                    {row.file && (
+                      <button
+                        type="button"
+                        className="bl-card-open"
+                        onClick={() => onOpen(row.file as CaseFile)}
+                      >
+                        Case file <MarkArrow size={13} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            {/* the middle cell of the wall, where a reader is already pausing */}
+            {index === NOTE_AFTER && (
+              <li className="bl-card bl-note bl-note-card">
+                <p className="bl-note-label">Margin note</p>
+                <MarkPaper className="bl-note-mark" size={24} />
+                <p className="bl-note-line">
+                  A demo proves it <Marked kind="circle">runs</Marked>. A case
+                  file proves it holds.
                 </p>
-                </div>
+                <p className="bl-note-foot">
+                  Every numbered card opens one: the architecture, the figures,
+                  what broke.
+                </p>
               </li>
-            </Fragment>
-          ))}
-        </ol>
-
-        {/* Every plate is mounted and one is shown. Swapping the source of
-            a single plate would send it back through its own file lookup
-            on each hover, so the artwork would drop out and fade in again
-            every time the pointer crossed a row. */}
-        <div
-          className="bl-index-follow"
-          ref={follower}
-          data-on={showing}
-          aria-hidden="true"
-        >
-          {rows.map((row, index) => (
-            <figure key={row.id} data-on={at === index}>
-              <Plate
-                bare
-                dir="work"
-                name={row.id}
-                src={row.image}
-                monogram={row.name}
-                alt=""
-              />
-            </figure>
-          ))}
-        </div>
-      </div>
-
-      {/* the note, set out in the margin the way one would be on paper */}
-      <div className="bl-note bl-note-end">
-        <p className="bl-note-label">Margin note</p>
-        <MarkPaper className="bl-note-mark" size={22} />
-        <p className="bl-note-line">
-          A demo proves it <Marked kind="circle">runs</Marked>. A case file
-          proves it holds.
-        </p>
-        <p className="bl-note-foot">
-          Every numbered row opens one: the architecture, the figures, what
-          broke.
-        </p>
-      </div>
+            )}
+          </Fragment>
+        ))}
+      </ol>
     </section>
   );
 }
