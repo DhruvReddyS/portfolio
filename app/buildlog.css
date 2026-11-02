@@ -5460,311 +5460,366 @@ html.bl-locked body { overflow: hidden; }
   .bl-stop-arm { display: none; }
 }
 
-/* ---- the log, run through sideways --------------------------------------
-   The act pins and the track travels left as you scroll, so reading down
-   the page means moving right along the years. Each room is a column on a
-   ruled axis with its mark on the line. A scrubber along the bottom
-   carries the same marks and fills as you go.
 
-   Wide screens only: pinning an act and turning vertical scroll sideways
-   is a poor trade on a phone, where the stacked timeline reads better. */
 
-.bl-reel { display: none; }
+/* ---- the log, set as one long spread -----------------------------------
+   Off the reference: a bordered screen inset from the page with a bar
+   across the top, editorial columns running away to the right at three
+   different heights, and a finely ruled strip along the bottom carrying
+   thumbnails. The act pins and the spread travels left, so reading down
+   the page reads right across the spread.
+
+   Wide screens only; the stacked timeline keeps the phone.             */
+
+.bl-spread { display: none; }
 
 @media (min-width: 1040px) {
-  .bl-reel { display: block; }
-
-  /* the stacked timeline is the narrow view; the reel replaces it here */
-  .bl-line { display: none; }
-
-  .bl-reel-viewport {
-    position: relative;
-    width: 100%;
+  .bl-spread {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    /* The act pins, so the whole frame including its ruled strip has to sit
+       inside one screen alongside the heading above it. */
+    height: min(58vh, 34rem);
+    margin-top: clamp(1rem, 2.5vh, 1.75rem);
+    border: 1px solid var(--bl-rule);
+    background: var(--bl-bg-deep);
     overflow: hidden;
-    margin-top: clamp(1.5rem, 4vh, 2.5rem);
   }
 
-  .bl-reel-track {
+  /* the stacked timeline is the narrow view */
+  .bl-line { display: none; }
+
+  /* ---- the bar across the top ---- */
+
+  .bl-spread-bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 20rem) auto auto auto;
+    align-items: center;
+    gap: clamp(1.25rem, 4vw, 4rem);
+    padding: 0.95rem clamp(1rem, 2.4vw, 1.9rem);
+    border-bottom: 1px solid var(--bl-rule);
+  }
+
+  .bl-spread-brand {
+    font-family: var(--bl-sans);
+    font-weight: 700;
+    font-size: 1.12rem;
+    letter-spacing: -0.035em;
+    color: var(--bl-ink);
+  }
+
+  .bl-spread-bar p {
+    margin: 0;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    color: var(--bl-ink-soft);
+  }
+
+  /* the little level meter from the reference */
+  .bl-spread-meter {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 0.8rem;
+    margin-left: auto;
+  }
+
+  .bl-spread-meter i {
+    width: 2px;
+    background: var(--bl-ink-dim);
+    animation: bl-meter 1.1s var(--bl-ease) infinite alternate;
+  }
+
+  .bl-spread-meter i:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .bl-spread-meter i:nth-child(2) { height: 80%; animation-delay: 0.12s; }
+  .bl-spread-meter i:nth-child(3) { height: 55%; animation-delay: 0.26s; }
+  .bl-spread-meter i:nth-child(4) { height: 95%; animation-delay: 0.08s; }
+  .bl-spread-meter i:nth-child(5) { height: 35%; animation-delay: 0.3s; }
+
+  @keyframes bl-meter {
+    to { transform: scaleY(0.35); }
+  }
+
+  .bl-spread-count {
+    font-family: var(--bl-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: var(--bl-ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* the corner markers */
+  .bl-spread-flags { display: flex; gap: 3px; }
+
+  .bl-spread-flags i {
+    width: 11px;
+    height: 11px;
+    background: var(--bl-accent);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+
+  .bl-spread-flags i:nth-child(2) { background: var(--bl-ink); }
+  .bl-spread-flags i:nth-child(3) {
+    background: var(--bl-amber);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+
+  /* ---- the spread itself ---- */
+
+  .bl-spread-viewport {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bl-spread-track {
     position: relative;
     display: flex;
     align-items: flex-start;
-    gap: clamp(2.5rem, 6vw, 5rem);
+    gap: clamp(2rem, 4.5vw, 4rem);
     width: max-content;
-    padding: 4.5rem 0 1rem;
+    height: 100%;
+    padding: 1.2rem clamp(1rem, 2.4vw, 1.9rem);
     will-change: transform;
   }
 
-  /* the line every room stands on */
-  .bl-reel-axis {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 6.4rem;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--bl-rule) 3%,
-      var(--bl-rule) 97%,
-      transparent
-    );
-  }
-
-  /* ---- one room ---- */
-
-  .bl-reel-stop {
-    position: relative;
-    flex: 0 0 auto;
-    width: 23rem;
-    padding-top: 4.4rem;
-  }
-
-  /* its mark, sitting on the line */
-  .bl-reel-mark {
+  /* a rule running down the spread, as in the reference */
+  .bl-spread-divider {
     position: absolute;
     top: 0;
-    left: 0;
-    display: grid;
-    place-items: center;
-    width: 4.4rem;
-    height: 4.4rem;
-    border-radius: 14px;
-    border: 1px solid rgba(243, 241, 234, 0.16);
-    background: #f3f1ea;
-    overflow: hidden;
-    opacity: 0.58;
-    transition:
-      opacity 0.5s var(--bl-ease),
-      border-color 0.5s var(--bl-ease),
-      box-shadow 0.5s var(--bl-ease),
-      scale 0.5s var(--bl-ease);
+    bottom: 0;
+    right: 16rem;
+    width: 1px;
+    background: var(--bl-rule);
   }
 
-  .bl-reel-mark .bl-plate-bare img {
-    position: absolute;
-    inset: 0.45rem;
-    width: auto;
-    height: auto;
-    max-width: calc(100% - 0.9rem);
-    max-height: calc(100% - 0.9rem);
-    margin: auto;
-    object-fit: contain;
-    filter: saturate(0.2);
+  /* ---- one column ---- */
+
+  .bl-spread-col {
+    flex: 0 0 auto;
+    width: 19.5rem;
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    opacity: 0.4;
+    transition: opacity 0.5s var(--bl-ease);
+  }
+
+  .bl-spread-col[data-on="true"] { opacity: 1; }
+
+  /* three drops, so nothing sits on a shared baseline */
+  .bl-spread-col[data-drop="0"] { margin-top: 0; }
+  .bl-spread-col[data-drop="1"] { margin-top: 3.4rem; }
+  .bl-spread-col[data-drop="2"] { margin-top: 1.7rem; }
+
+  .bl-spread-kicker {
+    margin: 0;
+    font-family: var(--bl-mono);
+    font-size: 0.54rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bl-ink-dim);
+  }
+
+  .bl-spread-head {
+    margin: 0;
+    font-family: var(--bl-sans);
+    font-weight: 600;
+    font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--bl-ink);
+  }
+
+  .bl-spread-role {
+    margin: 0;
+    font-family: var(--bl-mono);
+    font-size: 0.54rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--bl-ink-soft);
+  }
+
+  .bl-spread-body {
+    margin: 0.3rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.58;
+    color: var(--bl-ink-soft);
+  }
+
+  /* the mark, set as a block the way a photograph is */
+  .bl-spread-shot {
+    position: relative;
+    margin: 0.75rem 0 0;
+    aspect-ratio: 4 / 3;
+    background: #f3f1ea;
+    overflow: hidden;
+    filter: saturate(0.25);
     transition: filter 0.5s var(--bl-ease);
   }
 
-  .bl-reel-mark .bl-plate-bare > span {
+  .bl-spread-col[data-on="true"] .bl-spread-shot {
+    filter: none;
+    box-shadow: 0 0 2.5rem -0.6rem color-mix(in srgb, var(--tint) 65%, transparent);
+  }
+
+  .bl-spread-shot .bl-plate-bare {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .bl-spread-shot .bl-plate-bare img {
+    position: absolute;
+    inset: 1.1rem;
+    width: auto;
+    height: auto;
+    max-width: calc(100% - 2.2rem);
+    max-height: calc(100% - 2.2rem);
+    margin: auto;
+    object-fit: contain;
+  }
+
+  .bl-spread-shot .bl-plate-bare > span {
     display: grid;
     place-items: center;
     width: 100%;
     height: 100%;
     padding: 0;
     font-family: var(--bl-mono);
-    font-size: 0.86rem;
-    letter-spacing: 0.06em;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
     color: #2a2721;
     -webkit-text-stroke: 0;
     -webkit-text-fill-color: currentColor;
   }
 
-  .bl-reel-stop[data-on="true"] .bl-reel-mark {
-    opacity: 1;
-    scale: 1.05;
-    border-color: var(--tint);
-    box-shadow: 0 0 2rem 0.2rem color-mix(in srgb, var(--tint) 40%, transparent);
-  }
-
-  .bl-reel-stop[data-on="true"] .bl-reel-mark .bl-plate-bare img { filter: none; }
-
-  /* the pip where the column meets the line */
-  .bl-reel-node {
-    position: absolute;
-    top: calc(6.4rem - 4.5rem);
-    left: 5.6rem;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    border: 1px solid var(--bl-ink-dim);
-    background: var(--bl-bg);
-    transition: background 0.4s var(--bl-ease), border-color 0.4s var(--bl-ease);
-  }
-
-  .bl-reel-stop[data-on="true"] .bl-reel-node {
-    background: var(--tint);
-    border-color: var(--tint);
-  }
-
-  /* ---- what the column says ---- */
-
-  .bl-reel-copy {
-    display: grid;
-    justify-items: start;
-    gap: 0.45rem;
-    padding-top: 1.1rem;
-    opacity: 0.45;
-    transition: opacity 0.5s var(--bl-ease);
-  }
-
-  .bl-reel-stop[data-on="true"] .bl-reel-copy { opacity: 1; }
-
-  .bl-reel-when {
-    margin: 0;
+  .bl-spread-more {
+    justify-self: start;
+    margin: 0.7rem 0 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--bl-rule);
+    background: none;
     font-family: var(--bl-mono);
-    font-size: 0.56rem;
+    font-size: 0.54rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--bl-ink-soft);
+    cursor: pointer;
+    transition: color 0.3s var(--bl-ease), border-color 0.3s var(--bl-ease);
   }
 
-  .bl-reel-when em {
-    font-style: normal;
-    display: block;
-    font-size: 0.5rem;
-    color: var(--bl-ink-dim);
+  .bl-spread-more:hover {
+    color: var(--bl-accent);
+    border-color: var(--bl-accent);
   }
 
-  .bl-reel-name {
-    margin: 0.15rem 0 0;
-    font-family: var(--bl-display);
-    font-weight: 400;
-    font-size: clamp(1.6rem, 2.4vw, 2.3rem);
-    line-height: 1.04;
-    letter-spacing: -0.022em;
-  }
+  /* ---- the ruled strip ---- */
 
-  .bl-reel-name small {
-    font-family: var(--bl-mono);
-    font-size: 0.52rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--bl-ink-dim);
-    vertical-align: middle;
-    margin-left: 0.5rem;
-  }
-
-  .bl-reel-role {
-    margin: 0;
-    font-family: var(--bl-mono);
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--bl-ink-soft);
-  }
-
-  .bl-reel-brief {
-    margin: 0.35rem 0 0;
-    font-size: 0.9rem;
-    line-height: 1.62;
-    color: var(--bl-ink-soft);
-  }
-
-  .bl-reel-copy .bl-btn { margin-top: 0.5rem; }
-
-  /* ---- the scrubber ---- */
-
-  .bl-reel-scrub {
+  .bl-spread-strip {
     position: relative;
-    margin-top: clamp(1.5rem, 4vh, 2.5rem);
-    padding-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.55rem clamp(1rem, 2.4vw, 1.9rem);
+    border-top: 1px solid var(--bl-rule);
   }
 
-  /* the ruler */
-  .bl-reel-ticks {
+  /* the fine ruler, the way a film edge is marked */
+  .bl-spread-ticks {
     position: absolute;
     left: 0;
     right: 0;
-    top: 0;
-    height: 10px;
+    bottom: 0;
+    height: 9px;
     background-image: repeating-linear-gradient(
       90deg,
       var(--bl-rule) 0,
       var(--bl-rule) 1px,
       transparent 1px,
-      transparent 14px
+      transparent 9px
     );
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
   }
 
-  .bl-reel-fill {
+  .bl-spread-fill {
     position: absolute;
     left: 0;
     right: 0;
-    top: 0;
+    bottom: 0;
     height: 2px;
     background: var(--bl-accent);
     transform-origin: left;
     transition: transform 0.2s linear;
   }
 
-  .bl-reel-dots {
+  .bl-spread-strip ol {
     display: flex;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 1.1rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .bl-reel-dots li {
-    display: grid;
-    justify-items: center;
-    gap: 0.4rem;
-  }
-
-  .bl-reel-dots li > span {
+  .bl-spread-strip li {
     position: relative;
-    display: grid;
-    place-items: center;
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 8px;
-    border: 1px solid var(--bl-rule);
+    width: 3.1rem;
+    height: 2.1rem;
     background: #f3f1ea;
     overflow: hidden;
-    opacity: 0.4;
-    transition: opacity 0.4s var(--bl-ease), border-color 0.4s var(--bl-ease);
+    opacity: 0.32;
+    transition: opacity 0.4s var(--bl-ease);
   }
 
-  .bl-reel-dots li[data-on="true"] > span {
-    opacity: 1;
-    border-color: var(--bl-accent);
-  }
+  .bl-spread-strip li[data-on="true"] { opacity: 1; }
 
-  .bl-reel-dots li .bl-plate-bare img {
+  .bl-spread-strip li .bl-plate-bare img {
     position: absolute;
-    inset: 0.22rem;
+    inset: 0.26rem;
     width: auto;
     height: auto;
-    max-width: calc(100% - 0.44rem);
-    max-height: calc(100% - 0.44rem);
+    max-width: calc(100% - 0.52rem);
+    max-height: calc(100% - 0.52rem);
     margin: auto;
     object-fit: contain;
   }
 
-  .bl-reel-dots li .bl-plate-bare > span {
+  .bl-spread-strip li .bl-plate-bare > span {
     display: grid;
     place-items: center;
     width: 100%;
     height: 100%;
     padding: 0;
     font-family: var(--bl-mono);
-    font-size: 0.5rem;
+    font-size: 0.52rem;
     color: #2a2721;
     -webkit-text-stroke: 0;
     -webkit-text-fill-color: currentColor;
   }
 
-  .bl-reel-dots em {
+  .bl-spread-now {
+    margin-left: auto;
     font-family: var(--bl-mono);
-    font-style: normal;
-    font-size: 0.46rem;
-    letter-spacing: 0.1em;
+    font-size: 0.56rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--bl-ink-dim);
-    opacity: 0;
-    transition: opacity 0.4s var(--bl-ease);
+    color: var(--bl-ink-soft);
+  }
+}
+
+@media (min-width: 1040px) and (prefers-reduced-motion: reduce) {
+  .bl-spread-meter i { animation: none; }
+}
+
+/* The act pins at the top of the screen, so everything in it has to fit one
+   screen: heading, frame and ruled strip. The section's usual padding is
+   generous enough to push the heading off the top once the frame is in. */
+@media (min-width: 1040px) {
+  .bl-log {
+    padding-top: clamp(3rem, 7vh, 4.75rem);
+    padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
+    justify-content: flex-start;
   }
 
-  .bl-reel-dots li[data-on="true"] em { opacity: 1; color: var(--bl-ink-soft); }
+  .bl-log .bl-head { margin-bottom: 0; }
 }
