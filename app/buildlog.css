@@ -7424,7 +7424,9 @@ html[data-over="paper"] .bl-grain-layer {
 [data-light="dark"],
 .bl-hero,
 .bl-log,
+.bl-work,
 .bl-wall-act,
+.bl-studio,
 .bl-contact,
 .bl-footer {
   --bl-bg: #0a0908;

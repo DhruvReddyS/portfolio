@@ -94,7 +94,7 @@ function useHyderabadTime() {
 }
 
 /** The acts that keep the lights off: the opening and the close. */
-const UNLIT = new Set(["top", "log", "wins", "contact"]);
+const UNLIT = new Set(["top", "log", "work", "wins", "studio", "contact"]);
 
 function BuildLog() {
   const active = useActiveSection();
