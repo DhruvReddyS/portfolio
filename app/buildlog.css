@@ -6197,3 +6197,49 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-amber);
   white-space: nowrap;
 }
+
+/* ---- the case files, as a grid ------------------------------------------
+   They used to pin this act and run sideways. The log does that now, and
+   two pinned acts back to back is the same trick twice: a reader gets two
+   consecutive stretches where scrolling down does not move the page down.
+   Six cards on a grid, scrolling the way the rest of the page does.     */
+
+.bl-film-viewport { overflow: visible; }
+
+.bl-film-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: clamp(0.9rem, 2vw, 1.6rem);
+  width: 100%;
+  padding: 0;
+  transform: none !important;
+}
+
+.bl-panel {
+  width: 100%;
+  height: clamp(20rem, 42vh, 25rem);
+}
+
+/* the one with the awards takes the wide slot */
+.bl-film-track > *:first-child { grid-column: span 2; }
+
+.bl-film-track > *:first-child .bl-panel { height: clamp(22rem, 48vh, 28rem); }
+
+@media (max-width: 900px) {
+  .bl-film-track > *:first-child { grid-column: auto; }
+  .bl-film-track > *:first-child .bl-panel { height: clamp(20rem, 42vh, 25rem); }
+}
+
+/* the act no longer has to hold one screen exactly */
+.bl-film {
+  min-height: 0;
+  padding-top: clamp(4rem, 10vh, 7rem);
+  padding-bottom: clamp(4rem, 10vh, 7rem);
+}
+
+/* The act was full-bleed on purpose while it was a strip running off both
+   edges. As a grid it needs the page's own gutter, or the cards sit hard
+   against the screen edge. */
+.bl-film-track { padding-inline: var(--bl-gutter); }
+
+.bl-film .bl-head { padding-inline: var(--bl-gutter); }

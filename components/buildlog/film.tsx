@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
@@ -19,66 +19,38 @@ if (typeof window !== "undefined") {
  * is both simpler and better on a touch screen.
  */
 export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
-  const section = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
 
+  // The cards used to pin this act and turn vertical scroll sideways. The
+  // log does that now, and two pinned acts back to back is the same trick
+  // twice: a reader gets two consecutive stretches where scrolling down
+  // does not move the page down. These lay out as a grid and simply scroll.
   useEffect(() => {
-    const sectionNode = section.current;
     const trackNode = track.current;
-    if (!sectionNode || !trackNode) return;
-
-    const wide = window.matchMedia("(min-width: 861px)");
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!wide.matches || still.matches) return;
+    if (!trackNode) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const context = gsap.context(() => {
-      const distance = () =>
-        Math.max(0, trackNode.scrollWidth - window.innerWidth);
-
-      gsap.to(trackNode, {
-        x: () => -distance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionNode,
-          start: "top top",
-          end: () => `+=${distance()}`,
-          pin: true,
-          scrub: 0.85,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => setProgress(self.progress),
-        },
+      gsap.from(".bl-panel", {
+        y: 42,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        stagger: 0.08,
+        scrollTrigger: { trigger: trackNode, start: "top 82%", once: true },
       });
-
-      // each still drifts against the travel, so the strip has depth
-      gsap.utils.toArray<HTMLElement>(".bl-panel-media img").forEach((image) => {
-        gsap.fromTo(
-          image,
-          { xPercent: -6 },
-          {
-            xPercent: 6,
-            ease: "none",
-            scrollTrigger: {
-              trigger: sectionNode,
-              start: "top top",
-              end: () => `+=${distance()}`,
-              scrub: 1,
-            },
-          },
-        );
-      });
-    }, sectionNode);
+    }, trackNode);
 
     return () => context.revert();
   }, []);
 
   return (
     <>
-        <section className="bl-film" id="work" ref={section}>
+        <section className="bl-film" id="work">
         <SectionHeader
         label="02 / Selected work"
         title="Six things I shipped"
-        lead="Drag or scroll sideways. Open any one for the full case file."
+        lead="Six builds. Open any one for the full case file."
       />
 
       <div className="bl-film-viewport">
@@ -150,10 +122,6 @@ export function FilmStrip({ onOpen }: { onOpen: (file: CaseFile) => void }) {
               </article>
             ))}
           </div>
-        </div>
-
-        <div className="bl-film-progress" aria-hidden="true">
-          <span style={{ transform: `scaleX(${Math.max(0.02, progress)})` }} />
         </div>
 
       </section>
