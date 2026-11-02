@@ -21,6 +21,7 @@ import { Marked, MarkedLine } from "./marked";
 import { Reel } from "./reel";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import { CrowdCanvas } from "@/components/ui/skiper39";
+import { BugHunt } from "@/components/ui/bug-hunt";
 import { PolaroidLine } from "@/components/ui/polaroid-line";
 import { StampedWordmark } from "@/components/ui/stamped-wordmark";
 import {
@@ -473,6 +474,13 @@ export function LogSection() {
 
   return (
     <section className="bl-section bl-log" id="log">
+      {/*
+        Webs, a spider, and one bug to fix. It lives here rather than on the
+        contact sheet, which already has a crowd walking across it: two things
+        moving in one frame and neither of them is noticed.
+      */}
+      <BugHunt roam={0.56} />
+
       <SectionHeader
         label="01 / Experience"
         title="Where it happened"
