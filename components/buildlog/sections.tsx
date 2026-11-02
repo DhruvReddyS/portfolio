@@ -19,6 +19,7 @@ import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
 import { Reel } from "./reel";
 import { AsciiArt } from "@/components/ui/ascii-art";
+import { CrowdCanvas } from "@/components/ui/skiper39";
 import {
   MarkArrow,
   MarkWindow,
@@ -709,6 +710,22 @@ export function WinsSection() {
 export function ContactSection() {
   return (
     <section className="bl-section bl-contact" id="contact">
+      {/*
+        A crowd along the foot of the last act. The whole page argues that the
+        work was for people and with people, and this is the one place that
+        could say so without another paragraph. Set as ink at a whisper, with
+        the light falling off at the top and bottom, so they read as figures
+        going past behind the invitation rather than as an illustration of it.
+      */}
+      <div className="bl-crowd" aria-hidden="true">
+        <CrowdCanvas
+          src="/assets/crowd/peeps.png"
+          rows={15}
+          cols={7}
+          className="bl-crowd-canvas"
+        />
+      </div>
+
       <SectionHeader label="07 / Contact" title="What happens next" />
 
       <Reveal>

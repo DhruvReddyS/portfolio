@@ -6747,104 +6747,25 @@ html[data-over="paper"] .bl-grain-layer {
 
 /* ---------- the cover ------------------------------------------------- */
 
-.bl-cover {
+/*
+ * The sheet itself is the LoadingAnimation component, fixed over everything
+ * at z-index 120 and painting its own ground. All this has to do is hold the
+ * stacking context and take it away again once the pixels have blown apart.
+ */
+
+.bl-cover-wrap {
   position: fixed;
   inset: 0;
-  z-index: 110;
-  display: grid;
-  place-items: center;
-  padding: clamp(1.25rem, 4vw, 3rem);
-  background: #080706;
-  color: var(--bl-ink);
-  will-change: transform;
+  z-index: 120;
 }
 
-.bl-cover-frame {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: clamp(1.1rem, 3vh, 2rem);
-  width: min(62rem, 100%);
-  padding: clamp(3rem, 9vh, 6rem) clamp(1.5rem, 5vw, 4.5rem);
+.bl-cover-sheet {
+  transition: opacity 0.6s var(--bl-ease);
 }
 
-/* the rule is drawn as four separate strokes so it can be ruled on, across
-   and then down, the way a frame is actually drawn */
-.bl-cover-frame > i,
-.bl-cover-frame > b {
-  position: absolute;
-  background: var(--bl-rule);
-}
-
-.bl-cover-frame > i {
-  left: 0;
-  right: 0;
-  height: 1px;
-  transform-origin: 0 50%;
-}
-
-.bl-cover-frame > i:nth-of-type(1) { top: 0; }
-.bl-cover-frame > i:nth-of-type(2) { bottom: 0; transform-origin: 100% 50%; }
-
-.bl-cover-frame > b {
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  transform-origin: 50% 0;
-}
-
-.bl-cover-frame > b:nth-of-type(1) { left: 0; }
-.bl-cover-frame > b:nth-of-type(2) { right: 0; transform-origin: 50% 100%; }
-
-.bl-cover-title {
-  margin: 0;
-  display: grid;
-  justify-items: center;
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-variation-settings: "SOFT" 22, "WONK" 1, "opsz" 72;
-  font-size: clamp(3rem, 11vw, 8rem);
-  line-height: 0.94;
-  letter-spacing: -0.03em;
-  text-align: center;
-}
-
-.bl-cover-title em {
-  font-style: italic;
-  color: var(--bl-accent);
-}
-
-/* each line is clipped to its own box, so it sets from behind its baseline */
-.bl-cover-line {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.06em;
-}
-
-.bl-cover-line > span { display: block; }
-
-.bl-cover-meta {
-  margin: 0;
-  font-family: var(--bl-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  text-align: center;
-}
-
-.bl-cover-by { color: var(--bl-ink-soft); }
-
-.bl-cover-foot {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.4rem 1.75rem;
-  letter-spacing: 0.22em;
-}
-
-@media (max-width: 560px) {
-  .bl-cover-meta { letter-spacing: 0.2em; font-size: 0.55rem; }
+.bl-cover-wrap[data-leaving="true"] .bl-cover-sheet {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ---------- the colophon ---------------------------------------------- */
@@ -7342,3 +7263,50 @@ html[data-over="paper"] .bl-grain-layer {
 
 .bl-bento-copy strong { transition: color 0.25s var(--bl-ease); }
 .bl-bento-tile:hover .bl-bento-copy strong { color: var(--bl-accent); }
+
+/* ---------- the crowd along the foot of the last act ------------------ */
+
+.bl-contact {
+  position: relative;
+  overflow: hidden;
+}
+
+/*
+ * The sprite sheet is black line art drawn for a white page. Inverted it
+ * becomes the ink this page is set in, and at this opacity it is weather
+ * rather than illustration. The mask stops it ending on a hard line.
+ */
+.bl-crowd {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: min(42vh, 23rem);
+  z-index: 0;
+  pointer-events: none;
+  filter: invert(1);
+  /* They pass in a dense clump as often as they pass singly, so this is set
+     for the clump: at the density of the screenshot that follows it would be
+     a wall of people across the invitation, and the invitation is the point. */
+  opacity: 0.12;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 56%, #000 90%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 56%, #000 90%, transparent);
+}
+
+.bl-crowd-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* the invitation sits in front of them, not among them */
+.bl-contact > *:not(.bl-crowd) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-crowd { display: none; }
+}

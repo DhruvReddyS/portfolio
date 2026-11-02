@@ -8,7 +8,7 @@ import { EducationSection } from "@/components/buildlog/education";
 import { StudioSection } from "@/components/buildlog/studio";
 import { WorkIndex } from "@/components/buildlog/work-index";
 import { SmoothScroll } from "@/components/buildlog/smooth";
-import { Overture } from "@/components/buildlog/overture";
+import { Cover } from "@/components/buildlog/cover";
 import {
   BuildLogFooter,
   CaseModal,
@@ -114,7 +114,7 @@ function BuildLog() {
       <a className="bl-skip" href="#log">
         Skip to the log
       </a>
-      <Overture />
+      <Cover />
       <div className="bl-grain-layer" aria-hidden="true" />
 
       <BuildLogNav active={active === "top" ? "" : active} />

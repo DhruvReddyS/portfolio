@@ -130,8 +130,17 @@ export default function ColophonPage() {
               circle and underline on the page.
             </li>
             <li>
-              The scattering grid in the stack section is adapted from a Codrops
-              demo.
+              The crowd walking along the foot of the last section is Skiper 39
+              by Gurvinder Singh (<a href="https://skiper-ui.com" target="_blank" rel="noreferrer">Skiper UI</a>),
+              itself adapted from a pen by Zadvorsky. The people in it are{" "}
+              <a href="https://www.openpeeps.com/" target="_blank" rel="noreferrer">Open Peeps</a>{" "}
+              by Pablo Stanley. The sprite sheet is served from this site rather
+              than from anyone else&apos;s, so the promise above still holds.
+            </li>
+            <li>
+              The loading sheet is built on the LoadingAnimation component, with
+              its figure replaced: the frames are a photograph of me, reduced to
+              sixty-six by fifty-three cells at one bit each.
             </li>
           </ul>
 
