@@ -214,6 +214,11 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
               >
                 <span className="bl-index-num">{row.index}</span>
 
+                {/* name, leader, figure: one line, so the leader is a flex
+                    child that takes whatever is left between them. As grid
+                    areas the rows underneath inflated the auto columns and
+                    the leader got what was left of that, which was a stub */}
+                <div className="bl-index-head">
                 <h3 className="bl-index-name">
                   {row.file ? (
                     <button
@@ -234,20 +239,18 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                   )}
                 </h3>
 
+                <i className="bl-index-lead" aria-hidden="true" />
+
+                <p className="bl-index-filed">{row.filed}</p>
+                </div>
+
                 <p className="bl-index-field">{row.field}</p>
 
                 <p className="bl-index-line">
                   <MarkedLine text={row.line} mark={row.mark} />
                 </p>
 
-                <p className="bl-index-filed">{row.filed}</p>
-
-                {/* the parts list is the one thing held back for the row
-                    being read: eight of them at once is a wall of nouns */}
-                <p className="bl-index-stack">
-                  {row.stack.slice(0, 7).join("  /  ")}
-                </p>
-
+                <div className="bl-index-foot">
                 <div className="bl-index-links">
                   {row.link && (
                     <a href={row.link.href} target="_blank" rel="noreferrer">
@@ -264,6 +267,13 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                       <MarkRosette size={12} /> Winner, twice
                     </span>
                   )}
+                </div>
+
+                {/* the parts list is the one thing held back for the row
+                    being read: eight of them at once is a wall of nouns */}
+                <p className="bl-index-stack">
+                  {row.stack.slice(0, 7).join("  /  ")}
+                </p>
                 </div>
               </li>
             </Fragment>
