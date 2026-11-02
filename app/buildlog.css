@@ -5968,3 +5968,157 @@ html.bl-locked body { overflow: hidden; }
 .bl-spread-col[data-drop="up"] { padding-top: 0.4rem; }
 
 .bl-spread-track { align-items: stretch; padding-block: 1rem; }
+
+/* ---- the case files, as modern cards ------------------------------------
+   The panels were slides: one filled two-thirds of the screen, held still,
+   and answered nothing when you reached for it. They are cards now. Two sit
+   in view at once so the strip reads as a set rather than a slideshow, the
+   art holds back until the card is reached for, and the depth is in the
+   layers the way it is on the wins: art set back behind the glass, copy
+   stood forward of it, the whole card rising toward you.                 */
+
+.bl-film-track { perspective: 1600px; perspective-origin: 50% 45%; }
+
+.bl-panel {
+  width: min(46vw, 38rem);
+  height: min(66vh, 34rem);
+  border-radius: 20px;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.5s var(--bl-ease),
+    border-color 0.4s var(--bl-ease),
+    box-shadow 0.5s var(--bl-ease);
+  box-shadow: 0 1.4rem 2.8rem -1.5rem rgba(0, 0, 0, 0.9);
+}
+
+.bl-panel:hover,
+.bl-panel:focus-within {
+  transform: translateZ(42px);
+  border-color: color-mix(in srgb, var(--bl-accent) 45%, transparent);
+  box-shadow:
+    0 2.4rem 4.5rem -1.6rem rgba(0, 0, 0, 0.95),
+    0 0 0 1px color-mix(in srgb, var(--bl-accent) 30%, transparent);
+}
+
+/* the art sits back, so moving the card parallaxes it against the frame */
+.bl-panel-media {
+  transform: translateZ(-34px) scale(1.08);
+  transition: transform 0.6s var(--bl-ease);
+}
+
+.bl-panel-media .bl-plate-bare img {
+  filter: saturate(0.7) brightness(0.74);
+  transition: filter 0.55s var(--bl-ease), transform 0.8s var(--bl-ease);
+}
+
+.bl-panel:hover .bl-panel-media .bl-plate-bare img,
+.bl-panel:focus-within .bl-panel-media .bl-plate-bare img {
+  filter: saturate(1) brightness(0.95);
+  transform: scale(1.04);
+}
+
+/* the copy stands off the face */
+.bl-panel-copy {
+  transform: translateZ(28px);
+  transition: transform 0.5s var(--bl-ease);
+}
+
+.bl-panel:hover .bl-panel-copy { transform: translateZ(40px); }
+
+.bl-panel-index { transform: translateZ(14px); }
+
+/* a lit lip along the bottom edge, as on the wins */
+.bl-panel::after {
+  content: "";
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--bl-accent) 85%, transparent),
+    transparent
+  );
+  opacity: 0;
+  transform: translateZ(24px);
+  transition: opacity 0.4s var(--bl-ease);
+  z-index: 3;
+}
+
+.bl-panel:hover::after,
+.bl-panel:focus-within::after { opacity: 1; }
+
+/* the actions read as controls, not as a row of pills competing with the art */
+.bl-panel-actions { gap: 0.4rem; }
+
+.bl-panel .bl-btn {
+  padding: 0.48rem 0.75rem;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  background: rgba(10, 10, 9, 0.42);
+}
+
+.bl-panel .bl-btn-solid { background: var(--bl-accent); backdrop-filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-panel,
+  .bl-panel:hover { transform: none; }
+  .bl-panel-media { transform: none; }
+  .bl-panel-copy { transform: none; }
+}
+
+@media (max-width: 860px) {
+  .bl-panel { width: min(86vw, 30rem); height: min(72vh, 32rem); }
+}
+
+/* ---- the spread, tightened ----------------------------------------------
+   The columns were sparse: a line of copy and a small mark left a lot of
+   dead frame. The mark is bigger, the type sits closer, and a hairline
+   runs between columns the way the reference rules its spread.          */
+
+.bl-spread-shot {
+  height: clamp(7rem, 30cqh, 11rem);
+  margin-top: 0.75rem;
+}
+
+.bl-spread-head { font-size: clamp(1.15rem, 3.2cqw, 1.5rem); }
+
+.bl-spread-body {
+  font-size: clamp(0.74rem, 2cqw, 0.84rem);
+  line-height: 1.6;
+  margin-top: 0.4rem;
+}
+
+/* the rule between columns */
+.bl-spread-col + .bl-spread-col { position: relative; }
+
+.bl-spread-col + .bl-spread-col::before {
+  content: "";
+  position: absolute;
+  top: -1rem;
+  bottom: -1rem;
+  left: calc(clamp(1.1rem, 3.5vw, 3.25rem) / -2);
+  width: 1px;
+  background: var(--bl-rule-soft);
+}
+
+/* the mark of the room being read carries its colour into the frame */
+.bl-spread-col[data-on="true"] .bl-spread-kicker { color: var(--tint); }
+
+@container (max-width: 640px) {
+  .bl-spread-shot { height: clamp(5rem, 22cqh, 7rem); }
+}
+
+/* A taller mark leaves less slack in the frame, and the zigzag is only as
+   big as the slack. 11rem took it down to 21px of travel, which is not a
+   zigzag. The mark gives some back, and the frame is a little taller. */
+.bl-spread { height: min(70vh, 38rem); }
+
+.bl-spread-shot { height: clamp(6rem, 24cqh, 9.25rem); }
+
+@container (max-width: 640px) {
+  .bl-spread-shot { height: clamp(4.5rem, 20cqh, 6.5rem); }
+}
