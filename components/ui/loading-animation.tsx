@@ -155,9 +155,16 @@ const CSS = `
 .la-loader .la-stage{position:relative;height:100%}
 .la-loader .la-top,.la-loader .la-cue,.la-loader .la-msg,.la-loader .la-replay{display:none !important}
 .la-loader .la-load{top:auto;bottom:clamp(22px,5vh,46px);left:clamp(20px,5vw,56px);right:auto;text-align:left;display:block}
-.la-loader .la-load b{font-size:11px;letter-spacing:2.2px;margin-bottom:9px;color:var(--la-ink)}
+.la-loader .la-load{display:grid;gap:9px;justify-items:start}
+.la-loader .la-load b{font-size:11px;letter-spacing:2.2px;margin:0;color:var(--la-ink)}
+.la-pct{display:none}
+.la-loader .la-pct{display:block;font:700 clamp(32px,4.4vw,52px)/.9 ${FONT};font-style:normal;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--la-accent)}
+.la-loader .la-pct::after{content:'%';font-size:.34em;letter-spacing:.14em;margin-left:5px;vertical-align:top;color:var(--la-ink);opacity:.55}
 .la-loader .la-bar{justify-content:flex-start;gap:4px}
 .la-loader .la-bar i{width:14px;height:8px;opacity:.16;transition:opacity .22s linear}
+/* .la-bar i.on is declared above at the same weight as the rule over it,
+   so in loader mode the later one won and the bar never lit. */
+.la-loader .la-bar i.on{opacity:1}
 .la-plate{position:absolute;inset:0;z-index:6;pointer-events:none;padding:clamp(20px,5vw,56px);display:flex;flex-direction:column;justify-content:space-between}
 .la-plate p{margin:0}
 .la-plate-title{font:700 11px ${FONT};letter-spacing:2.6px;text-transform:uppercase;color:var(--la-accent)}
@@ -213,7 +220,7 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
       <div class="la-msg"><h1 class="la-h" aria-label="${esc(rows.map((r) => r.map((c) => c[0]).join("")).join(" ").replace(/\s+/g, " ").trim())}">${rows.map(headRow).join("")}</h1>
         <button class="la-cta" type="button" tabindex="-1">${esc(o.cta)}</button></div>
       ${o.loader ? `<div class="la-plate" aria-hidden="true"><p class="la-plate-title">${esc(o.title || o.name)}</p><p class="la-plate-foot">${o.footer.map((f) => `<span>${esc(f)}</span>`).join("")}</p></div>` : ""}
-      <div class="la-load" role="status"><b>${esc(o.loadingLabel)}</b><div class="la-bar">${"<i></i>".repeat(16)}</div><button class="la-replay" type="button">${esc(o.replayLabel)}</button></div>
+      <div class="la-load" role="status"><em class="la-pct">0</em><b>${esc(o.loadingLabel)}</b><div class="la-bar">${"<i></i>".repeat(16)}</div><button class="la-replay" type="button">${esc(o.replayLabel)}</button></div>
     </div></div>`;
 
   const q = <T extends Element>(s: string) => root.querySelector(s) as T;
@@ -223,6 +230,9 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
   const chips = [...root.querySelectorAll<HTMLElement>(".la-t")];
   const cta = q<HTMLButtonElement>(".la-cta"), cue = q<HTMLElement>(".la-cue"), load = q<HTMLElement>(".la-load");
   const loadLabel = q<HTMLElement>(".la-load b"), barBlocks = [...root.querySelectorAll<HTMLElement>(".la-bar i")];
+  const pctEl = q<HTMLElement>(".la-pct");
+  /** The count under the bar. Only ever goes up, and only reads 100 when it is. */
+  const showPct = (v: number) => { const t = String(v); if (pctEl.textContent !== t) pctEl.textContent = t; };
 
   /* decode the packed frames (1 bit per cell), and find the box the figure ever occupies */
   const packed = opts.frames && opts.frames.length ? opts.frames : BUILTIN_FRAMES;
@@ -354,13 +364,22 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
     };
     const when = (t: number, fn: () => void) => { const k = at(t); if (k <= 0.01) return; sx.save(); sx.globalAlpha = k; fn(); sx.restore(); };
     const k = frame % n, rot = Math.round((k / n) * 360);
+    /*
+     * The side panels only exist if there is margin to stand them in. The
+     * figure is centred and grows with the sheet, so on a narrow window there
+     * is none, and `panel` would clamp them back inside the frame — a panel
+     * of measurements sitting on the face it is measuring, which reads as a
+     * box dropped on him rather than as a tool pointing at him. Better to
+     * leave them out than to put them there.
+     */
+    const roomL = fx0 - (R + 6), roomR = W - fx1 - 6;
     /* 0.10  layers */
-    when(0.1, () => panel(fx1 + 14, fy0, 138, "Layers", [["◉ Figure", ""], ["◉ Pixels", String(GW * GH)], ["◉ Background", ""]]));
+    if (roomR >= 138 + 14) when(0.1, () => panel(fx1 + 14, fy0, 138, "Layers", [["◉ Figure", ""], ["◉ Pixels", String(GW * GH)], ["◉ Background", ""]]));
     /* 0.25  properties, with a live rotation readout */
     /* Role is prose, and prose in a panel of measurements is the one line
        that has to be truncated to fit, which is how you can tell it does
        not belong there. */
-    when(0.25, () => panel(fx0 - 14 - 142, fy0, 142, "Properties", [["X", `${Math.round(fx0)}`], ["Y", `${Math.round(fy0)}`], ["W × H", `${Math.round(fx1 - fx0)}×${Math.round(fy1 - fy0)}`], ["Rotate", `${rot}°`], ["Pixel", `${cw.toFixed(1)}×${ch.toFixed(1)}`], ["Frame", `${k + 1}/${n}`], ["Colour", "1-bit"]]));
+    if (roomL >= 142 + 14) when(0.25, () => panel(fx0 - 14 - 142, fy0, 142, "Properties", [["X", `${Math.round(fx0)}`], ["Y", `${Math.round(fy0)}`], ["W × H", `${Math.round(fx1 - fx0)}×${Math.round(fy1 - fy0)}`], ["Rotate", `${rot}°`], ["Pixel", `${cw.toFixed(1)}×${ch.toFixed(1)}`], ["Frame", `${k + 1}/${n}`], ["Colour", "1-bit"]]));
     /* 0.40  measurements */
     when(0.4, () => {
       const my = (fy0 + fy1) / 2, mx = (fx0 + fx1) / 2;
@@ -375,8 +394,12 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
      */
     /* 0.70  tags */
     when(0.7, () => {
-      pill("Layer 1 · 66 × 53", fx1 + 14, fy1 - 80, col.tint, G(1)); pill("Pixel mask", fx1 + 14, fy1 - 58, col.tint, G(1)); pill("Opacity 100%", fx0 - 96, fy1 - 80, col.tint, G(1));
-      pill(`Fill  ${col.accent.replace("#", "").toUpperCase()}`, fx0 - 108, fy1 - 58, col.tint, G(1)); sx.fillStyle = col.accent; sx.fillRect(fx0 - 106, fy1 - 55, 9, 9);
+      if (roomR >= 110) { pill("Layer 1 · 66 × 53", fx1 + 14, fy1 - 80, col.tint, G(1)); pill("Pixel mask", fx1 + 14, fy1 - 58, col.tint, G(1)); }
+      if (roomL >= 112) {
+        pill("Opacity 100%", fx0 - 96, fy1 - 80, col.tint, G(1));
+        pill(`Fill  ${col.accent.replace("#", "").toUpperCase()}`, fx0 - 108, fy1 - 58, col.tint, G(1));
+        sx.fillStyle = col.accent; sx.fillRect(fx0 - 106, fy1 - 55, 9, 9);
+      }
     });
     /* 0.85  swatches + export */
     when(0.85, () => {
@@ -470,7 +493,7 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
   function complete() {
     if (!o.loader) document.body.style.overflow = "";
     st.phase = "done"; if (!o.loader) { st.p = 0; st.target = 0; }
-    loadLabel.textContent = o.readyLabel; barBlocks.forEach((i) => i.classList.add("on")); load.classList.add("on", "done");
+    loadLabel.textContent = o.readyLabel; barBlocks.forEach((i) => i.classList.add("on")); showPct(100); load.classList.add("on", "done");
     opts.onComplete?.();
     root.dispatchEvent(new CustomEvent("loadinganimation:complete", { bubbles: true }));
   }
@@ -481,7 +504,7 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
     st.phase = "assemble"; st.target = 0; if (!o.autoplay) document.body.style.overflow = "hidden";
   }
   function resetUi() {
-    load.classList.remove("on", "done"); loadLabel.textContent = o.loadingLabel; barBlocks.forEach((i) => i.classList.remove("on"));
+    load.classList.remove("on", "done"); loadLabel.textContent = o.loadingLabel; barBlocks.forEach((i) => i.classList.remove("on")); showPct(0);
   }
   function replay() {
     st.phase = "scroll"; st.p = 0; st.target = 0; st.autoStart = 0; st.reveal = 0; document.body.style.overflow = "";
@@ -504,12 +527,17 @@ export function mountLoadingAnimation(root: HTMLElement, opts: LoadingAnimationO
     if (st.phase === "scroll") {
       st.p = reduced ? 0 : 1 - smooth(e / IN);
       st.reveal = reduced ? 0 : clamp(hold / 2100);
-      const filled = Math.min(15, Math.floor(clamp(e / Math.max(1, o.minDuration)) * 16));
+      const prog = clamp(e / Math.max(1, o.minDuration));
+      const filled = Math.min(15, Math.floor(prog * 16));
       barBlocks.forEach((i, k) => i.classList.toggle("on", k < filled));
+      // 99 is the honest ceiling while anything is still in flight: the bar
+      // and the number are waiting on the same thing, so they stop together.
+      showPct(Math.min(99, Math.round(prog * 99)));
       if (ready && e >= o.minDuration) {
         st.phase = "load"; st.loadStart = ts;
         loadLabel.textContent = o.readyLabel;
         barBlocks.forEach((i) => i.classList.add("on"));
+        showPct(100);
         // said now, not when the pixels have finished going: whatever is
         // underneath should be arriving while this is still on its way out
         opts.onLeave?.();
