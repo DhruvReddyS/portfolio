@@ -6,7 +6,7 @@ import { GrokCompanion } from "@/components/buildlog/grok";
 import { ToolkitSection } from "@/components/buildlog/toolkit";
 import { EducationSection } from "@/components/buildlog/education";
 import { StudioSection } from "@/components/buildlog/studio";
-import { FilmStrip } from "@/components/buildlog/film";
+import { WorkIndex } from "@/components/buildlog/work-index";
 import { SmoothScroll } from "@/components/buildlog/smooth";
 import { Overture } from "@/components/buildlog/overture";
 import {
@@ -113,7 +113,7 @@ function BuildLog() {
       <main className="bl-main">
         <Hero time={time} />
         <LogSection />
-        <FilmStrip onOpen={setOpenCase} />
+        <WorkIndex onOpen={setOpenCase} />
         <EducationSection />
         <ToolkitSection />
         <WinsSection />

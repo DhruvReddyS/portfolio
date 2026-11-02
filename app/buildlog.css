@@ -1212,79 +1212,7 @@ html.bl-locked body { overflow: hidden; }
 
 }
 
-/* ---------- the film strip --------------------------------------------------- */
-
-.bl-film {
-  position: relative;
-  padding: clamp(4rem, 10vh, 7rem) 0;
-  scroll-margin-top: 4.5rem;
-}
-
-/* while it is pinned the whole act has to fit the viewport exactly */
-@media (min-width: 861px) {
-  .bl-film {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(1rem, 3vh, 2rem);
-    padding: 5rem 0 2rem;
-  }
-
-  .bl-film-head { margin-bottom: 0; }
-
-  .bl-panel {
-    height: min(60vh, 32rem);
-  }
-}
-
-.bl-film-head {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: clamp(0.9rem, 3vw, 2.25rem);
-  padding: 0 var(--bl-gutter) 0 calc(var(--bl-gutter) + var(--bl-rail));
-  margin-bottom: clamp(2rem, 5vh, 3.25rem);
-}
-
-.bl-film-title {
-  margin: 0;
-  font-family: var(--bl-display);
-  font-size: clamp(1.9rem, 4.8vw, 3.4rem);
-  line-height: 1.04;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-
-.bl-film-hint { margin-left: auto; }
-
-.bl-film-viewport { overflow: hidden; }
-
-.bl-film-track {
-  display: flex;
-  gap: clamp(1rem, 2.5vw, 2rem);
-  padding: 0 calc(var(--bl-gutter) + var(--bl-rail));
-  will-change: transform;
-}
-
-.bl-panel {
-  position: relative;
-  flex: 0 0 auto;
-  width: min(68vw, 56rem);
-  height: min(74vh, 40rem);
-  overflow: hidden;
-  background: var(--bl-surface);
-  border: 1px solid var(--bl-rule);
-  display: flex;
-  align-items: flex-end;
-}
-
-.bl-panel-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: #14120f;
-}
+/* ---------- a plate, filling whatever holds it ------------------------------ */
 
 .bl-plate-bare {
   position: absolute;
@@ -1295,160 +1223,23 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-plate-bare img[data-loaded="true"] { width: 112%; margin-left: -6%; }
 
-/* the title, oversized and ghosted, until a screenshot replaces it */
+/* The monogram is a stand-in for a file that is not there yet. Once one
+   loads it is no longer standing in for anything, and leaving it drawn
+   puts the project's name in outline on top of the project's own
+   screenshot. */
+.bl-plate-bare:has(img[data-loaded="true"]) > span,
+.bl-plate-slot:has(img[data-loaded="true"]) > span { display: none; }
+
+/* the title, ghosted, while there is no screenshot to show instead */
 .bl-plate-bare > span {
   font-family: var(--bl-display);
-  font-size: clamp(3rem, 9vw, 7rem);
+  font-size: clamp(2rem, 5vw, 3.6rem);
   line-height: 1;
   letter-spacing: -0.035em;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(233, 227, 213, 0.22);
+  -webkit-text-stroke: 1px rgba(233, 227, 213, 0.18);
   text-align: center;
-  padding: 0 2rem;
-}
-
-.bl-panel-media::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      to top,
-      rgba(8, 7, 6, 0.95) 0%,
-      rgba(8, 7, 6, 0.72) 32%,
-      rgba(8, 7, 6, 0.18) 68%
-    ),
-    linear-gradient(
-      75deg,
-      rgba(8, 7, 6, 0.8) 0%,
-      rgba(8, 7, 6, 0.3) 55%,
-      transparent 100%
-    );
-}
-
-/*
- * A panel is always a dark slide, whichever way the lamp is switched, so its
- * type is pinned to the light ink and the strip reads as one roll of film.
- */
-.bl-panel {
-  --bl-ink: #f3f1ea;
-  --bl-ink-soft: rgba(243, 241, 234, 0.82);
-  --bl-ink-dim: rgba(243, 241, 234, 0.62);
-  --bl-rule: rgba(243, 241, 234, 0.28);
-  color: var(--bl-ink);
-}
-
-.bl-panel .bl-btn { color: var(--bl-ink); }
-
-.bl-panel .bl-btn-solid { color: var(--bl-accent-ink); }
-
-.bl-panel-index {
-  position: absolute;
-  top: clamp(1rem, 2.5vw, 2rem);
-  right: clamp(1rem, 2.5vw, 2rem);
-  z-index: 2;
-  font-family: var(--bl-display);
-  font-size: clamp(4rem, 11vw, 9rem);
-  line-height: 0.8;
-  color: transparent;
-  -webkit-text-stroke: 1px color-mix(in srgb, var(--bl-ink) 38%, transparent);
-}
-
-.bl-panel-copy {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  gap: 0.7rem;
-  padding: clamp(1.5rem, 3.5vw, 3rem);
-  max-width: 44rem;
-}
-
-.bl-panel-domain,
-.bl-panel-tagline {
-  margin: 0;
-  font-family: var(--bl-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.17em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-}
-
-.bl-panel-name {
-  margin: 0;
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-size: clamp(2.6rem, 7vw, 6rem);
-  line-height: 0.9;
-  letter-spacing: -0.035em;
-}
-
-.bl-panel-thesis {
-  margin: 0;
-  max-width: 34ch;
-  font-size: clamp(1rem, 1.5vw, 1.25rem);
-  line-height: 1.5;
-  color: var(--bl-ink-soft);
-}
-
-.bl-panel-stack {
-  margin: 0;
-  font-family: var(--bl-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-}
-
-.bl-panel-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  align-items: center;
-  margin-top: 0.35rem;
-}
-
-.bl-panel-award {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-family: var(--bl-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--bl-amber);
-}
-
-.bl-film-progress {
-  height: 1px;
-  margin: 0 calc(var(--bl-gutter) + var(--bl-rail));
-  background: var(--bl-rule);
-}
-
-.bl-film-progress span {
-  display: block;
-  height: 100%;
-  background: var(--bl-hand);
-  transform-origin: left;
-  transform: scaleX(0);
-}
-
-/* touch screens get a native snapping strip instead of the pinned run */
-@media (max-width: 860px) {
-  .bl-film-viewport {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .bl-film-viewport::-webkit-scrollbar { display: none; }
-  .bl-film-track { transform: none !important; }
-  .bl-panel {
-    width: min(86vw, 30rem);
-    height: auto;
-    min-height: 32rem;
-    scroll-snap-align: center;
-  }
-  .bl-film-hint { margin-left: 0; }
+  padding: 0 1.5rem;
 }
 
 /* ---------- the opening cover ------------------------------------------- */
@@ -2395,7 +2186,6 @@ html.bl-locked body { overflow: hidden; }
 .bl-cta { border-radius: 999px; }
 
 /* media and panels get a real corner */
-.bl-panel,
 .bl-school,
 .bl-studio-panel,
 .bl-plate-slot,
@@ -2407,7 +2197,6 @@ html.bl-locked body { overflow: hidden; }
 .bl-plate-slot { border-radius: 12px; }
 
 /* a faint corner bloom on the big surfaces, the way a lit screen looks */
-.bl-panel::before,
 .bl-studio-panel::after {
   content: "";
   position: absolute;
@@ -2836,7 +2625,6 @@ html.bl-locked body { overflow: hidden; }
   justify-content: center;
 }
 
-.bl-film { min-height: 100svh; }
 
 @media (max-width: 760px) {
   .bl-section { min-height: auto; }
@@ -5917,110 +5705,6 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-spread-track { align-items: stretch; padding-block: 1rem; }
 
-/* ---- the case files, as modern cards ------------------------------------
-   The panels were slides: one filled two-thirds of the screen, held still,
-   and answered nothing when you reached for it. They are cards now. Two sit
-   in view at once so the strip reads as a set rather than a slideshow, the
-   art holds back until the card is reached for, and the depth is in the
-   layers the way it is on the wins: art set back behind the glass, copy
-   stood forward of it, the whole card rising toward you.                 */
-
-.bl-film-track { perspective: 1600px; perspective-origin: 50% 45%; }
-
-.bl-panel {
-  width: min(46vw, 38rem);
-  height: min(66vh, 34rem);
-  border-radius: 20px;
-  transform-style: preserve-3d;
-  transition:
-    transform 0.5s var(--bl-ease),
-    border-color 0.4s var(--bl-ease),
-    box-shadow 0.5s var(--bl-ease);
-  box-shadow: 0 1.4rem 2.8rem -1.5rem rgba(0, 0, 0, 0.9);
-}
-
-.bl-panel:hover,
-.bl-panel:focus-within {
-  transform: translateZ(42px);
-  border-color: color-mix(in srgb, var(--bl-accent) 45%, transparent);
-  box-shadow:
-    0 2.4rem 4.5rem -1.6rem rgba(0, 0, 0, 0.95),
-    0 0 0 1px color-mix(in srgb, var(--bl-accent) 30%, transparent);
-}
-
-/* the art sits back, so moving the card parallaxes it against the frame */
-.bl-panel-media {
-  transform: translateZ(-34px) scale(1.08);
-  transition: transform 0.6s var(--bl-ease);
-}
-
-.bl-panel-media .bl-plate-bare img {
-  filter: saturate(0.7) brightness(0.74);
-  transition: filter 0.55s var(--bl-ease), transform 0.8s var(--bl-ease);
-}
-
-.bl-panel:hover .bl-panel-media .bl-plate-bare img,
-.bl-panel:focus-within .bl-panel-media .bl-plate-bare img {
-  filter: saturate(1) brightness(0.95);
-  transform: scale(1.04);
-}
-
-/* the copy stands off the face */
-.bl-panel-copy {
-  transform: translateZ(28px);
-  transition: transform 0.5s var(--bl-ease);
-}
-
-.bl-panel:hover .bl-panel-copy { transform: translateZ(40px); }
-
-.bl-panel-index { transform: translateZ(14px); }
-
-/* a lit lip along the bottom edge, as on the wins */
-.bl-panel::after {
-  content: "";
-  position: absolute;
-  left: 9%;
-  right: 9%;
-  bottom: 0;
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--bl-accent) 85%, transparent),
-    transparent
-  );
-  opacity: 0;
-  transform: translateZ(24px);
-  transition: opacity 0.4s var(--bl-ease);
-  z-index: 3;
-}
-
-.bl-panel:hover::after,
-.bl-panel:focus-within::after { opacity: 1; }
-
-/* the actions read as controls, not as a row of pills competing with the art */
-.bl-panel-actions { gap: 0.4rem; }
-
-.bl-panel .bl-btn {
-  padding: 0.48rem 0.75rem;
-  border-radius: 999px;
-  backdrop-filter: blur(8px);
-  background: rgba(10, 10, 9, 0.42);
-}
-
-.bl-panel .bl-btn-solid { background: var(--bl-accent); backdrop-filter: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  .bl-panel,
-  .bl-panel:hover { transform: none; }
-  .bl-panel-media { transform: none; }
-  .bl-panel-copy { transform: none; }
-}
-
-@media (max-width: 860px) {
-  .bl-panel { width: min(86vw, 30rem); height: min(72vh, 32rem); }
-}
 
 /* ---- the spread, tightened ----------------------------------------------
    The columns were sparse: a line of copy and a small mark left a lot of
@@ -6113,182 +5797,6 @@ html.bl-locked body { overflow: hidden; }
    drain on the rest */
 .bl-spread-shot { filter: saturate(0.5); }
 
-/* ---- the cards ---- */
-
-/* The ghost numeral was set at a size that fought the project name for the
-   same corner. It sits behind the work now rather than beside it. */
-.bl-panel-index {
-  font-size: clamp(5rem, 11vw, 9rem);
-  opacity: 0.1;
-  top: auto;
-  bottom: 38%;
-  right: 1.25rem;
-}
-
-.bl-panel:hover .bl-panel-index { opacity: 0.16; }
-
-.bl-panel-index { transition: opacity 0.45s var(--bl-ease); }
-
-/* the award reads as a ribbon, not as another button in the row */
-.bl-panel-award {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--bl-amber) 55%, transparent);
-  background: color-mix(in srgb, var(--bl-amber) 14%, transparent);
-  font-family: var(--bl-mono);
-  font-size: 0.5rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--bl-amber);
-  white-space: nowrap;
-}
-
-
-/* ---- the case files, as a bento wall ------------------------------------
-   They used to pin this act and run sideways. The log does that now, and
-   two pinned acts back to back is the same trick twice: a reader gets two
-   consecutive stretches where scrolling down does not move the page down.
-
-   So the six sit on a wall instead, in four slot sizes. The sizes are
-   fixed per slot rather than measured from the content, which is what
-   keeps the wall a shape and not a pile; the cards were written in an
-   order that puts each build in the slot its artwork suits.
-
-   A tile shows what its size can hold and no more. Shrinking a card is
-   not hiding it: the whole case file is one click away from every tile,
-   and a small tile that tried to carry the same six lines as the big one
-   would only prove the sizes were decoration.                          */
-
-.bl-film-viewport { overflow: visible; }
-
-.bl-film-track {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: clamp(13rem, 17vw, 16rem);
-  gap: clamp(0.7rem, 1.1vw, 1.1rem);
-  width: 100%;
-  padding-inline: var(--bl-gutter);
-  transform: none !important;
-}
-
-/* the grid owns the measure now; the strip's own sizing is off */
-.bl-panel {
-  width: auto;
-  height: auto;
-  min-height: 0;
-  flex: initial;
-  border-radius: 18px;
-}
-
-.bl-panel[data-size="big"] { grid-column: span 2; grid-row: span 2; }
-.bl-panel[data-size="wide"] { grid-column: span 2; }
-.bl-panel[data-size="small"] { grid-column: span 1; }
-
-/* ---- what each size says ---- */
-
-.bl-panel-copy { padding: clamp(1.1rem, 1.6vw, 1.5rem); gap: 0.45rem; }
-
-.bl-panel[data-size="big"] .bl-panel-copy {
-  padding: clamp(1.5rem, 2.6vw, 2.4rem);
-  gap: 0.7rem;
-}
-
-.bl-panel-name { font-size: clamp(1.55rem, 2.3vw, 2.1rem); }
-.bl-panel[data-size="wide"] .bl-panel-name { font-size: clamp(1.8rem, 2.9vw, 2.7rem); }
-.bl-panel[data-size="big"] .bl-panel-name { font-size: clamp(2.6rem, 4.6vw, 4.6rem); }
-
-.bl-panel-thesis { font-size: 0.95rem; max-width: 40ch; }
-.bl-panel[data-size="big"] .bl-panel-thesis {
-  font-size: clamp(1rem, 1.4vw, 1.2rem);
-  max-width: 34ch;
-}
-
-/* only the big tile has the room for the build's parts list */
-.bl-panel:not([data-size="big"]) .bl-panel-stack { display: none; }
-
-/* a small tile keeps the name, the one-line what-it-is, and the way in */
-.bl-panel[data-size="small"] .bl-panel-domain,
-.bl-panel[data-size="small"] .bl-panel-thesis { display: none; }
-
-/* the ghost numeral is sized off its tile, or it swamps the small ones */
-.bl-panel-index { font-size: clamp(2.6rem, 4vw, 3.6rem); bottom: auto; top: 0.9rem; }
-.bl-panel[data-size="wide"] .bl-panel-index { font-size: clamp(3.4rem, 5.5vw, 5rem); }
-.bl-panel[data-size="big"] .bl-panel-index {
-  font-size: clamp(5rem, 9vw, 8.5rem);
-  top: auto;
-  bottom: 34%;
-}
-
-/* ---- the wall at narrower widths ---- */
-
-/* two columns: the big one goes full width and stays double height, the
-   wide ones go full width, and the small pair sit side by side */
-@media (max-width: 1180px) {
-  .bl-film-track {
-    grid-template-columns: repeat(2, 1fr);
-    /* a wide tile is the full width here, so it is carrying the same copy
-       across a much longer measure and needs the row to grow with it */
-    grid-auto-rows: clamp(14.5rem, 30vw, 17rem);
-  }
-
-  .bl-panel[data-size="wide"] { grid-column: span 2; }
-}
-
-/* one column: nothing is small any more, so every tile says everything */
-@media (max-width: 680px) {
-  .bl-film-track {
-    grid-template-columns: 1fr;
-    grid-auto-rows: auto;
-  }
-
-  .bl-panel,
-  .bl-panel[data-size="big"],
-  .bl-panel[data-size="wide"],
-  .bl-panel[data-size="small"] {
-    grid-column: auto;
-    grid-row: auto;
-    min-height: clamp(17rem, 46vh, 21rem);
-  }
-
-  .bl-panel[data-size="big"] { min-height: clamp(20rem, 54vh, 24rem); }
-
-  .bl-panel[data-size] .bl-panel-domain,
-  .bl-panel[data-size] .bl-panel-stack,
-  .bl-panel[data-size] .bl-panel-thesis { display: block; }
-
-  .bl-panel-name { font-size: clamp(2.1rem, 9vw, 3rem); }
-  .bl-panel-index { font-size: clamp(3.4rem, 14vw, 5rem); }
-}
-
-/* the act no longer has to hold one screen exactly */
-.bl-film {
-  height: auto;
-  min-height: 0;
-  padding-top: clamp(4rem, 10vh, 7rem);
-  padding-bottom: clamp(4rem, 10vh, 7rem);
-}
-
-/* The act was full-bleed on purpose while it was a strip running off both
-   edges. As a wall it needs the page's own gutter. */
-.bl-film .bl-head { padding-inline: var(--bl-gutter); }
-
-/* The ghosted title that stands in for a missing screenshot was sized off
-   the viewport, from the days when a card was most of one. On a tile it
-   has to be sized off the tile, or it outgrows the name it stands behind. */
-.bl-panel .bl-plate-bare > span { font-size: clamp(1.9rem, 4vw, 3.4rem); padding: 0 1rem; }
-.bl-panel[data-size="small"] .bl-plate-bare > span { font-size: clamp(1.5rem, 2.8vw, 2.3rem); }
-.bl-panel[data-size="big"] .bl-plate-bare > span { font-size: clamp(3rem, 6.5vw, 5.6rem); }
-
-@media (max-width: 680px) {
-  .bl-panel .bl-plate-bare > span,
-  .bl-panel[data-size="small"] .bl-plate-bare > span,
-  .bl-panel[data-size="big"] .bl-plate-bare > span {
-    font-size: clamp(2.2rem, 11vw, 3.6rem);
-  }
-}
 
 /* ---- the log, out of its box --------------------------------------------
    The spread sat inside a ruled frame with a bar of chrome across the top:
@@ -6404,360 +5912,338 @@ html.bl-locked body { overflow: hidden; }
 /* the circled word is drawn in the amber the note is written in */
 .bl-note .bl-marked-ink { color: var(--bl-amber); }
 
-/* ---- the side quests, as tiles ------------------------------------------
-   They were a list of names under the wall, which read as a footnote to
-   the work rather than as part of it. On the wall they are cards like the
-   rest, only smaller, and the sentence is the whole of what they say: the
-   kicker a card gives to its field, these give to where it was built.   */
-
-.bl-panel[data-kind="quest"] .bl-panel-domain { display: block; }
-
-.bl-panel-blurb {
-  margin: 0;
-  font-size: 0.85rem;
-  line-height: 1.45;
-  color: var(--bl-ink-soft);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
-  overflow: hidden;
-}
-
-/* no screenshot and no case file behind it, so the mark stands in for both
-   and is allowed to be the picture rather than hide behind one */
-.bl-panel[data-kind="quest"] .bl-panel-media::after {
-  background: linear-gradient(
-    to top,
-    rgba(8, 7, 6, 0.95) 0%,
-    rgba(8, 7, 6, 0.62) 46%,
-    rgba(8, 7, 6, 0.3) 100%
-  );
-}
-
-@media (max-width: 680px) {
-  .bl-note[data-size="wide"] { grid-column: auto; }
-  .bl-note { min-height: clamp(13rem, 34vh, 16rem); }
-  .bl-panel-blurb { -webkit-line-clamp: 6; line-clamp: 6; }
-}
 
 /* Wider rooms, now that the spread steps one at a time. At the old width
    four of the five were in the frame at once, which left the stepping with
    almost nothing to move and the columns with more air than words. */
 .bl-spread-col { width: clamp(15rem, 38cqw, 28rem); }
 
-/* ---- the wall, cleaned up -----------------------------------------------
-   Every tile was carrying two ghosts: the project's name set huge in
-   outline, and its number set huge in outline, both behind a tile that
-   already says the name and the number in full. On a card the width of a
-   screen that read as watermarking. At tile size it just reads as the
-   title having been printed twice, which is what made the wall look
-   broken rather than busy.
+/* ---------- the work, as an index -------------------------------------------
+   Cards were the wrong instrument for this section. Eight of them want
+   eight pictures and five of these builds have none; they want eight
+   equally weighted sentences and these have one strong one each; and they
+   want a shape, which kept turning into the subject.
 
-   Both go. The number comes back as a small slug in the corner, which is
-   what it was always for, and a tile with no screenshot is given a field
-   of colour to be rather than an outline of its own name.               */
+   A list has none of those appetites. It says what there is, in the order
+   it happened, and it is read the way a contents page is read: down the
+   left, stopping where something catches. What it cannot do is show the
+   work, so the margin does that, and follows whichever row is being read.
+   ------------------------------------------------------------------------- */
 
-.bl-panel .bl-plate-bare > span { display: none; }
+.bl-index { scroll-margin-top: 4.5rem; }
 
-/* the number, as a caption rather than a watermark */
-.bl-panel-index {
-  top: clamp(0.95rem, 1.7vw, 1.35rem);
-  left: clamp(1.1rem, 1.9vw, 1.5rem);
-  right: auto;
-  bottom: auto;
+.bl-index-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+  padding: 0 var(--bl-gutter);
+}
+
+/* ---- the list ---- */
+
+.bl-index-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-index-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.1rem minmax(0, 1fr) auto;
+  grid-template-areas:
+    "num name  filed"
+    "num field links";
+  align-items: baseline;
+  column-gap: clamp(0.75rem, 2vw, 1.75rem);
+  row-gap: 0.3rem;
+  padding: clamp(0.95rem, 1.8vh, 1.35rem) 0;
+  border-bottom: 1px solid var(--bl-rule-soft);
+  transition: background 0.35s var(--bl-ease);
+}
+
+/* the rule that marks the row being read, drawn from the left as a pen
+   would draw it rather than switched on */
+.bl-index-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 100%;
+  background: var(--bl-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--bl-ease);
+}
+
+.bl-index-row[data-on="true"]::after { transform: scaleX(1); }
+
+.bl-index-num {
+  grid-area: num;
+  align-self: start;
+  padding-top: 0.45rem;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: var(--bl-ink-dim);
+  transition: color 0.3s var(--bl-ease);
+}
+
+.bl-index-row[data-on="true"] .bl-index-num { color: var(--bl-accent); }
+
+.bl-index-name {
+  grid-area: name;
+  margin: 0;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-size: clamp(1.65rem, 2.7vw, 2.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+}
+
+.bl-index-name button,
+.bl-index-name span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--bl-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.3s var(--bl-ease);
+}
+
+.bl-index-name span { cursor: default; }
+
+.bl-index-row[data-on="true"] .bl-index-name button { color: var(--bl-accent); }
+
+/* the arrow is the whole of the invitation, so it is only there when the
+   row is the one being read */
+.bl-index-name button svg {
+  opacity: 0;
+  transform: translateX(-0.4rem);
+  transition:
+    opacity 0.3s var(--bl-ease),
+    transform 0.3s var(--bl-ease);
+}
+
+.bl-index-row[data-on="true"] .bl-index-name button svg {
+  opacity: 1;
+  transform: none;
+}
+
+.bl-index-name button:focus-visible {
+  outline: 2px solid var(--bl-accent);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.bl-index-field {
+  grid-area: field;
+  margin: 0;
   font-family: var(--bl-mono);
   font-size: 0.56rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  line-height: 1;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
   color: var(--bl-ink-dim);
-  -webkit-text-stroke: 0;
-  opacity: 1;
 }
 
-.bl-panel[data-size="big"] .bl-panel-index,
-.bl-panel[data-size="wide"] .bl-panel-index {
-  font-size: 0.56rem;
-  /* the watermark rule set these by size and still outranks the one above */
-  top: clamp(0.95rem, 1.7vw, 1.35rem);
-  bottom: auto;
-}
-.bl-panel:hover .bl-panel-index { opacity: 1; color: var(--bl-accent); }
-
-/* ---- a tile with nothing to show ---- */
-
-/* No screenshot behind it, so there is nothing for the copy to clear and
-   nothing for a darkening gradient to do. It gets a field of its own and
-   the copy starts at the top, where a reader starts. */
-.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) {
-  align-items: flex-start;
+/* what the build is filed under: a figure off the project where there is
+   one, and what kind of build it was where there is not */
+.bl-index-filed {
+  grid-area: filed;
+  margin: 0;
+  justify-self: end;
+  max-width: 13rem;
+  text-align: right;
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  color: var(--bl-ink-soft);
 }
 
-/* enough to clear the number in the corner, and no more: at the old depth
-   the copy ran out of the bottom of the tile and took the buttons with it */
-.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) .bl-panel-copy {
-  padding-top: clamp(1.8rem, 2.6vw, 2.2rem);
+.bl-index-links {
+  grid-area: links;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
 }
 
-.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) .bl-panel-media {
+.bl-index-links a,
+.bl-index-award {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  text-decoration: none;
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-index-links a:hover { color: var(--bl-accent); }
+.bl-index-award { color: var(--bl-amber); }
+
+/* a side quest has no case file behind it, so its name is not a door */
+.bl-index-row[data-quest="true"] .bl-index-name { font-size: clamp(1.3rem, 1.9vw, 1.75rem); }
+.bl-index-row[data-quest="true"] .bl-index-name span { color: var(--bl-ink-soft); }
+
+/* where the numbered builds end */
+.bl-index-break {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: clamp(1.75rem, 4vh, 2.75rem) 0 0.65rem;
+}
+
+.bl-index-break span {
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-index-break i {
+  flex: 1;
+  height: 1px;
+  background: var(--bl-rule-soft);
+}
+
+/* the sentence belongs in the margin while there is a margin to put it in */
+.bl-index-line { display: none; }
+
+/* ---- the margin ---- */
+
+.bl-index-margin {
+  position: sticky;
+  top: clamp(5rem, 13vh, 7.5rem);
+  display: grid;
+  gap: clamp(0.9rem, 2vh, 1.4rem);
+}
+
+.bl-index-plate {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--bl-rule);
   background:
-    /* ruled, like the paper the rest of the site is named after. It is the
-       one texture that says something about the project having been worked
-       out rather than just being dark. */
     repeating-linear-gradient(
       180deg,
-      rgba(243, 241, 234, 0.06) 0 1px,
+      rgba(243, 241, 234, 0.05) 0 1px,
       transparent 1px 1.5rem
-    ),
-    radial-gradient(
-      120% 95% at 90% 4%,
-      color-mix(in srgb, var(--bl-accent) 17%, transparent),
-      transparent 58%
     ),
     linear-gradient(205deg, #15120f 0%, #0a0908 80%);
 }
 
-.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) .bl-panel-media::after {
-  background: none;
+.bl-index-plate figure {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  transform: scale(1.015);
+  transition:
+    opacity 0.4s var(--bl-ease),
+    transform 0.5s var(--bl-ease);
 }
 
-/* ---- the tiles that do have a screenshot ---- */
-
-/* The art was darkened until there was no telling it was there. The copy
-   only needs the bottom of the frame held down, not the whole of it. */
-.bl-panel-media .bl-plate-bare img { filter: saturate(0.85) brightness(0.92); }
-
-.bl-panel-media::after {
-  background:
-    linear-gradient(
-      to top,
-      rgba(8, 7, 6, 0.96) 0%,
-      rgba(8, 7, 6, 0.82) 26%,
-      rgba(8, 7, 6, 0.26) 62%,
-      transparent 100%
-    ),
-    linear-gradient(
-      75deg,
-      rgba(8, 7, 6, 0.72) 0%,
-      rgba(8, 7, 6, 0.16) 52%,
-      transparent 100%
-    );
-}
-
-/* ---- one layout per tile shape ------------------------------------------
-   Every tile was built the same way: the picture full-bleed behind, the
-   copy over the top of it, a gradient in between holding the two apart.
-   That is a hero card's anatomy, and it worked while a card was most of
-   the screen. On a tile a third that tall the copy fills the whole frame,
-   so the gradient has to cover the whole frame, and the picture may as
-   well not be there. Lighten the gradient instead and the copy lands on
-   the bright part of a photograph.
-
-   So the picture gets its own side of the tile rather than the back of
-   it, and which side depends on the shape: beside the copy on a wide
-   tile, above it on a small one. The big tile keeps the full bleed,
-   because at that size there is room for both.                        */
-
-/* a wide tile: picture left, copy right */
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"]) {
-  display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  align-items: stretch;
-}
-
-/* a small tile: picture above, copy under it */
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"]) {
-  display: grid;
-  grid-template-rows: 42% minmax(0, 1fr);
-  /* the panel is a flex row with align-items: flex-end underneath this.
-     Carried into a grid that stops the picture's cell stretching, and the
-     plate inside it is absolute, so the cell collapses to nothing. */
-  align-items: stretch;
-}
-
-/* in both, the picture is a box in the layout rather than the backdrop */
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-media,
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-media {
-  position: relative;
-  inset: auto;
-  overflow: hidden;
-}
-
-/* and it fills that box, instead of being sized off its own width and
-   leaving bands of nothing above and below */
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-plate-bare img[data-loaded="true"],
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-plate-bare img[data-loaded="true"] {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  margin-left: 0;
-}
-
-/* nothing is being held apart any more, so the scrim is only a soft edge
-   where the picture meets the copy */
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-media::after {
-  background: linear-gradient(90deg, transparent 62%, rgba(8, 7, 6, 0.55) 100%);
-}
-
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-media::after {
-  background: linear-gradient(180deg, transparent 58%, rgba(8, 7, 6, 0.6) 100%);
-}
-
-/* the copy sits in its own cell, against the bottom of it */
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-copy,
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-copy {
-  align-self: end;
-  max-width: none;
-}
-
-/* the number would sit on the picture; it goes over the copy instead */
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-index {
-  left: auto;
-  right: clamp(1.1rem, 1.9vw, 1.5rem);
-}
-
-/* the picture parallaxes against the frame on a full-bleed tile. A tile
-   that gives it a box of its own has nothing to parallax against, and the
-   scale only crops it further. */
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-media,
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-media {
+.bl-index-plate figure[data-on="true"] {
+  opacity: 1;
   transform: none;
 }
 
-/* the big tile keeps the full bleed, and keeps enough scrim under the copy
-   to be read on top of a photograph */
-.bl-panel[data-size="big"] .bl-panel-media::after {
-  background:
-    linear-gradient(
-      to top,
-      rgba(8, 7, 6, 0.97) 0%,
-      rgba(8, 7, 6, 0.88) 34%,
-      rgba(8, 7, 6, 0.3) 68%,
-      transparent 100%
-    ),
-    linear-gradient(
-      75deg,
-      rgba(8, 7, 6, 0.7) 0%,
-      rgba(8, 7, 6, 0.12) 55%,
-      transparent 100%
-    );
+/* a build with no screenshot keeps the ruled field, and its name is set
+   over it rather than filling it */
+.bl-index-plate .bl-plate-bare > span {
+  font-size: clamp(1.5rem, 3vw, 2.3rem);
 }
 
-/* the act lost the list of side quests off its bottom when they came up
-   onto the wall, and kept the room they were standing in */
-.bl-film { padding-bottom: clamp(2rem, 5vh, 3.5rem); }
-
-/* ---- the copy in a split tile -------------------------------------------
-   Half the width and the same six lines: the copy outgrew the tile and
-   pushed the picture's cell out with it. The name comes down to the size
-   the column can hold, the one-line descriptor goes (the sentence under
-   it says more, and says it in words), and the sentence is held to two
-   lines so a long one cannot do the same thing again.                  */
-
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-copy {
-  padding: clamp(0.8rem, 1.2vw, 1.05rem);
-  gap: 0.32rem;
+.bl-index-sentence {
+  margin: 0;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-size: clamp(1.1rem, 1.55vw, 1.45rem);
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+  color: var(--bl-ink);
 }
 
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-name {
-  font-size: clamp(1.45rem, 2.1vw, 2rem);
+.bl-index-stack {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  line-height: 1.6;
+  color: var(--bl-ink-dim);
 }
 
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-tagline {
-  display: none;
+.bl-note-margin {
+  margin-top: clamp(0.5rem, 1.5vh, 1rem);
+  padding: clamp(1rem, 1.6vw, 1.35rem);
 }
 
-.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-thesis {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
+.bl-note-margin .bl-note-line { font-size: clamp(1.05rem, 1.5vw, 1.35rem); }
+.bl-note-margin .bl-note-foot { font-size: 0.74rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-index-plate figure { transition: none; transform: none; }
+  .bl-index-row::after { transition: none; }
+  .bl-index-name button svg { opacity: 1; transform: none; }
 }
 
-/* and a small tile has a picture taking two fifths of it, so the same */
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-copy {
-  padding: clamp(0.95rem, 1.5vw, 1.25rem);
-  gap: 0.3rem;
-}
+/* ---- one column ---------------------------------------------------------
+   There is no margin on a narrow screen, so there is nothing to put the
+   picture in and nowhere to keep it while you read past it. It goes, and
+   the sentence it was standing next to comes into the row instead. The
+   section is lighter on a phone than on a desktop, which is the right way
+   round for a list.                                                      */
 
-.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-  .bl-panel-name {
-  font-size: clamp(1.35rem, 1.9vw, 1.75rem);
-}
+@media (max-width: 1024px) {
+  .bl-index-body { grid-template-columns: minmax(0, 1fr); }
+  .bl-index-margin { display: none; }
 
-/* A tile is a fixed height and the sentence under the name is the one part
-   of a card whose length nobody controls. Two lines on anything but the
-   big tile, so a long one cannot push the buttons out of the bottom. This
-   matters most while a screenshot is still loading: until it lands the
-   tile lays out as though it had none, and that is the taller of the two
-   arrangements. */
-.bl-panel:not([data-size="big"]) .bl-panel-thesis {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-}
-
-@media (max-width: 680px) {
-  .bl-panel:not([data-size="big"]) .bl-panel-thesis {
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
-  }
-}
-
-/* On one column a tile is the width of the phone, and splitting that in
-   two leaves a picture too narrow to be one and a column of copy too
-   narrow to read. Every tile with a picture puts it on top there, which
-   is the arrangement the small tiles already use. */
-@media (max-width: 680px) {
-  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"]),
-  .bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"]) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 38% minmax(0, 1fr);
-    align-items: stretch;
+  .bl-index-row {
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    grid-template-areas:
+      "num name"
+      "num field"
+      "num line"
+      "num filed"
+      "num links";
+    row-gap: 0.45rem;
+    padding: clamp(1.1rem, 2.4vh, 1.6rem) 0;
   }
 
-  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-    .bl-panel-media::after {
-    background: linear-gradient(180deg, transparent 58%, rgba(8, 7, 6, 0.6) 100%);
+  .bl-index-filed,
+  .bl-index-links {
+    justify-self: start;
+    text-align: left;
+    max-width: none;
   }
 
-  /* at full width the copy has the room for the size it had before */
-  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-    .bl-panel-name,
-  .bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
-    .bl-panel-name {
-    font-size: clamp(2.1rem, 9vw, 3rem);
-  }
-
-  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-    .bl-panel-tagline {
+  .bl-index-line {
+    grid-area: line;
     display: block;
+    margin: 0.15rem 0 0;
+    max-width: 46ch;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--bl-ink-soft);
   }
 
-  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
-    .bl-panel-index {
-    left: clamp(1.1rem, 1.9vw, 1.5rem);
-    right: auto;
-  }
+  /* nothing hovers on a touch screen, so the arrow is simply always there */
+  .bl-index-name button svg { opacity: 1; transform: none; }
 }

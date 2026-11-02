@@ -56,7 +56,7 @@ test("server-renders the build log", async () => {
   // every section head is present
   for (const head of [
     "Where it happened",
-    "Six things I shipped",
+    "What got built",
     "A dual degree, run in parallel",
     "Thirty-one things I build with",
     "What it won",
@@ -94,7 +94,7 @@ test("renders all five log entries with what each one was", async () => {
   }
 });
 
-test("renders the whole wall: six case files, the note and both side quests", async () => {
+test("renders the index: six case files, both side quests and the margin note", async () => {
   const html = await (await render()).text();
 
   for (const project of [
@@ -108,18 +108,23 @@ test("renders the whole wall: six case files, the note and both side quests", as
     assert.match(html, new RegExp(project), `renders ${project}`);
   }
 
-  // the side quests are tiles on the same wall now, not a list under it
+  // the side quests are rows in the same index, not a list under it
   assert.match(html, /Side quest/i);
   assert.match(html, /ReconAI/);
   assert.match(html, /SnapFix/);
 
-  // the note pinned up among them
+  // the note in the margin
   assert.match(html, /Margin note/i);
   assert.match(html, /A case file proves it holds/);
 
-  // Three ways into a project: the live site, the source, the write-up.
-  assert.match(html, /Case file/i);
-  assert.match(html, /Visit site/i);
+  // every row is filed under a figure off the project, or what kind of
+  // build it was when it has no figure
+  assert.match(html, /49,684 indexed passages/);
+  assert.match(html, /IIT Madras BS, Data Science/);
+
+  // a row's name opens the case file; an outbound link is a separate thing
+  assert.match(html, /case file/i);
+  assert.match(html, /<a[^>]+target="_blank"/);
 });
 
 test("renders all four wins", async () => {
@@ -226,7 +231,7 @@ test("the source avoids the icon library and keeps the hand-drawn marks", async 
     "components/buildlog/grok.tsx",
     "components/buildlog/toolkit.tsx",
     "components/buildlog/education.tsx",
-    "components/buildlog/film.tsx",
+    "components/buildlog/work-index.tsx",
     "components/buildlog/smooth.tsx",
   ];
 
