@@ -94,7 +94,7 @@ test("renders all five log entries with what each one was", async () => {
   }
 });
 
-test("renders the index: six case files, both side quests and the margin note", async () => {
+test("renders the rack: six case files and both side quests", async () => {
   const html = await (await render()).text();
 
   for (const project of [
@@ -112,10 +112,6 @@ test("renders the index: six case files, both side quests and the margin note", 
   assert.match(html, /Side quest/i);
   assert.match(html, /ReconAI/);
   assert.match(html, /SnapFix/);
-
-  // the note in the margin
-  assert.match(html, /Margin note/i);
-  assert.match(html, /A case file proves it holds/);
 
   // every row is filed under a figure off the project, or what kind of
   // build it was when it has no figure

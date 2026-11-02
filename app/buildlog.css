@@ -6161,19 +6161,6 @@ html.bl-locked body { overflow: hidden; }
 
 /* ---- the note, in the middle cell ---- */
 
-.bl-note-card {
-  justify-content: flex-end;
-  gap: 0.6rem;
-  padding: clamp(1.2rem, 2vw, 1.8rem);
-  background: color-mix(in srgb, var(--bl-amber) 9%, var(--bl-surface));
-  border: 1px dashed color-mix(in srgb, var(--bl-amber) 48%, transparent);
-}
-
-.bl-note-card:hover {
-  transform: none;
-  border-color: color-mix(in srgb, var(--bl-amber) 65%, transparent);
-  box-shadow: none;
-}
 
 @media (prefers-reduced-motion: reduce) {
   .bl-card,
@@ -7034,8 +7021,6 @@ html[data-over="paper"] .bl-grain-layer {
 .bl-card:hover .bl-card-name { color: var(--bl-accent); }
 .bl-card-name { transition: color 0.25s var(--bl-ease); }
 
-/* an annotation and the punctuation it belongs to travel together */
-.bl-nobreak { white-space: nowrap; }
 
 /*
  * The shelf is a run of elements with no whitespace between them, which a
@@ -7749,27 +7734,7 @@ body,
 /* the head's own margin is the rhythm now; this was a second helping of it */
 .bl-bento { margin-top: 0; }
 
-/* the margin note is a card in the wall, so it is built like one */
-.bl-note-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: var(--bl-s-card);
-  background: var(--bl-ink);
-  border-color: var(--bl-ink);
-}
 
-.bl-note-card .bl-note-label,
-.bl-note-card .bl-note-foot { color: color-mix(in srgb, var(--bl-bg) 62%, transparent); }
-.bl-note-card .bl-note-line { color: var(--bl-bg); }
-.bl-note-card .bl-note-mark { color: var(--bl-accent); }
-.bl-note-card:hover { transform: none; box-shadow: none; border-color: var(--bl-ink); }
-
-/* the annotated word sits inside the inverted card, so it takes the card's
-   ink rather than the page's */
-.bl-note-card .bl-marked,
-.bl-note-card .bl-marked-text { color: inherit; }
 
 /* ==========================================================================
    MOTION
@@ -8986,33 +8951,6 @@ body,
   align-items: center;
   gap: 0.6rem 1.1rem;
 }
-
-/* ---- the note, now an aside rather than a cell in a wall ---- */
-
-.bl-note-aside {
-  display: grid;
-  gap: 0.5rem;
-  justify-items: start;
-  max-width: 44ch;
-  margin-top: clamp(1.75rem, 4vh, 2.75rem);
-  padding: var(--bl-s-card);
-  border: 1px solid var(--bl-ink);
-  border-radius: 12px;
-  background: var(--bl-ink);
-}
-
-.bl-note-aside .bl-note-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: color-mix(in srgb, var(--bl-bg) 62%, transparent);
-}
-
-.bl-note-aside .bl-note-mark { color: var(--bl-accent); }
-.bl-note-aside .bl-note-line { color: var(--bl-bg); }
-.bl-note-aside .bl-note-foot { color: color-mix(in srgb, var(--bl-bg) 58%, transparent); }
-.bl-note-aside .bl-marked,
-.bl-note-aside .bl-marked-text { color: inherit; }
 
 @media (max-width: 640px) {
   .bl-flow .swiper-slide.bl-flow-slide { width: 78vw; }

@@ -3,10 +3,10 @@
 import { Fragment, useState } from "react";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
 import { Coverflow } from "@/components/ui/coverflow";
-import { MarkArrow, MarkGithub, MarkPaper, MarkRosette, MarkWindow } from "./marks";
+import { MarkArrow, MarkGithub, MarkRosette, MarkWindow } from "./marks";
 import { Plate } from "./plate";
 import { SectionHeader } from "./sections";
-import { Marked, MarkedLine } from "./marked";
+import { MarkedLine } from "./marked";
 
 /**
  * The work, as a rack you turn through.
@@ -195,21 +195,6 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
         ))}
       </div>
 
-      <aside className="bl-note bl-note-aside">
-        <p className="bl-note-label">
-          <MarkPaper className="bl-note-mark" size={14} /> Margin note
-        </p>
-        <p className="bl-note-line">
-          A demo proves it{" "}
-          <span className="bl-nobreak">
-            <Marked kind="circle">runs</Marked>.
-          </span>{" "}
-          A case file proves it holds.
-        </p>
-        <p className="bl-note-foot">
-          Every numbered card opens one: the architecture, the figures, what broke.
-        </p>
-      </aside>
     </section>
   );
 }
