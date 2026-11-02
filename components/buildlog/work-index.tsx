@@ -1,31 +1,31 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Fragment, useState } from "react";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
+import { Coverflow } from "@/components/ui/coverflow";
 import { MarkArrow, MarkGithub, MarkPaper, MarkRosette, MarkWindow } from "./marks";
 import { Plate } from "./plate";
 import { SectionHeader } from "./sections";
 import { Marked, MarkedLine } from "./marked";
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
 /**
- * The work, as a wall of cards of one size.
+ * The work, as a rack you turn through.
  *
- * Earlier versions of this section went looking for a shape: tiles at four
- * sizes, then a typed index with the artwork following the pointer. Both
- * were defensible and neither was liked, and the reason is probably that a
- * work section has one job, which is to show the work. A shape that makes
- * the work smaller in order to make the page more interesting has the
- * trade backwards.
+ * It has been tiles at four sizes, a typed index, and a wall of cards. The
+ * wall was the best of those and this is not an argument that it was wrong:
+ * it is a different claim about what eight builds are. A wall says here are
+ * eight things, compare them. A rack says here is one thing, and there are
+ * seven more behind it.
  *
- * So: nine cells, one size, three across. Picture, what field it sits in,
- * the name, the one sentence that says why it exists, then what it is
- * filed under and the way in. The note takes the middle cell.
+ * The thing that has never gone away is that three of the eight have a
+ * screenshot and five do not, so a rack of faces is a rack of five empty
+ * frames unless the five are given something true to carry. They carry what
+ * the build is made of, set out on ruled ground, which is what this section
+ * has been doing since the cards and is the one part worth keeping.
+ *
+ * Every entry's copy is in the page, not only the one facing you. The rack
+ * shows one at a time; a crawler, a reader with no JavaScript and the test
+ * suite all see all eight.
  */
 
 /** The figure a card is filed under, or what kind of build it was. */
@@ -47,7 +47,6 @@ type Row = {
   link?: { label: string; href: string };
   repo?: string;
   decorated?: boolean;
-  /** What it is made of, used to set the entry when there is no plate. */
   stack: string[];
   /** Absent on the side quests, which have no case file behind them. */
   file?: CaseFile;
@@ -84,157 +83,132 @@ const rows: Row[] = [
   })),
 ];
 
-/** After the fourth card, which is the middle cell of a three-across wall. */
-const NOTE_AFTER = 3;
-
 export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
-  const wall = useRef<HTMLOListElement>(null);
-
-  useEffect(() => {
-    const node = wall.current;
-    if (!node) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const context = gsap.context(() => {
-      gsap.from(".bl-card", {
-        y: 26,
-        opacity: 0,
-        duration: 0.6,
-        ease: "power3.out",
-        stagger: 0.06,
-        scrollTrigger: { trigger: node, start: "top 82%", once: true },
-      });
-    }, node);
-
-    return () => context.revert();
-  }, []);
+  const [at, setAt] = useState(0);
 
   return (
     <section className="bl-section bl-work" id="work">
       <SectionHeader
         label="02 / Selected work"
         title="What got built"
-        lead="Six builds and two side quests. Open any of the six for the full case file."
+        lead="Six builds and two side quests. Turn the rack, and press the one facing you for the full case file."
+        note={`${rows.length} on the rack`}
       />
 
-      <ol className="bl-work-wall" ref={wall}>
+      <Coverflow
+        className="bl-work-rack"
+        ariaLabel="Six builds and two side quests"
+        slides={rows.map((row) => ({
+          key: row.id,
+          label: `${row.name}, ${row.kind}`,
+          cover: (
+            <div className="bl-card-shot" data-plate={row.image ? "shot" : "set"}>
+              {row.image ? (
+                <Plate
+                  bare
+                  dir="work"
+                  name={row.id}
+                  src={row.image}
+                  monogram={row.name}
+                  alt={`${row.name}, ${row.kind}`}
+                />
+              ) : (
+                <p className="bl-card-set">
+                  {row.stack.slice(0, 9).map((part, i) => (
+                    <Fragment key={part}>
+                      {i > 0 && <i aria-hidden="true">·</i>}
+                      <span>{part}</span>
+                    </Fragment>
+                  ))}
+                  <span className="bl-sr">{row.name}</span>
+                </p>
+              )}
+
+              <span className="bl-card-num">{row.index}</span>
+
+              {row.decorated ? (
+                <span className="bl-card-tag" data-win="true">
+                  <MarkRosette size={11} /> Winner, twice
+                </span>
+              ) : (
+                <span className="bl-card-tag">{row.kind}</span>
+              )}
+            </div>
+          ),
+        }))}
+        onActivate={setAt}
+        onOpen={(index) => {
+          const row = rows[index];
+          if (row?.file) onOpen(row.file);
+        }}
+      />
+
+      {/* All eight, stacked in one cell. Only the one on the rack is shown,
+          and the rest are inert rather than merely invisible. */}
+      <div className="bl-flow-caption">
         {rows.map((row, index) => (
-          <Fragment key={row.id}>
-            <li
-              className="bl-card"
-              data-quest={row.quest ? "true" : undefined}
-              /*
-               * Three of these have a screenshot and five do not, and every
-               * arrangement this section has worn so far was really a way of
-               * arranging five empty frames. A frame with the project's name
-               * ghosted inside it is not a picture of anything.
-               *
-               * So an entry without a plate does not get one. The space goes
-               * to what the thing is made of, set out on ruled ground, which
-               * is what a log book does when there is nothing to paste in.
-               */
-              data-plate={row.image ? "shot" : "set"}
-            >
-              <div className="bl-card-shot">
-                {row.image ? (
-                  <Plate
-                    bare
-                    dir="work"
-                    name={row.id}
-                    src={row.image}
-                    monogram={row.name}
-                    alt={`${row.name}, ${row.kind}`}
-                  />
-                ) : (
-                  <p className="bl-card-set">
-                    {row.stack.slice(0, 9).map((part, at) => (
-                      <Fragment key={part}>
-                        {at > 0 && <i aria-hidden="true">·</i>}
-                        <span>{part}</span>
-                      </Fragment>
-                    ))}
-                  </p>
+          <article
+            key={row.id}
+            className="bl-flow-info"
+            data-on={index === at ? "true" : undefined}
+            inert={index === at ? undefined : true}
+          >
+            <p className="bl-flow-kicker">
+              <span>{row.index}</span>
+              <i aria-hidden="true" />
+              {row.field}
+            </p>
+
+            <h3 className="bl-flow-name">{row.name}</h3>
+
+            <p className="bl-flow-line">
+              <MarkedLine text={row.line} mark={row.mark} />
+            </p>
+
+            <div className="bl-flow-foot">
+              <p className="bl-flow-filed">{row.filed}</p>
+
+              <div className="bl-flow-acts">
+                {row.link && (
+                  <a className="bl-card-side" href={row.link.href} target="_blank" rel="noreferrer">
+                    <MarkWindow size={12} /> Live
+                  </a>
                 )}
-
-                <span className="bl-card-num">{row.index}</span>
-
-                {row.decorated ? (
-                  <span className="bl-card-tag" data-win="true">
-                    <MarkRosette size={11} /> Winner, twice
-                  </span>
-                ) : (
-                  <span className="bl-card-tag">{row.kind}</span>
+                {row.repo && (
+                  <a className="bl-card-side" href={row.repo} target="_blank" rel="noreferrer">
+                    <MarkGithub size={12} /> Source
+                  </a>
+                )}
+                {row.file && (
+                  <button
+                    type="button"
+                    className="bl-card-open"
+                    onClick={() => onOpen(row.file as CaseFile)}
+                  >
+                    Case file <MarkArrow size={13} />
+                  </button>
                 )}
               </div>
-
-              <div className="bl-card-body">
-                <p className="bl-card-kicker">{row.field}</p>
-                <h3 className="bl-card-name">{row.name}</h3>
-                <p className="bl-card-line">
-                  <MarkedLine text={row.line} mark={row.mark} />
-                </p>
-
-                <div className="bl-card-foot">
-                  <p className="bl-card-filed">{row.filed}</p>
-
-                  <div className="bl-card-acts">
-                    {row.link && (
-                      <a
-                        className="bl-card-side"
-                        href={row.link.href}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <MarkWindow size={12} /> Live
-                      </a>
-                    )}
-                    {row.repo && (
-                      <a
-                        className="bl-card-side"
-                        href={row.repo}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <MarkGithub size={12} /> Source
-                      </a>
-                    )}
-                    {row.file && (
-                      <button
-                        type="button"
-                        className="bl-card-open"
-                        onClick={() => onOpen(row.file as CaseFile)}
-                      >
-                        Case file <MarkArrow size={13} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </li>
-
-            {/* the middle cell of the wall, where a reader is already pausing */}
-            {index === NOTE_AFTER && (
-              <li className="bl-card bl-note bl-note-card">
-                <p className="bl-note-label">Margin note</p>
-                <MarkPaper className="bl-note-mark" size={24} />
-                <p className="bl-note-line">
-                  {/* the mark and the stop it belongs to must not be split
-                      across a line break, or the sentence starts with "." */}
-                  A demo proves it{" "}
-                  <span className="bl-nobreak">
-                    <Marked kind="circle">runs</Marked>.
-                  </span>{" "}
-                  A case file proves it holds.
-                </p>
-                <p className="bl-note-foot">
-                  Every numbered card opens one: the architecture, the figures,
-                  what broke.
-                </p>
-              </li>
-            )}
-          </Fragment>
+            </div>
+          </article>
         ))}
-      </ol>
+      </div>
+
+      <aside className="bl-note bl-note-aside">
+        <p className="bl-note-label">
+          <MarkPaper className="bl-note-mark" size={14} /> Margin note
+        </p>
+        <p className="bl-note-line">
+          A demo proves it{" "}
+          <span className="bl-nobreak">
+            <Marked kind="circle">runs</Marked>.
+          </span>{" "}
+          A case file proves it holds.
+        </p>
+        <p className="bl-note-foot">
+          Every numbered card opens one: the architecture, the figures, what broke.
+        </p>
+      </aside>
     </section>
   );
 }

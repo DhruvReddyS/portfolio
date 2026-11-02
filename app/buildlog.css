@@ -8776,3 +8776,244 @@ body,
 
 /* the colophon now sits under a name, so it needs a rule rather than a gap */
 .bl-colo { border-top: 1px solid var(--bl-rule); padding-top: clamp(1.75rem, 4vh, 2.75rem); }
+
+/* ==========================================================================
+   THE RACK
+   Eight builds on a coverflow, with all eight captions in the page and one
+   of them showing.
+   ========================================================================== */
+
+.bl-flow { position: relative; }
+
+.bl-flow-rack {
+  width: 100%;
+  overflow: visible;
+  padding: clamp(0.5rem, 2vh, 1.25rem) 0 clamp(1.25rem, 3vh, 2rem);
+}
+
+/*
+ * Specificity, not order: Swiper's own stylesheet is imported by the
+ * component and lands after this file, so a single-class rule of mine loses
+ * to its `.swiper-slide { width: 100% }` and slidesPerView="auto" then reads
+ * a card two and a half thousand pixels wide.
+ */
+.bl-flow .swiper-slide.bl-flow-slide {
+  width: min(var(--bl-flow-w), 76vw);
+  height: auto;
+}
+
+/* the face: the same plate the cards used, now standing on its own */
+.bl-flow-face {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--bl-rule);
+  border-radius: 12px;
+  background: var(--bl-surface);
+  transition: border-color 0.4s var(--bl-ease);
+}
+
+.bl-flow-face .bl-card-shot {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.swiper-slide-active .bl-flow-face {
+  border-color: color-mix(in srgb, var(--bl-accent) 50%, transparent);
+  box-shadow: var(--bl-lift);
+}
+
+/* Swiper paints its own shadows on the turned cards; they are built for a
+   white page and go to soot on this one. */
+.bl-flow .swiper-slide-shadow-left,
+.bl-flow .swiper-slide-shadow-right {
+  background-image: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--bl-bg-deep) 72%, transparent),
+    transparent
+  );
+  border-radius: 12px;
+}
+
+.bl-flow .swiper-slide-shadow-right {
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--bl-bg-deep) 72%, transparent),
+    transparent
+  );
+}
+
+/* ---- the handles under the rack ---- */
+
+.bl-flow-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.bl-flow-btn {
+  appearance: none;
+  width: 2.3rem;
+  height: 2.3rem;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--bl-rule);
+  background: transparent;
+  color: inherit;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s var(--bl-ease), color 0.2s var(--bl-ease);
+}
+
+.bl-flow-btn:hover { background: var(--bl-ink); color: var(--bl-bg); }
+
+.bl-flow-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bl-flow-dots li button {
+  display: block;
+  width: 0.4rem;
+  height: 0.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bl-rule);
+  cursor: pointer;
+  transition: width 0.3s var(--bl-ease), background 0.3s var(--bl-ease);
+}
+
+.bl-flow-dots li[data-on="true"] button {
+  width: 1.3rem;
+  border-radius: 999px;
+  background: var(--bl-accent);
+}
+
+/* ---- the caption: eight stacked in one cell ---- */
+
+.bl-flow-caption {
+  display: grid;
+  margin-top: clamp(1.5rem, 3.5vh, 2.5rem);
+  padding-top: clamp(1.1rem, 2.5vh, 1.75rem);
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-flow-info {
+  grid-area: 1 / 1;
+  display: grid;
+  gap: 0.55rem;
+  justify-items: start;
+  max-width: 54ch;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity 0.4s var(--bl-ease),
+    transform 0.4s var(--bl-ease),
+    visibility 0s linear 0.4s;
+}
+
+.bl-flow-info[data-on="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s, 0s, 0s;
+}
+
+.bl-flow-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-flow-kicker span { color: var(--bl-accent); }
+.bl-flow-kicker i { width: 1.4rem; height: 1px; background: var(--bl-rule); }
+
+.bl-flow-name {
+  margin: 0;
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+  text-transform: uppercase;
+}
+
+.bl-flow-line {
+  margin: 0;
+  font-size: var(--bl-t-body);
+  line-height: 1.65;
+  color: var(--bl-ink-soft);
+}
+
+.bl-flow-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem clamp(1rem, 3vw, 2rem);
+  width: 100%;
+  margin-top: 0.3rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--bl-rule-soft);
+}
+
+.bl-flow-filed {
+  margin: 0;
+  margin-right: auto;
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-flow-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.1rem;
+}
+
+/* ---- the note, now an aside rather than a cell in a wall ---- */
+
+.bl-note-aside {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  max-width: 44ch;
+  margin-top: clamp(1.75rem, 4vh, 2.75rem);
+  padding: var(--bl-s-card);
+  border: 1px solid var(--bl-ink);
+  border-radius: 12px;
+  background: var(--bl-ink);
+}
+
+.bl-note-aside .bl-note-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: color-mix(in srgb, var(--bl-bg) 62%, transparent);
+}
+
+.bl-note-aside .bl-note-mark { color: var(--bl-accent); }
+.bl-note-aside .bl-note-line { color: var(--bl-bg); }
+.bl-note-aside .bl-note-foot { color: color-mix(in srgb, var(--bl-bg) 58%, transparent); }
+.bl-note-aside .bl-marked,
+.bl-note-aside .bl-marked-text { color: inherit; }
+
+@media (max-width: 640px) {
+  .bl-flow .swiper-slide.bl-flow-slide { width: 78vw; }
+}
