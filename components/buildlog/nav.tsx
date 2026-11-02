@@ -24,6 +24,8 @@ export function BuildLogNav({ active }: { active: string }) {
   const [stuck, setStuck] = useState(false);
   const [open, setOpen] = useState(false);
   const [read, setRead] = useState(0);
+  /** Which page of the book you are on, and how many there are. */
+  const [folio, setFolio] = useState({ at: 1, of: 1 });
   const lastScroll = useRef(0);
 
   // Hide on the way down, bring it back on the way up, and keep the hairline
@@ -34,6 +36,16 @@ export function BuildLogNav({ active }: { active: string }) {
       const span =
         document.documentElement.scrollHeight - window.innerHeight;
       setRead(span > 0 ? Math.min(1, Math.max(0, y / span)) : 0);
+
+      /*
+       * A folio, because this is a book and a book tells you where you are
+       * by the page. A screenful is a page: it is the only definition that
+       * means anything on a document that reflows, and it is honest about
+       * being an approximation because the last one is rarely full.
+       */
+      const of = Math.max(1, Math.round(document.documentElement.scrollHeight / window.innerHeight));
+      const at = Math.min(of, Math.floor(y / window.innerHeight) + 1);
+      setFolio((prev) => (prev.at === at && prev.of === of ? prev : { at, of }));
       setHidden(y > 320 && y > lastScroll.current);
       setStuck(y > 12);
       lastScroll.current = y;
@@ -87,8 +99,9 @@ export function BuildLogNav({ active }: { active: string }) {
             scrollTo(0);
           }}
         >
-          <span className="bl-brand-mark" aria-hidden="true">
-            <i>&lt;</i>SDR<i>/&gt;</i>
+          <span className="bl-brand-stamp" aria-hidden="true">SDR</span>
+          <span className="bl-brand-title" aria-hidden="true">
+            The Build Log
           </span>
           <span className="bl-sr">S. Dhruv Reddy, home</span>
         </a>
@@ -107,6 +120,12 @@ export function BuildLogNav({ active }: { active: string }) {
           <i className="bl-act-rule" aria-hidden="true" />
           <span className="bl-act-word">Contents</span>
         </button>
+
+        <p className="bl-folio" aria-hidden="true">
+          <i>p.</i>
+          <b>{String(folio.at).padStart(2, "0")}</b>
+          <span>/ {String(folio.of).padStart(2, "0")}</span>
+        </p>
 
         <a
           className="bl-resume"

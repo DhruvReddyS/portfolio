@@ -9404,3 +9404,187 @@ body,
 
 /* the transcript plates, lifted off the ground they now share with it */
 .bl-degree { background: var(--bl-surface); }
+
+
+/* ---------- the crowd, in white ---------------------------------------- */
+
+/*
+ * They were weather: inverted line art at a tenth, so they read as a grey
+ * smudge rather than as people. Up to where they are actually white, with
+ * the top of the band faded harder so they stay under the invitation
+ * instead of walking through it.
+ */
+.bl-crowd {
+  opacity: 0.42;
+  /* shallower than before: at this brightness a tall band walks straight
+     through the line under the button */
+  height: min(32vh, 17rem);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 48%, #000 92%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 48%, #000 92%, transparent);
+}
+
+/* ==========================================================================
+   THE RUNNING HEAD
+   A bar that behaves like the top of a printed page: the book on the left,
+   the act you are in across the middle, and the folio on the right.
+   ========================================================================== */
+
+.bl-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: none;
+}
+
+/* the monogram, stamped rather than typed */
+.bl-brand-stamp {
+  display: grid;
+  place-items: center;
+  width: 1.95rem;
+  height: 1.95rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 4px;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--bl-ink);
+  transition: border-color 0.3s var(--bl-ease), color 0.3s var(--bl-ease);
+}
+
+.bl-brand:hover .bl-brand-stamp {
+  border-color: var(--bl-accent);
+  color: var(--bl-accent);
+}
+
+.bl-brand-title {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 24, "WONK" 1, "opsz" 20;
+  font-size: 0.92rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--bl-ink);
+}
+
+/* ---- the folio ---- */
+
+.bl-folio {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin: 0;
+  flex: none;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--bl-ink-dim);
+  white-space: nowrap;
+}
+
+.bl-folio i { font-style: normal; }
+
+.bl-folio b {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 24;
+  font-size: 1.05rem;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--bl-ink);
+}
+
+@media (max-width: 1040px) {
+  .bl-brand-title { display: none; }
+}
+
+@media (max-width: 760px) {
+  .bl-folio { display: none; }
+}
+
+/* ==========================================================================
+   THE BACK COVER
+   A page has to end like one, not simply stop.
+   ========================================================================== */
+
+/* the tear-off: a perforation across the top of the last page */
+.bl-footer {
+  position: relative;
+  border-top: 0;
+}
+
+.bl-footer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bl-rule) 0 6px,
+    transparent 6px 12px
+  );
+}
+
+/* ---- the signature ---- */
+
+.bl-colo-art {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  width: clamp(8.5rem, 17vw, 13rem);
+  opacity: 0.78;
+}
+
+.bl-colo-art figcaption {
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  text-align: center;
+}
+
+/* ---- the way back ---- */
+
+.bl-totop {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bl-ink-soft);
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 0.25s var(--bl-ease),
+    border-color 0.25s var(--bl-ease),
+    transform 0.25s var(--bl-ease);
+}
+
+.bl-totop svg { rotate: -45deg; transition: transform 0.3s var(--bl-ease); }
+
+.bl-totop:hover {
+  color: var(--bl-ink);
+  border-color: var(--bl-accent);
+  transform: translateY(-2px);
+}
+
+.bl-totop:hover svg { transform: translateY(-2px); }
+
+@media (max-width: 720px) {
+  .bl-totop { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-totop, .bl-totop svg { transition: none; }
+  .bl-totop:hover { transform: none; }
+}

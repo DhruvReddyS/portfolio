@@ -14,7 +14,7 @@ import {
 } from "@/lib/portfolio-data";
 import { Reveal } from "./reveal";
 import { whenCurtainOpens } from "@/lib/curtain";
-import { Counter, Magnetic } from "./smooth";
+import { Counter, Magnetic, useSmoothScroll } from "./smooth";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
@@ -728,6 +728,8 @@ export function ContactSection() {
  * was made, and one way to reach the person who made it.
  */
 export function BuildLogFooter({ time }: { time: string }) {
+  const { scrollTo } = useSmoothScroll();
+
   return (
     <footer className="bl-footer" id="footer">
       {/* the name, pressed into the last page */}
@@ -775,7 +777,7 @@ export function BuildLogFooter({ time }: { time: string }) {
 
         {/* signed off in characters, which is the only portrait a log book
             would have room to print */}
-        <div className="bl-colo-art">
+        <figure className="bl-colo-art">
           <AsciiArt
             src="/assets/dhruv.png"
             resolution={62}
@@ -788,7 +790,8 @@ export function BuildLogFooter({ time }: { time: string }) {
             objectFit="contain"
             className="bl-ascii"
           />
-        </div>
+          <figcaption>Signed, in characters</figcaption>
+        </figure>
       </div>
 
       <dl className="bl-colo-set">
@@ -816,6 +819,16 @@ export function BuildLogFooter({ time }: { time: string }) {
         </span>
         <a href="/colophon">Colophon, privacy &amp; terms</a>
         <span>Designed and engineered by {profile.name}</span>
+
+        {/* the end of a book is the one place a way back belongs */}
+        <button
+          type="button"
+          className="bl-totop"
+          onClick={() => scrollTo(0)}
+        >
+          <MarkArrow size={12} />
+          Back to the cover
+        </button>
       </div>
     </footer>
   );
