@@ -38,6 +38,22 @@ export function useInView<T extends HTMLElement>(
     // gone and the hero is simply there when it lifts.
     let release = () => {};
 
+    /*
+     * Anything already on screen reveals, margin or no margin.
+     *
+     * The bottom margin below exists to hold a reveal back until it is
+     * properly in view on the way down the page. Applied to what is already
+     * in the first screen it does the opposite: the hero's socials and its
+     * last credential sit inside that bottom tenth at load, never intersect,
+     * and simply never appear. That went unnoticed for as long as the
+     * hydration bug above was rendering everything revealed anyway.
+     */
+    const box = node.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) {
+      release = whenCurtainOpens(() => setInView(true));
+      return () => release();
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

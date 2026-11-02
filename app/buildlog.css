@@ -7889,3 +7889,143 @@ body,
   .bl-card:hover,
   .bl-bento-tile:hover { transform: none; }
 }
+
+/* ==========================================================================
+   THE HERO, GIVEN A FLOOR
+   ------------------------------------------------------------------------
+   The composition was right and the parts were homeless. A cut-out portrait
+   with nothing behind it hangs in the middle of the page; four credentials
+   joined to their labels by dotted leaders read as a receipt; and the name
+   dissolved into the background at the baseline, which is where it needed
+   to be hardest.
+   ========================================================================== */
+
+/* the floor it stands on, fading out at both ends so it is a ground rather
+   than a line drawn across the page */
+.bl-hero-figure::after {
+  content: "";
+  position: absolute;
+  left: -14%;
+  right: -14%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--bl-rule) 16%,
+    var(--bl-rule) 84%,
+    transparent
+  );
+}
+
+/* the bloom was doing the arch's job badly; now it only warms it */
+.bl-hero-aura { inset: 26% -14% 6%; filter: blur(56px); opacity: 0.75; }
+
+/* ---- the name holds its baseline ---- */
+
+.bl-hero-wordmark [data-line="1"] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-ink) 92%, transparent) 0%,
+    color-mix(in srgb, var(--bl-ink) 58%, transparent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bl-hero-wordmark [data-line="2"] {
+  background: linear-gradient(
+    180deg,
+    var(--bl-accent) 0%,
+    color-mix(in srgb, var(--bl-accent) 72%, transparent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- the credentials, as a set of facts rather than a receipt ---- */
+
+.bl-specs { gap: 0; }
+
+.bl-spec {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--bl-rule-soft);
+  transition: border-color 0.3s var(--bl-ease);
+}
+
+.bl-spec:hover { border-color: var(--bl-rule); }
+
+/* the dotted leader joined two things that were already next to each other */
+.bl-spec i { display: none; }
+
+.bl-spec dt {
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.2em;
+  color: var(--bl-ink-dim);
+  transition: color 0.3s var(--bl-ease);
+}
+
+.bl-spec:hover dt { color: var(--bl-accent); }
+
+.bl-spec dd {
+  justify-self: end;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  font-size: clamp(1.05rem, 1.55vw, 1.35rem);
+}
+
+.bl-spec dd em { font-size: 0.52rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-hero-aura { transition: none; }
+}
+
+/*
+ * The base of the photograph.
+ *
+ * The source is a cut-out that ends at the waist, so without this it stops
+ * dead on a horizontal edge halfway down the page and reads as pasted on.
+ * There has been a comment promising this fade in the stylesheet for some
+ * time with no rule under it.
+ */
+.bl-hero-figure img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent 99%);
+  mask-image: linear-gradient(to bottom, #000 84%, transparent 99%);
+}
+
+/* ---- the hero, on a phone ---- */
+
+/*
+ * Four credentials as four full-width rows cost 174px of an 844px screen and
+ * pushed the hero 100px past the fold, so the first flick of the thumb was
+ * still the hero. Two by two, and the top gap trimmed to what the bar needs.
+ */
+@media (max-width: 820px) {
+  .bl-hero {
+    padding-top: clamp(4rem, 8vh, 5rem);
+    padding-bottom: clamp(0.9rem, 2vh, 1.4rem);
+    gap: clamp(0.5rem, 1.2vh, 0.9rem);
+  }
+
+  .bl-specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(1rem, 4vw, 1.75rem);
+  }
+
+  .bl-spec {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+    padding: 0.5rem 0;
+  }
+
+  .bl-spec dd {
+    justify-self: start;
+    justify-content: flex-start;
+    font-size: clamp(0.95rem, 4vw, 1.15rem);
+  }
+}
