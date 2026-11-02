@@ -6167,7 +6167,7 @@ html.bl-locked body { overflow: hidden; }
 .bl-film-track {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: clamp(12.5rem, 16vw, 15rem);
+  grid-auto-rows: clamp(13rem, 17vw, 16rem);
   gap: clamp(0.7rem, 1.1vw, 1.1rem);
   width: 100%;
   padding-inline: var(--bl-gutter);
@@ -6445,3 +6445,319 @@ html.bl-locked body { overflow: hidden; }
    four of the five were in the frame at once, which left the stepping with
    almost nothing to move and the columns with more air than words. */
 .bl-spread-col { width: clamp(15rem, 38cqw, 28rem); }
+
+/* ---- the wall, cleaned up -----------------------------------------------
+   Every tile was carrying two ghosts: the project's name set huge in
+   outline, and its number set huge in outline, both behind a tile that
+   already says the name and the number in full. On a card the width of a
+   screen that read as watermarking. At tile size it just reads as the
+   title having been printed twice, which is what made the wall look
+   broken rather than busy.
+
+   Both go. The number comes back as a small slug in the corner, which is
+   what it was always for, and a tile with no screenshot is given a field
+   of colour to be rather than an outline of its own name.               */
+
+.bl-panel .bl-plate-bare > span { display: none; }
+
+/* the number, as a caption rather than a watermark */
+.bl-panel-index {
+  top: clamp(0.95rem, 1.7vw, 1.35rem);
+  left: clamp(1.1rem, 1.9vw, 1.5rem);
+  right: auto;
+  bottom: auto;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  color: var(--bl-ink-dim);
+  -webkit-text-stroke: 0;
+  opacity: 1;
+}
+
+.bl-panel[data-size="big"] .bl-panel-index,
+.bl-panel[data-size="wide"] .bl-panel-index {
+  font-size: 0.56rem;
+  /* the watermark rule set these by size and still outranks the one above */
+  top: clamp(0.95rem, 1.7vw, 1.35rem);
+  bottom: auto;
+}
+.bl-panel:hover .bl-panel-index { opacity: 1; color: var(--bl-accent); }
+
+/* ---- a tile with nothing to show ---- */
+
+/* No screenshot behind it, so there is nothing for the copy to clear and
+   nothing for a darkening gradient to do. It gets a field of its own and
+   the copy starts at the top, where a reader starts. */
+.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) {
+  align-items: flex-start;
+}
+
+/* enough to clear the number in the corner, and no more: at the old depth
+   the copy ran out of the bottom of the tile and took the buttons with it */
+.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) .bl-panel-copy {
+  padding-top: clamp(1.8rem, 2.6vw, 2.2rem);
+}
+
+.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) .bl-panel-media {
+  background:
+    /* ruled, like the paper the rest of the site is named after. It is the
+       one texture that says something about the project having been worked
+       out rather than just being dark. */
+    repeating-linear-gradient(
+      180deg,
+      rgba(243, 241, 234, 0.06) 0 1px,
+      transparent 1px 1.5rem
+    ),
+    radial-gradient(
+      120% 95% at 90% 4%,
+      color-mix(in srgb, var(--bl-accent) 17%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(205deg, #15120f 0%, #0a0908 80%);
+}
+
+.bl-panel:not(:has(.bl-plate-bare img[data-loaded="true"])) .bl-panel-media::after {
+  background: none;
+}
+
+/* ---- the tiles that do have a screenshot ---- */
+
+/* The art was darkened until there was no telling it was there. The copy
+   only needs the bottom of the frame held down, not the whole of it. */
+.bl-panel-media .bl-plate-bare img { filter: saturate(0.85) brightness(0.92); }
+
+.bl-panel-media::after {
+  background:
+    linear-gradient(
+      to top,
+      rgba(8, 7, 6, 0.96) 0%,
+      rgba(8, 7, 6, 0.82) 26%,
+      rgba(8, 7, 6, 0.26) 62%,
+      transparent 100%
+    ),
+    linear-gradient(
+      75deg,
+      rgba(8, 7, 6, 0.72) 0%,
+      rgba(8, 7, 6, 0.16) 52%,
+      transparent 100%
+    );
+}
+
+/* ---- one layout per tile shape ------------------------------------------
+   Every tile was built the same way: the picture full-bleed behind, the
+   copy over the top of it, a gradient in between holding the two apart.
+   That is a hero card's anatomy, and it worked while a card was most of
+   the screen. On a tile a third that tall the copy fills the whole frame,
+   so the gradient has to cover the whole frame, and the picture may as
+   well not be there. Lighten the gradient instead and the copy lands on
+   the bright part of a photograph.
+
+   So the picture gets its own side of the tile rather than the back of
+   it, and which side depends on the shape: beside the copy on a wide
+   tile, above it on a small one. The big tile keeps the full bleed,
+   because at that size there is room for both.                        */
+
+/* a wide tile: picture left, copy right */
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"]) {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  align-items: stretch;
+}
+
+/* a small tile: picture above, copy under it */
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"]) {
+  display: grid;
+  grid-template-rows: 42% minmax(0, 1fr);
+  /* the panel is a flex row with align-items: flex-end underneath this.
+     Carried into a grid that stops the picture's cell stretching, and the
+     plate inside it is absolute, so the cell collapses to nothing. */
+  align-items: stretch;
+}
+
+/* in both, the picture is a box in the layout rather than the backdrop */
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-media,
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-media {
+  position: relative;
+  inset: auto;
+  overflow: hidden;
+}
+
+/* and it fills that box, instead of being sized off its own width and
+   leaving bands of nothing above and below */
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-plate-bare img[data-loaded="true"],
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-plate-bare img[data-loaded="true"] {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin-left: 0;
+}
+
+/* nothing is being held apart any more, so the scrim is only a soft edge
+   where the picture meets the copy */
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-media::after {
+  background: linear-gradient(90deg, transparent 62%, rgba(8, 7, 6, 0.55) 100%);
+}
+
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-media::after {
+  background: linear-gradient(180deg, transparent 58%, rgba(8, 7, 6, 0.6) 100%);
+}
+
+/* the copy sits in its own cell, against the bottom of it */
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-copy,
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-copy {
+  align-self: end;
+  max-width: none;
+}
+
+/* the number would sit on the picture; it goes over the copy instead */
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-index {
+  left: auto;
+  right: clamp(1.1rem, 1.9vw, 1.5rem);
+}
+
+/* the picture parallaxes against the frame on a full-bleed tile. A tile
+   that gives it a box of its own has nothing to parallax against, and the
+   scale only crops it further. */
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-media,
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-media {
+  transform: none;
+}
+
+/* the big tile keeps the full bleed, and keeps enough scrim under the copy
+   to be read on top of a photograph */
+.bl-panel[data-size="big"] .bl-panel-media::after {
+  background:
+    linear-gradient(
+      to top,
+      rgba(8, 7, 6, 0.97) 0%,
+      rgba(8, 7, 6, 0.88) 34%,
+      rgba(8, 7, 6, 0.3) 68%,
+      transparent 100%
+    ),
+    linear-gradient(
+      75deg,
+      rgba(8, 7, 6, 0.7) 0%,
+      rgba(8, 7, 6, 0.12) 55%,
+      transparent 100%
+    );
+}
+
+/* the act lost the list of side quests off its bottom when they came up
+   onto the wall, and kept the room they were standing in */
+.bl-film { padding-bottom: clamp(2rem, 5vh, 3.5rem); }
+
+/* ---- the copy in a split tile -------------------------------------------
+   Half the width and the same six lines: the copy outgrew the tile and
+   pushed the picture's cell out with it. The name comes down to the size
+   the column can hold, the one-line descriptor goes (the sentence under
+   it says more, and says it in words), and the sentence is held to two
+   lines so a long one cannot do the same thing again.                  */
+
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-copy {
+  padding: clamp(0.8rem, 1.2vw, 1.05rem);
+  gap: 0.32rem;
+}
+
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-name {
+  font-size: clamp(1.45rem, 2.1vw, 2rem);
+}
+
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-tagline {
+  display: none;
+}
+
+.bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-thesis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* and a small tile has a picture taking two fifths of it, so the same */
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-copy {
+  padding: clamp(0.95rem, 1.5vw, 1.25rem);
+  gap: 0.3rem;
+}
+
+.bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+  .bl-panel-name {
+  font-size: clamp(1.35rem, 1.9vw, 1.75rem);
+}
+
+/* A tile is a fixed height and the sentence under the name is the one part
+   of a card whose length nobody controls. Two lines on anything but the
+   big tile, so a long one cannot push the buttons out of the bottom. This
+   matters most while a screenshot is still loading: until it lands the
+   tile lays out as though it had none, and that is the taller of the two
+   arrangements. */
+.bl-panel:not([data-size="big"]) .bl-panel-thesis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+@media (max-width: 680px) {
+  .bl-panel:not([data-size="big"]) .bl-panel-thesis {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+}
+
+/* On one column a tile is the width of the phone, and splitting that in
+   two leaves a picture too narrow to be one and a column of copy too
+   narrow to read. Every tile with a picture puts it on top there, which
+   is the arrangement the small tiles already use. */
+@media (max-width: 680px) {
+  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"]),
+  .bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 38% minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+    .bl-panel-media::after {
+    background: linear-gradient(180deg, transparent 58%, rgba(8, 7, 6, 0.6) 100%);
+  }
+
+  /* at full width the copy has the room for the size it had before */
+  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+    .bl-panel-name,
+  .bl-panel[data-size="small"]:has(.bl-plate-bare img[data-loaded="true"])
+    .bl-panel-name {
+    font-size: clamp(2.1rem, 9vw, 3rem);
+  }
+
+  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+    .bl-panel-tagline {
+    display: block;
+  }
+
+  .bl-panel[data-size="wide"]:has(.bl-plate-bare img[data-loaded="true"])
+    .bl-panel-index {
+    left: clamp(1.1rem, 1.9vw, 1.5rem);
+    right: auto;
+  }
+}
