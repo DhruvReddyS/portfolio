@@ -696,8 +696,22 @@ function WinFrame({
     const node = frame.current;
     if (!node) return;
     const box = node.getBoundingClientRect();
-    node.style.setProperty("--px", `${event.clientX - box.left}px`);
-    node.style.setProperty("--py", `${event.clientY - box.top}px`);
+    const x = event.clientX - box.left;
+    const y = event.clientY - box.top;
+    node.style.setProperty("--px", `${x}px`);
+    node.style.setProperty("--py", `${y}px`);
+    // and the same reading as a pair from -1 to 1, which is what the tilt
+    // wants. Kept small on purpose: the tile should stay square to the
+    // reader and get its depth from the layers, not from leaning over.
+    node.style.setProperty("--rx", (y / box.height - 0.5).toFixed(3));
+    node.style.setProperty("--ry", (x / box.width - 0.5).toFixed(3));
+  };
+
+  const rest = () => {
+    const node = frame.current;
+    if (!node) return;
+    node.style.setProperty("--rx", "0");
+    node.style.setProperty("--ry", "0");
   };
 
   return (
@@ -707,6 +721,7 @@ function WinFrame({
         className="bl-bento-tile"
         data-lead={index === 0}
         onPointerMove={track}
+        onPointerLeave={rest}
         onClick={onOpen}
         role="button"
         tabIndex={0}
@@ -843,6 +858,27 @@ function WinModal({ award, onClose }: { award: Award; onClose: () => void }) {
 
 export function WinsSection() {
   const [open, setOpen] = useState<Award | null>(null);
+  const wall = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = wall.current;
+    if (!node) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const context = gsap.context(() => {
+      gsap.from(".bl-bento-tile", {
+        z: -220,
+        yPercent: 14,
+        opacity: 0,
+        duration: 0.9,
+        ease: "power3.out",
+        stagger: 0.09,
+        scrollTrigger: { trigger: node, start: "top 80%", once: true },
+      });
+    }, node);
+
+    return () => context.revert();
+  }, []);
 
   return (
     <section className="bl-section bl-wall-act" id="wins">
@@ -852,7 +888,7 @@ export function WinsSection() {
         lead="Four of them. Open any tile for the story behind it."
       />
 
-      <div className="bl-bento">
+      <div className="bl-bento" ref={wall}>
         {awards.map((award, index) => (
           <WinFrame
             key={award.id}
