@@ -5,7 +5,18 @@ import gsap from "gsap";
 import { profile } from "@/lib/portfolio-data";
 
 /**
- * The cover of the log book, lifted away on arrival.
+ * The cover of the book, lifted away on arrival.
+ *
+ * It used to count 000 to 100 while a rule grew across the screen. Nothing
+ * on this page is loading at that point, so the number was describing
+ * nothing: it was there because every site has one, which is the whole
+ * problem with it. A percentage you invented is the loudest possible way to
+ * tell someone the page was assembled rather than made.
+ *
+ * What is left is what a book actually puts on its cover, and nothing else:
+ * the title, whose it is, where and when. The frame rules itself in, the
+ * title sets, and the sheet lifts. Under two seconds, once, and it never
+ * claims to be doing any work.
  *
  * Renders nothing on the server, so the page underneath is complete before
  * this ever mounts. Anyone who has asked for reduced motion skips it.
@@ -13,8 +24,6 @@ import { profile } from "@/lib/portfolio-data";
 export function Overture() {
   const [play, setPlay] = useState(false);
   const root = useRef<HTMLDivElement>(null);
-  const count = useRef<HTMLSpanElement>(null);
-  const rule = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     // Plays on every arrival. Only a reduced-motion preference skips it.
@@ -30,8 +39,8 @@ export function Overture() {
 
     document.documentElement.classList.add("bl-locked");
 
-    const ticker = { n: 0 };
     const timeline = gsap.timeline({
+      defaults: { ease: "power3.out" },
       onComplete: () => {
         document.documentElement.classList.remove("bl-locked");
         setPlay(false);
@@ -39,42 +48,31 @@ export function Overture() {
     });
 
     timeline
-      .from(node.querySelectorAll(".bl-overture-line > span"), {
-        yPercent: 110,
-        duration: 1,
-        ease: "power3.out",
-        stagger: 0.09,
+      // the frame is ruled on, across first and then down
+      .from(node.querySelectorAll(".bl-cover-frame > i"), {
+        scaleX: 0,
+        duration: 0.62,
+        ease: "power2.inOut",
+        stagger: 0.06,
       })
-      .to(
-        rule.current,
-        { scaleX: 1, duration: 1.3, ease: "power2.inOut" },
-        0.1,
+      .from(
+        node.querySelectorAll(".bl-cover-frame > b"),
+        { scaleY: 0, duration: 0.55, ease: "power2.inOut", stagger: 0.06 },
+        0.14,
       )
-      .to(
-        ticker,
-        {
-          n: 100,
-          duration: 1.5,
-          ease: "power1.inOut",
-          onUpdate: () => {
-            if (count.current) {
-              count.current.textContent = String(Math.round(ticker.n)).padStart(3, "0");
-            }
-          },
-        },
-        0,
+      // then the title sets, line by line, out from behind its own baseline
+      .from(
+        node.querySelectorAll(".bl-cover-line > span"),
+        { yPercent: 115, duration: 0.78, stagger: 0.08 },
+        0.3,
       )
-      .to(node.querySelectorAll(".bl-overture-fade"), {
-        opacity: 0,
-        duration: 0.4,
-        ease: "power2.in",
-      })
-      // the cover lifts, and the page is underneath
-      .to(node, {
-        yPercent: -100,
-        duration: 1.05,
-        ease: "power4.inOut",
-      });
+      .from(
+        node.querySelectorAll(".bl-cover-meta"),
+        { opacity: 0, y: 10, duration: 0.5, stagger: 0.07 },
+        0.62,
+      )
+      // and the sheet is turned
+      .to(node, { yPercent: -100, duration: 0.95, ease: "power4.inOut" }, 1.26);
 
     return () => {
       timeline.kill();
@@ -85,30 +83,26 @@ export function Overture() {
   if (!play) return null;
 
   return (
-    <div className="bl-overture" ref={root} aria-hidden="true">
-      <div className="bl-overture-inner">
-        <p className="bl-overture-kicker bl-overture-fade">
-          {profile.location} · {profile.coords}
-        </p>
+    <div className="bl-cover" ref={root} aria-hidden="true">
+      <div className="bl-cover-frame">
+        <i /> <i /> <b /> <b />
 
-        <h2 className="bl-overture-title">
-          <span className="bl-overture-line">
+        <h2 className="bl-cover-title">
+          <span className="bl-cover-line">
             <span>The</span>
           </span>
-          <span className="bl-overture-line">
+          <span className="bl-cover-line">
             <span>
               Build <em>Log</em>
             </span>
           </span>
         </h2>
 
-        <span className="bl-overture-rule" ref={rule} />
+        <p className="bl-cover-meta bl-cover-by">{profile.full}</p>
 
-        <p className="bl-overture-foot bl-overture-fade">
-          <span>{profile.full}</span>
-          <span className="bl-overture-count">
-            <span ref={count}>000</span>
-          </span>
+        <p className="bl-cover-meta bl-cover-foot">
+          <span>{profile.location}</span>
+          <span>{profile.coords}</span>
         </p>
       </div>
     </div>

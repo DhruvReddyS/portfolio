@@ -47,6 +47,8 @@ type Row = {
   link?: { label: string; href: string };
   repo?: string;
   decorated?: boolean;
+  /** What it is made of, used to set the entry when there is no plate. */
+  stack: string[];
   /** Absent on the side quests, which have no case file behind them. */
   file?: CaseFile;
   quest?: true;
@@ -66,6 +68,7 @@ const rows: Row[] = [
     link: file.link,
     repo: file.repo,
     decorated: Boolean(file.awards),
+    stack: file.stack,
     file,
   })),
   ...sideQuests.map((quest, offset) => ({
@@ -76,6 +79,7 @@ const rows: Row[] = [
     kind: "Side quest",
     filed: quest.context,
     line: quest.blurb,
+    stack: quest.stack,
     quest: true as const,
   })),
 ];
@@ -116,16 +120,41 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
       <ol className="bl-work-wall" ref={wall}>
         {rows.map((row, index) => (
           <Fragment key={row.id}>
-            <li className="bl-card" data-quest={row.quest ? "true" : undefined}>
+            <li
+              className="bl-card"
+              data-quest={row.quest ? "true" : undefined}
+              /*
+               * Three of these have a screenshot and five do not, and every
+               * arrangement this section has worn so far was really a way of
+               * arranging five empty frames. A frame with the project's name
+               * ghosted inside it is not a picture of anything.
+               *
+               * So an entry without a plate does not get one. The space goes
+               * to what the thing is made of, set out on ruled ground, which
+               * is what a log book does when there is nothing to paste in.
+               */
+              data-plate={row.image ? "shot" : "set"}
+            >
               <div className="bl-card-shot">
-                <Plate
-                  bare
-                  dir="work"
-                  name={row.id}
-                  src={row.image}
-                  monogram={row.name}
-                  alt={`${row.name}, ${row.kind}`}
-                />
+                {row.image ? (
+                  <Plate
+                    bare
+                    dir="work"
+                    name={row.id}
+                    src={row.image}
+                    monogram={row.name}
+                    alt={`${row.name}, ${row.kind}`}
+                  />
+                ) : (
+                  <p className="bl-card-set">
+                    {row.stack.slice(0, 9).map((part, at) => (
+                      <Fragment key={part}>
+                        {at > 0 && <i aria-hidden="true">·</i>}
+                        <span>{part}</span>
+                      </Fragment>
+                    ))}
+                  </p>
+                )}
 
                 <span className="bl-card-num">{row.index}</span>
 
@@ -189,8 +218,13 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                 <p className="bl-note-label">Margin note</p>
                 <MarkPaper className="bl-note-mark" size={24} />
                 <p className="bl-note-line">
-                  A demo proves it <Marked kind="circle">runs</Marked>. A case
-                  file proves it holds.
+                  {/* the mark and the stop it belongs to must not be split
+                      across a line break, or the sentence starts with "." */}
+                  A demo proves it{" "}
+                  <span className="bl-nobreak">
+                    <Marked kind="circle">runs</Marked>.
+                  </span>{" "}
+                  A case file proves it holds.
                 </p>
                 <p className="bl-note-foot">
                   Every numbered card opens one: the architecture, the figures,

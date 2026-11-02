@@ -8,7 +8,6 @@ import {
   awards,
   logStories,
   profile,
-  sections,
   type Award,
   type CaseFile,
   type LogEntry,
@@ -37,18 +36,38 @@ if (typeof window !== "undefined") {
 
 /* ------------------------------------------------------------- section head */
 
+/**
+ * How an act opens: a ruled folio line carrying the act's number and name,
+ * then the title hanging under it in the book's serif, left, in mixed case,
+ * with the lede set out to the right.
+ *
+ * Every act used to open with the same centred uppercase slab. Six of them
+ * in a row is what a template looks like, and it was shouting over the hero,
+ * which is the one place on the page that voice is meant to be.
+ */
 export function SectionHeader({
   label,
   title,
   lead,
+  note,
 }: {
+  /** "03 / Study": the act number, then what the act is. */
   label: string;
   title: React.ReactNode;
   lead?: string;
+  /** Optional right-hand end of the rule: a count, a date, a folio. */
+  note?: string;
 }) {
+  const [no, tag] = label.split("/").map((part) => part.trim());
+
   return (
     <Reveal className="bl-head" as="header">
-      <p className="bl-head-label">{label}</p>
+      <p className="bl-head-rule">
+        <span className="bl-head-no">{no}</span>
+        <span className="bl-head-tag">{tag ?? label}</span>
+        <i aria-hidden="true" />
+        {note && <span className="bl-head-note">{note}</span>}
+      </p>
       <h2 className="bl-head-title">{title}</h2>
       {lead && <p className="bl-head-lead">{lead}</p>}
     </Reveal>
@@ -733,78 +752,61 @@ export function ContactSection() {
         </p>
       </Reveal>
 
-      <Reveal delay={320}>
-        <div className="bl-contact-links">
-          <a className="bl-btn" href={profile.github} target="_blank" rel="noreferrer">
-            <MarkGithub size={14} /> {profile.githubHandle}
-          </a>
-          <a className="bl-btn" href={profile.linkedin} target="_blank" rel="noreferrer">
-            <MarkLinkedin size={14} /> {profile.linkedinHandle}
-          </a>
-          <a className="bl-btn" href={profile.studio} target="_blank" rel="noreferrer">
-            ByUsForU <MarkArrow size={12} />
-          </a>
-          <a className="bl-btn" href={profile.resume} target="_blank" rel="noreferrer">
-            <MarkPaper size={14} /> Résumé
-          </a>
-        </div>
-      </Reveal>
+      {/* The same four links used to sit here and again in the footer, two
+          hundred pixels apart. They belong in the colophon, which is where a
+          reader goes looking for them. */}
     </section>
   );
 }
 
+/**
+ * The back page: a colophon, not a sitemap.
+ *
+ * There were three columns of links and a marquee running the name across
+ * the bottom for ever. Both are filler. The contents already live in the bar,
+ * so repeating them here only says the page ran out of things to put at the
+ * end, and an infinite scroller of your own name says less the longer it
+ * runs.
+ *
+ * A colophon is the opposite: the small print a book keeps for the people
+ * who are still reading. What it is set in, what it was made with, where it
+ * was made, and one way to reach the person who made it.
+ */
 export function BuildLogFooter({ time }: { time: string }) {
   return (
     <footer className="bl-footer" id="footer">
-      <div className="bl-footer-name" aria-hidden="true">
-        <div className="bl-footer-run">
-          {[0, 1].map((copy) => (
-            <span key={copy}>
-              S. Dhruv Reddy <i /> Full-stack <i /> Applied AI <i />
-            </span>
-          ))}
-        </div>
-      </div>
+      <div className="bl-colo">
+        <div className="bl-colo-say">
+          <p className="bl-colo-kicker">Say hello</p>
 
-      <div className="bl-footer-grid">
-        <div className="bl-footer-col">
-          <p className="bl-head-label">Sections</p>
-          {sections.map((item) => (
-            <a key={item.id} href={`#${item.id}`}>
-              {item.label}
-            </a>
-          ))}
-        </div>
-
-        <div className="bl-footer-col">
-          <p className="bl-head-label">Elsewhere</p>
-          <a href={profile.github} target="_blank" rel="noreferrer">
-            GitHub <span>{profile.githubHandle}</span>
-          </a>
-          <a href={profile.linkedin} target="_blank" rel="noreferrer">
-            LinkedIn <span>{profile.linkedinHandle}</span>
-          </a>
-          <a href={profile.studio} target="_blank" rel="noreferrer">
-            ByUsForU <span>freelance.byus4u.in</span>
-          </a>
-          <a href={profile.resume} target="_blank" rel="noreferrer">
-            Résumé <span>PDF</span>
-          </a>
-        </div>
-
-        <div className="bl-footer-col">
-          <p className="bl-head-label">Say hello</p>
-          <a className="bl-footer-mail" href={`mailto:${profile.email}`}>
+          <a className="bl-colo-mail" href={`mailto:${profile.email}`}>
             {profile.email}
           </a>
-          <p className="bl-footer-live">
-            <i aria-hidden="true" /> Hyderabad · {time}
+
+          <p className="bl-colo-where">
+            <i aria-hidden="true" />
+            {profile.location} · {time} · {profile.coords}
           </p>
-          <p className="bl-footer-coords">{profile.coords}</p>
+
+          <div className="bl-colo-links">
+            <a href={profile.github} target="_blank" rel="noreferrer">
+              <MarkGithub size={13} /> {profile.githubHandle}
+            </a>
+            <a href={profile.linkedin} target="_blank" rel="noreferrer">
+              <MarkLinkedin size={13} /> {profile.linkedinHandle}
+            </a>
+            <a href={profile.studio} target="_blank" rel="noreferrer">
+              ByUsForU <MarkArrow size={11} />
+            </a>
+            <a href={profile.resume} target="_blank" rel="noreferrer">
+              <MarkPaper size={13} /> Résumé
+            </a>
+          </div>
         </div>
 
-        {/* the portrait, signed off in characters */}
-        <div className="bl-footer-art">
+        {/* signed off in characters, which is the only portrait a log book
+            would have room to print */}
+        <div className="bl-colo-art">
           <AsciiArt
             src="/assets/dhruv.png"
             resolution={62}
@@ -819,6 +821,25 @@ export function BuildLogFooter({ time }: { time: string }) {
           />
         </div>
       </div>
+
+      <dl className="bl-colo-set">
+        <div>
+          <dt>Set in</dt>
+          <dd>Fraunces, Instrument Sans and JetBrains Mono.</dd>
+        </div>
+        <div>
+          <dt>Built with</dt>
+          <dd>Next.js, GSAP and Lenis, served from the edge.</dd>
+        </div>
+        <div>
+          <dt>Tracks</dt>
+          <dd>Nothing. No analytics, no cookies, no third-party scripts.</dd>
+        </div>
+        <div>
+          <dt>Written by</dt>
+          <dd>{profile.full}, in {profile.location}, by hand.</dd>
+        </div>
+      </dl>
 
       <div className="bl-footer-base">
         <span>

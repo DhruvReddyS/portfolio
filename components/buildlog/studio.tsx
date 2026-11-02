@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { studio } from "@/lib/portfolio-data";
 import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
@@ -77,16 +78,22 @@ export function StudioSection() {
             </div>
           </div>
 
-          {/* the six steps, as a run of stations */}
-          <div className="bl-studio-process">
-            {studio.process.map((stage) => (
-              <div className="bl-stage" key={stage.step}>
-                <span className="bl-stage-step">{stage.step}</span>
-                <strong>{stage.title}</strong>
-                <p>{stage.note}</p>
-              </div>
+          {/*
+            The six stages, set as one ruled line rather than six boxes.
+            Spelled out as a card each, this is the block every agency
+            template ships with, and six cards of forty words is a lot of
+            page spent saying that work happens in an order.
+          */}
+          <p className="bl-studio-run">
+            {studio.process.map((stage, index) => (
+              <Fragment key={stage.step}>
+                {index > 0 && <i aria-hidden="true" />}
+                <span>
+                  <em>{stage.step}</em> {stage.title}
+                </span>
+              </Fragment>
             ))}
-          </div>
+          </p>
 
         </div>
       </Reveal>

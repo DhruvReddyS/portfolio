@@ -6198,3 +6198,1147 @@ html.bl-locked body { overflow: hidden; }
 
   .bl-card-name { font-size: clamp(1.7rem, 7vw, 2.2rem); }
 }
+
+/* ==========================================================================
+   THE GRADE
+   ------------------------------------------------------------------------
+   The page had one problem underneath all the others: it was one flat black
+   with one orange on it, and every act wore the same uniform. Six identical
+   centred frontispieces, six grids of the same rounded card, thirty-one
+   vendor logos in their own brand colours. Nothing was decided twice, so
+   nothing read as decided at all.
+   
+   Three changes answer that, and they run through everything below.
+   
+   1. The lamp. The middle of the page is lit. Study and the toolkit sit on
+      paper, cream ground and dark ink, laid on the dark with a shadow at
+      each edge. The colour lives in the ground, not in the chips, which is
+      why scrolling now changes the light instead of staying one black.
+   
+   2. The folio. An act opens with a ruled line carrying its number and its
+      name, and the title hangs under it in the book's own serif, left, in
+      mixed case, with the lede out to the right. No act is centred and no
+      act shouts in capitals any more.
+   
+   3. The second ink. One muted stamp green, kept for numbers, marks and
+      live indicators, so the red pen can go back to being a pen.
+   ========================================================================== */
+
+:root,
+[data-lamp="off"] {
+  /* the ledger's second ink: used for figures, stamps and live marks */
+  --bl-stamp: #7f9d8e;
+  --bl-stamp-soft: rgba(127, 157, 142, 0.16);
+}
+
+/* ---------- the lamp -------------------------------------------------- */
+
+/*
+ * Everything in this project is drawn from custom properties, so a sheet of
+ * paper is a block of token overrides and nothing else: no component below
+ * knows which side of the page it is on.
+ */
+
+[data-light="paper"],
+html[data-over="paper"] .bl-nav {
+  --bl-bg: #e8e1d2;
+  --bl-bg-deep: #dcd3c0;
+  --bl-surface: #efe9dc;
+  --bl-surface-2: #ddd4c2;
+  --bl-ink: #1b1815;
+  --bl-ink-soft: #564f45;
+  --bl-ink-dim: #8a8071;
+  --bl-rule: rgba(27, 24, 21, 0.2);
+  --bl-rule-soft: rgba(27, 24, 21, 0.085);
+  --bl-accent: #bd3317;
+  --bl-accent-ink: #f6f2e8;
+  --bl-accent-soft: rgba(189, 51, 23, 0.12);
+  --bl-amber: #a2731f;
+  --bl-hand: #bd3317;
+  --bl-hand-2: #a2731f;
+  --bl-stamp: #3d5b50;
+  --bl-stamp-soft: rgba(61, 91, 80, 0.13);
+  --bl-lift: 0 0.9rem 2.2rem rgba(52, 41, 27, 0.16);
+  color-scheme: light;
+}
+
+/* The two lit acts run together as one sheet, so there is a single cut into
+   the light and a single cut back out of it rather than four. */
+.bl-leaf {
+  position: relative;
+  z-index: 1;
+  background: var(--bl-bg);
+  color: var(--bl-ink);
+}
+
+/* the sheet is laid ON the dark: its own shadow falls at both edges */
+.bl-leaf::before,
+.bl-leaf::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.bl-leaf::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
+}
+
+.bl-leaf::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+}
+
+/* Film grain is light sitting on top of a dark frame. On paper the same
+   layer has to be dirt sitting in it, or the sheet glows. */
+html[data-over="paper"] .bl-grain-layer {
+  opacity: 0.028;
+  mix-blend-mode: multiply;
+}
+
+/* ---------- the dark acts, graded ------------------------------------- */
+
+/*
+ * Not one black. The log is cool, because it is offices and screens; the
+ * wins are warm, because they are rooms with people in them; contact is the
+ * deepest, because it is the end of the reel. The steps are small on purpose:
+ * they should be felt on the way past, not noticed on arrival.
+ */
+
+.bl-log { background: #0a0b0d; }
+.bl-work { background: #0b0a09; }
+.bl-wall-act { background: #100c0a; }
+.bl-studio { background: #090a0c; }
+.bl-contact { background: #070606; }
+
+.bl-log,
+.bl-work,
+.bl-wall-act,
+.bl-studio,
+.bl-contact {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- the folio: how an act opens ------------------------------- */
+
+.bl-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: end;
+  column-gap: clamp(1.5rem, 4vw, 4rem);
+  row-gap: 1rem;
+  justify-items: stretch;
+  text-align: left;
+  max-width: none;
+  margin: 0 0 clamp(2.5rem, 5.5vh, 4rem);
+}
+
+.bl-head-rule {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin: 0 0 clamp(1rem, 2.2vh, 1.75rem);
+  padding-bottom: 0.72rem;
+  border-bottom: 1px solid var(--bl-rule);
+  color: var(--bl-ink-dim);
+}
+
+.bl-head-no {
+  font-family: var(--bl-display);
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 24, "WONK" 1, "opsz" 36;
+  line-height: 0.9;
+  color: var(--bl-accent);
+}
+
+.bl-head-tag {
+  font-family: var(--bl-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.bl-head-rule i {
+  flex: 1;
+  height: 1px;
+  min-width: 1.5rem;
+  background: var(--bl-rule);
+}
+
+.bl-head-note {
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/*
+ * The title is set in the book's serif, mixed case, left. The uppercase sans
+ * slab it replaces is the single loudest tell on a generated page, and it was
+ * also competing with the hero, which is the one place that voice belongs.
+ */
+.bl-head-title {
+  grid-column: 1;
+  margin: 0;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 48;
+  font-size: clamp(2.05rem, 4.4vw, 3.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.016em;
+  text-transform: none;
+  text-wrap: balance;
+  color: var(--bl-ink);
+}
+
+.bl-head-lead {
+  grid-column: 2;
+  margin: 0 0 0.4rem;
+  max-width: 34ch;
+  justify-self: end;
+  font-size: clamp(0.88rem, 1.1vw, 0.99rem);
+  line-height: 1.7;
+  color: var(--bl-ink-soft);
+}
+
+@media (max-width: 880px) {
+  .bl-head { grid-template-columns: minmax(0, 1fr); }
+  .bl-head-title,
+  .bl-head-lead {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .bl-head-lead { max-width: 46ch; }
+}
+
+/* the acts no longer need a screenful of air above them to breathe */
+.bl-section {
+  padding-block: clamp(4.25rem, 9vh, 6.75rem);
+}
+
+/* ---------- the toolkit, as a page from the back of the book ---------- */
+
+.bl-tools-sheet {
+  margin: 0;
+  display: grid;
+}
+
+.bl-shelf {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 0.2fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 3rem);
+  align-items: baseline;
+  padding: clamp(1.05rem, 2.3vw, 1.85rem) 0;
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-shelf:last-child { border-bottom: 1px solid var(--bl-rule); }
+
+.bl-shelf dt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  white-space: nowrap;
+}
+
+.bl-shelf-name {
+  font-family: var(--bl-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bl-ink);
+}
+
+.bl-shelf-count {
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  color: var(--bl-stamp);
+}
+
+.bl-shelf dd {
+  margin: 0;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 26, "WONK" 1, "opsz" 28;
+  font-size: clamp(1.05rem, 1.75vw, 1.45rem);
+  line-height: 1.55;
+  color: var(--bl-ink);
+}
+
+.bl-shelf dd i {
+  font-style: normal;
+  margin: 0 0.5rem;
+  color: var(--bl-accent);
+  opacity: 0.55;
+}
+
+.bl-shelf dd span {
+  transition: color 0.2s var(--bl-ease);
+}
+
+.bl-shelf dd span:hover { color: var(--bl-accent); }
+
+@media (max-width: 700px) {
+  .bl-shelf {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+/* ---------- the bar ---------------------------------------------------- */
+
+.bl-nav {
+  justify-content: space-between;
+  gap: clamp(0.75rem, 3vw, 2.5rem);
+  color: var(--bl-ink);
+  background: color-mix(in srgb, var(--bl-bg) 88%, transparent);
+  backdrop-filter: blur(14px) saturate(130%);
+  transition: transform 0.4s var(--bl-ease), background 0.5s var(--bl-ease),
+    color 0.5s var(--bl-ease), border-color 0.5s var(--bl-ease);
+}
+
+/* how far through the page you are: the one thing a bar can say that the
+   contents page cannot */
+.bl-nav-read {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--bl-accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
+.bl-act {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 0.45rem 0;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.bl-act-no {
+  font-family: var(--bl-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  color: var(--bl-accent);
+}
+
+.bl-act-name {
+  font-family: var(--bl-display);
+  font-size: 0.98rem;
+  font-variation-settings: "SOFT" 26, "WONK" 1, "opsz" 20;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--bl-ink);
+}
+
+.bl-act-rule {
+  flex: 1;
+  min-width: 1rem;
+  height: 1px;
+  background: var(--bl-rule);
+  transition: background 0.25s var(--bl-ease);
+}
+
+.bl-act-word {
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  white-space: nowrap;
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-act:hover .bl-act-rule { background: var(--bl-accent); }
+.bl-act:hover .bl-act-word { color: var(--bl-accent); }
+
+@media (max-width: 620px) {
+  .bl-act-word,
+  .bl-act-rule { display: none; }
+  .bl-act { flex: 0 1 auto; margin: 0; }
+}
+
+/* ---------- the contents, as a page of its own ------------------------ */
+
+.bl-contents {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 4vh, 2.75rem);
+  padding: clamp(1.1rem, 4vh, 2.5rem) var(--bl-gutter) clamp(1.5rem, 5vh, 3rem);
+  background: #080706;
+  color: var(--bl-ink);
+  animation: bl-contents-in 0.45s var(--bl-ease) both;
+  overflow-y: auto;
+}
+
+@keyframes bl-contents-in {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+.bl-contents-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--bl-rule);
+}
+
+.bl-contents-kicker {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-contents-close {
+  display: inline-grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--bl-ink-soft);
+  cursor: pointer;
+  transition: color 0.2s var(--bl-ease), border-color 0.2s var(--bl-ease);
+}
+
+.bl-contents-close:hover {
+  color: var(--bl-accent);
+  border-color: var(--bl-accent);
+}
+
+.bl-contents-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bl-contents-list li {
+  animation: bl-contents-row 0.5s var(--bl-ease) both;
+  animation-delay: calc(0.08s + var(--i) * 0.045s);
+}
+
+@keyframes bl-contents-row {
+  from { opacity: 0; transform: translateY(1.1rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.bl-contents-list button {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  width: 100%;
+  padding: clamp(0.6rem, 1.6vh, 1.05rem) 0;
+  appearance: none;
+  border: 0;
+  border-top: 1px solid var(--bl-rule-soft);
+  background: transparent;
+  color: var(--bl-ink-soft);
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-contents-list li:last-child button {
+  border-bottom: 1px solid var(--bl-rule-soft);
+}
+
+.bl-contents-no {
+  font-family: var(--bl-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--bl-ink-dim);
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-contents-name {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 48;
+  font-size: clamp(1.6rem, 4.4vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: inherit;
+}
+
+.bl-contents-list button i {
+  flex: 1;
+  min-width: 1rem;
+  height: 1px;
+  background: var(--bl-rule-soft);
+  transition: background 0.25s var(--bl-ease);
+}
+
+.bl-contents-go {
+  display: inline-flex;
+  opacity: 0;
+  transform: translateX(-0.4rem);
+  color: var(--bl-accent);
+  transition: opacity 0.25s var(--bl-ease), transform 0.25s var(--bl-ease);
+}
+
+.bl-contents-list button:hover,
+.bl-contents-list button:focus-visible,
+.bl-contents-list button[data-active="true"] { color: var(--bl-ink); }
+
+.bl-contents-list button:hover .bl-contents-no,
+.bl-contents-list button[data-active="true"] .bl-contents-no { color: var(--bl-accent); }
+
+.bl-contents-list button:hover i { background: var(--bl-rule); }
+
+.bl-contents-list button:hover .bl-contents-go,
+.bl-contents-list button:focus-visible .bl-contents-go {
+  opacity: 1;
+  transform: none;
+}
+
+.bl-contents-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 2rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--bl-rule);
+  font-family: var(--bl-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--bl-ink-dim);
+}
+
+.bl-contents-foot a {
+  color: var(--bl-ink-soft);
+  transition: color 0.2s var(--bl-ease);
+}
+
+.bl-contents-foot a:hover { color: var(--bl-accent); }
+
+/* ---------- the cover ------------------------------------------------- */
+
+.bl-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  background: #080706;
+  color: var(--bl-ink);
+  will-change: transform;
+}
+
+.bl-cover-frame {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.1rem, 3vh, 2rem);
+  width: min(62rem, 100%);
+  padding: clamp(3rem, 9vh, 6rem) clamp(1.5rem, 5vw, 4.5rem);
+}
+
+/* the rule is drawn as four separate strokes so it can be ruled on, across
+   and then down, the way a frame is actually drawn */
+.bl-cover-frame > i,
+.bl-cover-frame > b {
+  position: absolute;
+  background: var(--bl-rule);
+}
+
+.bl-cover-frame > i {
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform-origin: 0 50%;
+}
+
+.bl-cover-frame > i:nth-of-type(1) { top: 0; }
+.bl-cover-frame > i:nth-of-type(2) { bottom: 0; transform-origin: 100% 50%; }
+
+.bl-cover-frame > b {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform-origin: 50% 0;
+}
+
+.bl-cover-frame > b:nth-of-type(1) { left: 0; }
+.bl-cover-frame > b:nth-of-type(2) { right: 0; transform-origin: 50% 100%; }
+
+.bl-cover-title {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 22, "WONK" 1, "opsz" 72;
+  font-size: clamp(3rem, 11vw, 8rem);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.bl-cover-title em {
+  font-style: italic;
+  color: var(--bl-accent);
+}
+
+/* each line is clipped to its own box, so it sets from behind its baseline */
+.bl-cover-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+
+.bl-cover-line > span { display: block; }
+
+.bl-cover-meta {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  text-align: center;
+}
+
+.bl-cover-by { color: var(--bl-ink-soft); }
+
+.bl-cover-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.75rem;
+  letter-spacing: 0.22em;
+}
+
+@media (max-width: 560px) {
+  .bl-cover-meta { letter-spacing: 0.2em; font-size: 0.55rem; }
+}
+
+/* ---------- the colophon ---------------------------------------------- */
+
+.bl-colo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: end;
+  padding-bottom: clamp(2rem, 5vh, 3.25rem);
+  border-bottom: 1px solid var(--bl-rule);
+}
+
+.bl-colo-say { display: grid; gap: 0.9rem; justify-items: start; }
+
+.bl-colo-kicker {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-colo-mail {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 48;
+  font-size: clamp(1.05rem, 4.4vw, 3rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--bl-ink);
+  overflow-wrap: anywhere;
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-colo-mail:hover { color: var(--bl-accent); }
+
+.bl-colo-where {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.14em;
+  color: var(--bl-ink-dim);
+}
+
+.bl-colo-where i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bl-stamp);
+  box-shadow: 0 0 0 3px var(--bl-stamp-soft);
+}
+
+.bl-colo-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.6rem;
+  margin-top: 0.35rem;
+}
+
+.bl-colo-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--bl-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  color: var(--bl-ink-soft);
+  transition: color 0.2s var(--bl-ease);
+}
+
+.bl-colo-links a:hover { color: var(--bl-accent); }
+
+.bl-colo-art { width: clamp(7rem, 14vw, 11rem); opacity: 0.6; }
+
+/* the small print, four lines, hanging off their own labels */
+.bl-colo-set {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1.1rem clamp(1.5rem, 4vw, 3.5rem);
+  margin: clamp(1.75rem, 4vh, 2.75rem) 0 clamp(1.75rem, 4vh, 2.75rem);
+}
+
+.bl-colo-set > div { display: grid; gap: 0.3rem; align-content: start; }
+
+.bl-colo-set dt {
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-colo-set dd {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--bl-ink-soft);
+}
+
+@media (max-width: 720px) {
+  .bl-colo { grid-template-columns: minmax(0, 1fr); }
+  .bl-colo-art { display: none; }
+}
+
+/* ---------- the studio's stages, as one ruled line -------------------- */
+
+.bl-studio-run {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0;
+  margin: clamp(1.25rem, 3vh, 2rem) 0 0;
+  padding-top: clamp(1rem, 2.5vh, 1.5rem);
+  border-top: 1px solid var(--bl-rule);
+  font-family: var(--bl-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  color: var(--bl-ink-soft);
+}
+
+.bl-studio-run span { display: inline-flex; align-items: baseline; gap: 0.4rem; }
+
+.bl-studio-run em {
+  font-style: normal;
+  color: var(--bl-accent);
+  font-size: 0.58rem;
+}
+
+.bl-studio-run i {
+  width: 1.5rem;
+  height: 1px;
+  margin: 0 0.75rem;
+  background: var(--bl-rule);
+}
+
+/* the colophon carries its own gutter now that the link columns are gone */
+.bl-footer {
+  padding: clamp(2.75rem, 7vh, 4.5rem) var(--bl-gutter) clamp(1.25rem, 3vh, 2rem);
+  background: #070606;
+}
+
+.bl-contents-no {
+  width: 2.25rem;
+  flex: none;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---------- the work, as entries rather than cards -------------------- */
+
+/*
+ * The rounded box with a hairline border and a slightly lighter fill is the
+ * most copied object on the web, and eight of them in a grid is what a
+ * generated page looks like from across the room. An entry in a catalogue
+ * has no box: it has a plate, the setting under it, and a rule to say where
+ * the next one starts.
+ */
+
+.bl-card {
+  overflow: visible;
+  border: 0;
+  border-bottom: 1px solid var(--bl-rule);
+  border-radius: 0;
+  background: transparent;
+  padding-bottom: 1.1rem;
+  transition: border-color 0.4s var(--bl-ease);
+}
+
+.bl-card:hover,
+.bl-card:focus-within {
+  transform: none;
+  box-shadow: none;
+  border-color: color-mix(in srgb, var(--bl-accent) 50%, transparent);
+}
+
+.bl-card-shot {
+  border: 0;
+  border-radius: 2px;
+  margin-bottom: 0.95rem;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(243, 241, 234, 0.055) 0 1px,
+      transparent 1px 1.45rem
+    ),
+    linear-gradient(200deg, #14110e 0%, #0a0908 85%);
+}
+
+/* the margin rule, as on a page of the book itself */
+.bl-card[data-plate="set"] .bl-card-shot::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2.1rem;
+  width: 1px;
+  background: color-mix(in srgb, var(--bl-accent) 28%, transparent);
+}
+
+/*
+ * What a build is made of, set where its photograph would have gone. It
+ * carries more than an outline of the name ever did, and it is true.
+ */
+.bl-card-set {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: flex-start;
+  gap: 0.1rem 0;
+  margin: 0;
+  padding: 1.5rem 1.4rem 1.5rem 3.1rem;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 26, "WONK" 1, "opsz" 24;
+  font-size: clamp(0.92rem, 1.35vw, 1.08rem);
+  line-height: 1.5;
+  color: var(--bl-ink-soft);
+}
+
+.bl-card-set i {
+  font-style: normal;
+  margin: 0 0.42rem;
+  color: var(--bl-accent);
+  opacity: 0.6;
+}
+
+/* the chips were glass pills; they are filing tabs now */
+.bl-card-num,
+.bl-card-tag {
+  top: 0;
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+  padding: 0.34rem 0.52rem;
+  font-size: 0.52rem;
+}
+
+.bl-card-num {
+  left: 0;
+  background: var(--bl-accent);
+  color: #0b0a09;
+  font-weight: 600;
+}
+
+.bl-card-tag {
+  right: 0;
+  background: rgba(7, 6, 5, 0.78);
+  color: var(--bl-ink-soft);
+}
+
+.bl-card-tag[data-win="true"] {
+  background: var(--bl-amber);
+  color: #0b0a09;
+  border: 0;
+}
+
+/* the name is the entry; it should answer the pointer, not the whole box */
+.bl-card:hover .bl-card-name { color: var(--bl-accent); }
+.bl-card-name { transition: color 0.25s var(--bl-ease); }
+
+/* an annotation and the punctuation it belongs to travel together */
+.bl-nobreak { white-space: nowrap; }
+
+/*
+ * The shelf is a run of elements with no whitespace between them, which a
+ * browser reads as one unbreakable word. Laying them out as flex items puts
+ * the break opportunities back.
+ */
+.bl-shelf dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+@media (max-width: 620px) {
+  .bl-head-note { display: none; }
+}
+
+/* ---------- the two degrees, as entries on the sheet ------------------ */
+
+.bl-degrees {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.bl-degree {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+  padding-top: 1.1rem;
+  border-top: 2px solid var(--bl-ink);
+}
+
+.bl-degree-kicker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-degree-kicker i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.bl-degree-kicker em {
+  margin-left: auto;
+  font-style: normal;
+  padding: 0.22rem 0.45rem;
+  color: var(--bl-accent-ink);
+  background: var(--bl-accent);
+}
+
+.bl-degree-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--bl-rule);
+}
+
+.bl-degree-name {
+  margin: 0;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 22, "WONK" 1, "opsz" 36;
+  font-size: clamp(1.3rem, 2.3vw, 1.95rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  max-width: 15ch;
+}
+
+/* the mark gets the size: it is the only number here that took four years */
+.bl-degree-mark {
+  display: grid;
+  justify-items: end;
+  gap: 0.1rem;
+  margin: 0;
+  text-align: right;
+  flex: none;
+}
+
+.bl-degree-mark strong {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 60;
+  font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  color: var(--bl-accent);
+}
+
+.bl-degree-mark span {
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-degree-field {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--bl-ink-soft);
+}
+
+.bl-degree-field strong {
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-stamp);
+}
+
+.bl-degree-points {
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.bl-degree-points li {
+  position: relative;
+  padding-left: 1.3rem;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--bl-ink-soft);
+}
+
+.bl-degree-points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.75rem;
+  height: 1px;
+  background: var(--bl-accent);
+}
+
+.bl-degree-certs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.25rem;
+  margin-top: 0.35rem;
+}
+
+.bl-degree-certs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+  border-bottom: 1px solid var(--bl-rule);
+  padding-bottom: 0.15rem;
+  transition: color 0.2s var(--bl-ease), border-color 0.2s var(--bl-ease);
+}
+
+.bl-degree-certs a:hover {
+  color: var(--bl-accent);
+  border-color: var(--bl-accent);
+}
+
+@media (max-width: 820px) {
+  .bl-degrees { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The counter sets its digits in a span of its own, so the label rule has to
+   be a child selector or it shrinks the figure it is labelling. */
+.bl-degree-mark > span {
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-degree-mark strong span {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-transform: none;
+}
+
+/* ---------- the wins, hung flat --------------------------------------- */
+
+/*
+ * All four of these have a real photograph behind them, so the wall stays a
+ * wall. What goes is the 20px radius, the lift and the sheet of glass that
+ * slid across on hover: three effects doing the job of none, and the glass
+ * in particular is the one that makes a page look rendered rather than hung.
+ */
+
+.bl-bento-tile {
+  border-radius: 2px;
+  background: #0d0b0a;
+  transition: border-color 0.4s var(--bl-ease);
+}
+
+.bl-bento-tile:hover,
+.bl-bento-tile:focus-visible {
+  transform: none;
+  border-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
+}
+
+.bl-bento-tile:hover .bl-plate-bare { transform: scale(1.03); }
+
+.bl-frame-glass { display: none; }
+
+.bl-bento-copy strong { transition: color 0.25s var(--bl-ease); }
+.bl-bento-tile:hover .bl-bento-copy strong { color: var(--bl-accent); }

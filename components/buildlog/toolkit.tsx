@@ -3,39 +3,6 @@
 import { Fragment, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import {
-  SiCloudflare,
-  SiCloudinary,
-  SiDocker,
-  SiExpress,
-  SiFastapi,
-  SiFirebase,
-  SiFlask,
-  SiFramer,
-  SiGit,
-  SiGithub,
-  SiGreensock,
-  SiJavascript,
-  SiLangchain,
-  SiMongodb,
-  SiMysql,
-  SiNeo4J,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiOllama,
-  SiPhp,
-  SiPostgresql,
-  SiPython,
-  SiQdrant,
-  SiReact,
-  SiRedis,
-  SiRender,
-  SiSqlite,
-  SiTailwindcss,
-  SiTypescript,
-  SiVercel,
-  SiVuedotjs,
-} from "react-icons/si";
 import { SectionHeader } from "./sections";
 
 if (typeof window !== "undefined") {
@@ -44,89 +11,75 @@ if (typeof window !== "undefined") {
 
 type Group = "Interface" | "Server" | "Applied AI" | "Data" | "Delivery";
 
-type Tool = {
-  name: string;
-  group: Group;
-  color: string;
-  icon: React.ReactNode;
+/**
+ * The toolkit, set as a page from the back of the book.
+ *
+ * This was thirty-one vendor logos, each in its own brand colour, in its own
+ * rounded pill. It is the single most copied block on the internet and the
+ * fastest way to tell a reader that nobody chose anything: the palette comes
+ * from the vendors, the shapes come from the icon library, and the page ends
+ * up advertising thirty-one other companies.
+ *
+ * A toolkit is a list. So it is set as one, in the book's own type, under the
+ * lamp, with the shelf in the margin and the names running on. The only thing
+ * it now says about React is that he uses it, which is the only thing it was
+ * ever saying.
+ */
+
+const shelves: Record<Group, string[]> = {
+  Interface: [
+    "React",
+    "Next.js",
+    "TypeScript",
+    "JavaScript",
+    "Vue.js",
+    "Tailwind",
+    "Framer Motion",
+    "GSAP",
+  ],
+  Server: ["Node.js", "Express", "Python", "Flask", "FastAPI", "PHP"],
+  "Applied AI": ["LangGraph", "Ollama", "Qdrant"],
+  Data: [
+    "PostgreSQL",
+    "MongoDB",
+    "Neo4j",
+    "MySQL",
+    "SQLite",
+    "Redis",
+    "Firebase",
+  ],
+  Delivery: [
+    "Docker",
+    "Cloudflare",
+    "Vercel",
+    "Render",
+    "Cloudinary",
+    "Git",
+    "GitHub",
+  ],
 };
-
-/** Every one of these has shipped in something on this page. */
-const tools: Tool[] = [
-  { name: "React", group: "Interface", color: "#61DAFB", icon: <SiReact /> },
-  { name: "Next.js", group: "Interface", color: "var(--bl-ink)", icon: <SiNextdotjs /> },
-  { name: "TypeScript", group: "Interface", color: "#3178C6", icon: <SiTypescript /> },
-  { name: "JavaScript", group: "Interface", color: "#F7DF1E", icon: <SiJavascript /> },
-  { name: "Vue.js", group: "Interface", color: "#42B883", icon: <SiVuedotjs /> },
-  { name: "Tailwind", group: "Interface", color: "#06B6D4", icon: <SiTailwindcss /> },
-  { name: "Framer Motion", group: "Interface", color: "#FF5C9A", icon: <SiFramer /> },
-  { name: "GSAP", group: "Interface", color: "#8FD000", icon: <SiGreensock /> },
-
-  { name: "Node.js", group: "Server", color: "#5FA04E", icon: <SiNodedotjs /> },
-  { name: "Express", group: "Server", color: "var(--bl-ink)", icon: <SiExpress /> },
-  { name: "Python", group: "Server", color: "#3776AB", icon: <SiPython /> },
-  { name: "Flask", group: "Server", color: "var(--bl-ink)", icon: <SiFlask /> },
-  { name: "FastAPI", group: "Server", color: "#009688", icon: <SiFastapi /> },
-  { name: "PHP", group: "Server", color: "#777BB4", icon: <SiPhp /> },
-
-  { name: "LangGraph", group: "Applied AI", color: "#1C9C7C", icon: <SiLangchain /> },
-  { name: "Ollama", group: "Applied AI", color: "var(--bl-ink)", icon: <SiOllama /> },
-  { name: "Qdrant", group: "Applied AI", color: "#DC244C", icon: <SiQdrant /> },
-
-  { name: "PostgreSQL", group: "Data", color: "#4169E1", icon: <SiPostgresql /> },
-  { name: "MongoDB", group: "Data", color: "#47A248", icon: <SiMongodb /> },
-  { name: "Neo4j", group: "Data", color: "#4581C3", icon: <SiNeo4J /> },
-  { name: "MySQL", group: "Data", color: "#4479A1", icon: <SiMysql /> },
-  { name: "SQLite", group: "Data", color: "#5AA9E6", icon: <SiSqlite /> },
-  { name: "Redis", group: "Data", color: "#FF4438", icon: <SiRedis /> },
-  { name: "Firebase", group: "Data", color: "#FFCA28", icon: <SiFirebase /> },
-
-  { name: "Docker", group: "Delivery", color: "#2496ED", icon: <SiDocker /> },
-  { name: "Cloudflare", group: "Delivery", color: "#F38020", icon: <SiCloudflare /> },
-  { name: "Vercel", group: "Delivery", color: "var(--bl-ink)", icon: <SiVercel /> },
-  { name: "Render", group: "Delivery", color: "#46E3B7", icon: <SiRender /> },
-  { name: "Cloudinary", group: "Delivery", color: "#3448C5", icon: <SiCloudinary /> },
-  { name: "Git", group: "Delivery", color: "#F05032", icon: <SiGit /> },
-  { name: "GitHub", group: "Delivery", color: "var(--bl-ink)", icon: <SiGithub /> },
-];
 
 const GROUPS: Group[] = ["Interface", "Server", "Applied AI", "Data", "Delivery"];
 
-/**
- * The toolkit, as the key to a map.
- *
- * This is the layout the project had before the rebuild: brand-coloured marks
- * on pills, wrapped and centred, with a strip of category labels ruled
- * underneath. It beats both the watch face and the web for one reason:
- * thirty-one tools is a legend, not a diagram, and a legend should be
- * scannable in one pass rather than explored.
- */
+const TOTAL = GROUPS.reduce((sum, group) => sum + shelves[group].length, 0);
+
 export function ToolkitSection() {
-  const key = useRef<HTMLDivElement>(null);
+  const sheet = useRef<HTMLDListElement>(null);
 
   useEffect(() => {
-    const node = key.current;
+    const node = sheet.current;
     if (!node) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const context = gsap.context(() => {
-      gsap.from(".bl-key > div", {
-        y: 18,
+      // the shelves rule themselves in, one line at a time
+      gsap.from(".bl-shelf", {
+        y: 14,
         opacity: 0,
-        scale: 0.94,
-        duration: 0.55,
+        duration: 0.6,
         ease: "power3.out",
-        stagger: { each: 0.028, from: "start" },
-        scrollTrigger: { trigger: node, start: "top 82%", once: true },
-      });
-
-      gsap.from(".bl-key-strip i", {
-        scaleX: 0,
-        transformOrigin: "left",
-        duration: 0.9,
-        ease: "power2.out",
-        stagger: 0.09,
-        scrollTrigger: { trigger: ".bl-key-strip", start: "top 90%", once: true },
+        stagger: 0.08,
+        scrollTrigger: { trigger: node, start: "top 84%", once: true },
       });
     }, node);
 
@@ -134,30 +87,36 @@ export function ToolkitSection() {
   }, []);
 
   return (
-    <section className="bl-section bl-toolkit" id="stack">
+    <section className="bl-section bl-tools" id="stack">
       <SectionHeader
         label="04 / Toolkit"
         title="Thirty-one things I build with"
-        lead="Correct tools, correct colours, zero filler. Every one has shipped in something on this page."
+        lead="No logos. Every name here has shipped inside something else on this page, which is the only endorsement any of them gets."
+        note={`${TOTAL} entries · 5 shelves`}
       />
 
-      <div className="bl-key" ref={key} aria-label="Technology toolkit">
-        {tools.map((tool) => (
-          <div key={tool.name} style={{ "--tool": tool.color } as React.CSSProperties}>
-            <span aria-hidden="true">{tool.icon}</span>
-            <strong>{tool.name}</strong>
-          </div>
-        ))}
-      </div>
-
-      <div className="bl-key-strip" aria-hidden="true">
-        {GROUPS.map((group, index) => (
+      <dl className="bl-tools-sheet" ref={sheet}>
+        {GROUPS.map((group) => (
           <Fragment key={group}>
-            <span>{group}</span>
-            {index < GROUPS.length - 1 && <i />}
+            <div className="bl-shelf">
+              <dt>
+                <span className="bl-shelf-name">{group}</span>
+                <span className="bl-shelf-count">
+                  {String(shelves[group].length).padStart(2, "0")}
+                </span>
+              </dt>
+              <dd>
+                {shelves[group].map((tool, index) => (
+                  <Fragment key={tool}>
+                    {index > 0 && <i aria-hidden="true">·</i>}
+                    <span>{tool}</span>
+                  </Fragment>
+                ))}
+              </dd>
+            </div>
           </Fragment>
         ))}
-      </div>
+      </dl>
     </section>
   );
 }
