@@ -8261,69 +8261,75 @@ body,
   .bl-tool-mark { font-size: 0.85rem; }
 }
 
-/* ---------- the close, in colour --------------------------------------- */
+/* ---------- the close, centred ----------------------------------------- */
 
 /*
- * The one place on the page that is allowed to be loud. Everywhere else the
- * accent is a pen and the page is paper or ink; here the word that matters is
- * lit from orange through gold into a warm pink, which are hues this site
- * does not otherwise own and should not: used once, at the end, on one word,
- * it reads as an ending rather than as a theme.
+ * One colour, not three. The orange-through-gold-into-pink gradient read as
+ * a smear rather than as a highlight: a gradient across letterforms muddies
+ * exactly where the stroke is thinnest, which on an italic serif is most of
+ * it. The word is simply the accent now, which is louder for being clean.
+ *
+ * And the whole act is centred, because it is the one page here that is
+ * addressed to the reader rather than filed for them.
  */
 
-.bl-contact { position: relative; }
-
-/* a bloom behind the line, so the colour has somewhere to come from */
-.bl-contact::before {
-  content: "";
-  position: absolute;
-  left: calc(var(--bl-gutter) - 4rem);
-  top: 34%;
-  width: min(44rem, 72%);
-  aspect-ratio: 16 / 9;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    closest-side,
-    rgba(255, 106, 44, 0.16),
-    rgba(255, 77, 109, 0.07) 56%,
-    transparent 78%
-  );
-  filter: blur(14px);
+.bl-contact {
+  position: relative;
+  text-align: center;
 }
 
-.bl-contact-huge em {
-  background: linear-gradient(
-    104deg,
-    #ff6a2c 0%,
-    #ffb340 44%,
-    #ff4d6d 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  /* the gradient clips to the glyphs, so the italic's overhang needs room or
-     the descender of the "y" is cut square */
-  padding-right: 0.08em;
+.bl-contact .bl-head {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  text-align: center;
 }
 
-/* the button stops being an outline and becomes the brightest thing here */
+.bl-contact .bl-head-title {
+  grid-column: 1;
+  max-width: 22ch;
+}
+
+.bl-contact .bl-head-lead {
+  grid-column: 1;
+  justify-self: center;
+  max-width: 46ch;
+}
+
+.bl-contact .bl-reveal { display: grid; justify-items: center; }
+
+.bl-contact-huge { text-align: center; }
+
+.bl-contact-huge em { color: var(--bl-accent); }
+
+.bl-contact .bl-lede {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: clamp(1rem, 2.5vh, 1.75rem);
+  text-align: center;
+}
+
+.bl-cta-sub {
+  justify-content: center;
+  text-align: center;
+}
+
+/* the button is solid, which is the one piece of flat colour the page ends on */
 .bl-cta {
-  background: linear-gradient(104deg, #ff6a2c 0%, #ff4d6d 128%);
-  border-color: transparent;
-  color: #140b07;
+  background: var(--bl-accent);
+  border-color: var(--bl-accent);
+  color: var(--bl-accent-ink);
 }
 
 .bl-cta .bl-cta-ring { opacity: 0; }
 
 .bl-cta:hover {
-  filter: brightness(1.06) saturate(1.05);
+  filter: brightness(1.07);
   transform: translateY(-2px);
 }
 
 .bl-cta-mark { color: inherit; }
 
-/* and the folio note on this act is the one that is actually news */
+/* the folio note on this act is the one that is actually news */
 .bl-contact .bl-head-note {
   display: inline-flex;
   align-items: center;
@@ -8358,3 +8364,292 @@ body,
 @media (max-width: 1100px) { .bl-pile { height: var(--bl-pile-h, 24rem); } }
 @media (max-width: 760px) { .bl-pile { height: var(--bl-pile-h, 30rem); } }
 @media (max-width: 420px) { .bl-pile { height: var(--bl-pile-h, 33rem); } }
+
+/* ==========================================================================
+   THE WALL
+   Four photographs pegged to a line, in a room rather than in a grid.
+   ========================================================================== */
+
+/* the wall itself: plaster, lit from above left, with a picture rail */
+.bl-wall-act {
+  position: relative;
+  overflow: hidden;
+}
+
+.bl-wall-act::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 80% at 18% -10%,
+      rgba(255, 238, 214, 0.09),
+      transparent 62%
+    ),
+    repeating-linear-gradient(
+      91deg,
+      rgba(255, 255, 255, 0.013) 0 2px,
+      transparent 2px 7px
+    ),
+    linear-gradient(180deg, #121110 0%, #0a0908 58%, #070606 100%);
+}
+
+/* the rail the line is tied off to */
+.bl-wall-act::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--bl-s-act) * 0.42);
+  height: 1px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(242, 239, 230, 0.07) 12%,
+    rgba(242, 239, 230, 0.07) 88%,
+    transparent
+  );
+}
+
+.bl-wall-act > * { position: relative; z-index: 1; }
+
+/* ---------- the line ---------------------------------------------------- */
+
+.bl-line {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  outline: none;
+  cursor: grab;
+}
+
+.bl-line[data-drag="1"] { cursor: grabbing; }
+
+.bl-line:focus-visible {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--bl-accent) 70%, transparent);
+  border-radius: 8px;
+}
+
+.bl-line-string {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.bl-line-string path { stroke: color-mix(in srgb, var(--bl-ink) 34%, transparent); }
+
+/* ---------- a print ----------------------------------------------------- */
+
+.bl-print {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--bl-print-w);
+  transform-origin: 50% 0;
+  will-change: transform;
+  cursor: inherit;
+}
+
+/* the instant print: a white sheet, a square window, a hand-written band */
+.bl-print-sheet {
+  margin-top: 11px;
+  padding: 11px 11px 0;
+  background: #f7f4ec;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 20px 34px -18px rgba(0, 0, 0, 0.75);
+  transition: transform 0.5s var(--bl-ease), filter 0.5s var(--bl-ease);
+}
+
+.bl-print[data-on="0"] .bl-print-sheet {
+  transform: scale(0.9);
+  filter: saturate(0.72) brightness(0.9);
+}
+
+.bl-print-shot {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #ded9ce;
+  display: grid;
+  place-items: center;
+}
+
+.bl-print-shot img,
+.bl-print-shot .bl-plate-bare img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.bl-print-shot .bl-plate-bare { position: absolute; inset: 0; }
+
+.bl-print-shot > span,
+.bl-print-shot .bl-plate-bare > span {
+  font-family: var(--bl-display);
+  font-size: 1.6rem;
+  color: rgba(27, 24, 20, 0.3);
+}
+
+/* the band under the window, written on by hand */
+.bl-print-note {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  font-family: var(--bl-display);
+  font-style: italic;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  color: #3b3833;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* the peg it hangs from */
+.bl-print-peg {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 10px;
+  height: 26px;
+  margin-left: -5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #8a6f4a, #c9a977 45%, #7d6240);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.bl-print-peg::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  width: 2px;
+  height: 7px;
+  background: rgba(40, 28, 12, 0.5);
+  border-radius: 1px;
+}
+
+/* ---------- the bar under the line -------------------------------------- */
+
+.bl-line-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  cursor: default;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-line-cap {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  padding-bottom: 0.15em;
+}
+
+.bl-line-cap > * {
+  display: block;
+  animation: bl-line-in 0.55s var(--bl-ease) both;
+}
+
+@keyframes bl-line-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.bl-line-title {
+  font-family: var(--bl-sans);
+  font-weight: 700;
+  font-size: var(--bl-t-sub);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bl-line-sub {
+  margin-top: 0.22rem;
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-line-count {
+  font-family: var(--bl-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  color: var(--bl-ink-dim);
+  white-space: nowrap;
+}
+
+.bl-line-count b { color: var(--bl-ink); font-weight: 500; }
+
+.bl-line-open {
+  appearance: none;
+  border: 1px solid var(--bl-accent);
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter 0.2s var(--bl-ease), transform 0.2s var(--bl-ease);
+}
+
+.bl-line-open:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+.bl-line-btn {
+  appearance: none;
+  width: 2.3rem;
+  height: 2.3rem;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--bl-rule);
+  background: transparent;
+  color: inherit;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s var(--bl-ease), color 0.2s var(--bl-ease);
+}
+
+.bl-line-btn:hover { background: var(--bl-ink); color: var(--bl-bg); }
+
+@media (max-width: 640px) {
+  .bl-line-cap { flex-basis: 100%; }
+  .bl-line-count, .bl-line-open { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-line-cap > * { animation: none; }
+  .bl-print-sheet { transition: none; }
+}

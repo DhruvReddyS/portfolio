@@ -21,6 +21,7 @@ import { Marked, MarkedLine } from "./marked";
 import { Reel } from "./reel";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import { CrowdCanvas } from "@/components/ui/skiper39";
+import { PolaroidLine } from "@/components/ui/polaroid-line";
 import {
   MarkArrow,
   MarkWindow,
@@ -486,94 +487,6 @@ export function LogSection() {
 
 /* ------------------------------------------------------------------ wins */
 
-/**
- * The wins, hung as a wall.
- *
- * Each one is a framed piece: a mat, a plate inside it, and a plaque screwed
- * on underneath. The frames are set at slightly different sizes and tilts so
- * the wall reads as hung rather than laid out, and a light follows the pointer
- * across the glass. Clicking a frame gives the brief behind it.
- */
-function WinFrame({
-  award,
-  index,
-  onOpen,
-}: {
-  award: Award;
-  index: number;
-  onOpen: () => void;
-}) {
-  const frame = useRef<HTMLDivElement>(null);
-
-  const track = (event: React.PointerEvent<HTMLDivElement>) => {
-    const node = frame.current;
-    if (!node) return;
-    const box = node.getBoundingClientRect();
-    const x = event.clientX - box.left;
-    const y = event.clientY - box.top;
-    node.style.setProperty("--px", `${x}px`);
-    node.style.setProperty("--py", `${y}px`);
-    // and the same reading as a pair from -1 to 1, which is what the tilt
-    // wants. Kept small on purpose: the tile should stay square to the
-    // reader and get its depth from the layers, not from leaning over.
-    node.style.setProperty("--rx", (y / box.height - 0.5).toFixed(3));
-    node.style.setProperty("--ry", (x / box.width - 0.5).toFixed(3));
-  };
-
-  const rest = () => {
-    const node = frame.current;
-    if (!node) return;
-    node.style.setProperty("--rx", "0");
-    node.style.setProperty("--ry", "0");
-  };
-
-  return (
-    <Reveal delay={index * 80}>
-      <div
-        ref={frame}
-        className="bl-bento-tile"
-        data-lead={index === 0}
-        onPointerMove={track}
-        onPointerLeave={rest}
-        onClick={onOpen}
-        role="button"
-        tabIndex={0}
-        aria-label={`See the brief for ${award.title}`}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            onOpen();
-          }
-        }}
-      >
-        <div className="bl-bento-art">
-        <Plate
-          dir="wins"
-          name={award.id}
-          src={award.image}
-          monogram={award.monogram}
-          alt={award.title}
-          bare
-        />
-        <span className="bl-bento-scrim" aria-hidden="true" />
-        <span className="bl-frame-glass" aria-hidden="true" />
-      </div>
-
-      <div className="bl-bento-copy">
-        <span className="bl-frame-kind">{award.kind}</span>
-        <strong>{award.title}</strong>
-        <em>
-          {award.org} · {award.place}
-        </em>
-        <span className="bl-bento-open">
-          Read it <MarkArrow size={11} />
-        </span>
-      </div>
-      </div>
-    </Reveal>
-  );
-}
-
 /** The brief behind the frame. */
 function WinModal({ award, onClose }: { award: Award; onClose: () => void }) {
   useEffect(() => {
@@ -669,48 +582,50 @@ function WinModal({ award, onClose }: { award: Award; onClose: () => void }) {
   );
 }
 
+/**
+ * The wins, pegged to a line on a wall.
+ *
+ * They were four tiles in a grid, which is the right object for work and the
+ * wrong one for this: these are photographs of rooms with people in them,
+ * taken on days that mattered, and a grid files them. A line of prints on a
+ * wall is how anybody actually keeps those.
+ *
+ * Drag the line, use the arrows, or press the one in the middle to read it.
+ */
 export function WinsSection() {
   const [open, setOpen] = useState<Award | null>(null);
-  const wall = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const node = wall.current;
-    if (!node) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const context = gsap.context(() => {
-      gsap.from(".bl-bento-tile", {
-        z: -220,
-        yPercent: 14,
-        opacity: 0,
-        duration: 0.9,
-        ease: "power3.out",
-        stagger: 0.09,
-        scrollTrigger: { trigger: node, start: "top 80%", once: true },
-      });
-    }, node);
-
-    return () => context.revert();
-  }, []);
 
   return (
     <section className="bl-section bl-wall-act" id="wins">
       <SectionHeader
         label="05 / Recognition"
         title="What it won"
-        lead="Four of them. Open any tile for the story behind it."
+        lead="Four of them. Drag the line, and press the one in the middle for the story behind it."
+        note={`${awards.length} pinned up`}
       />
 
-      <div className="bl-bento" ref={wall}>
-        {awards.map((award, index) => (
-          <WinFrame
-            key={award.id}
-            award={award}
-            index={index}
-            onOpen={() => setOpen(award)}
-          />
-        ))}
-      </div>
+      <PolaroidLine
+        className="bl-wall"
+        prints={awards.map((award) => ({
+          cover: (
+            <Plate
+              dir="wins"
+              name={award.id}
+              src={award.image}
+              monogram={award.monogram}
+              alt={award.title}
+              bare
+            />
+          ),
+          note: award.kind,
+          title: award.title,
+          caption: `${award.org} · ${award.place}`,
+          alt: award.title,
+        }))}
+        onOpen={(index) => setOpen(awards[index])}
+        openLabel="Read it"
+        ariaLabel="Four wins, pegged to a line"
+      />
 
       {open && <WinModal award={open} onClose={() => setOpen(null)} />}
     </section>
