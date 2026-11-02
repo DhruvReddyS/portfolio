@@ -13,26 +13,25 @@ if (typeof window !== "undefined") {
 /**
  * The five rooms, set as one long spread inside a framed panel.
  *
- * Built off the reference: a bordered screen inset from the page with a bar
- * across the top, editorial columns running away to the right at different
- * heights, and a finely ruled strip along the bottom carrying thumbnails.
  * The act pins and the spread travels left as you scroll, so reading down
- * the page means reading right across the spread.
+ * the page means reading right across the spread. Blocks zigzag: one sits
+ * against the top of the frame, the next against the bottom, so the eye
+ * moves up and down as it moves right.
  *
- * The blocks do not sit on a shared baseline. Each takes one of three drops
- * so the spread reads as something laid out by hand rather than a row of
- * cards, which is what the earlier pass got wrong.
+ * The strip along the bottom is a real scrubber. Dragging it, or clicking
+ * anywhere along it, maps straight back onto the window's scroll position
+ * inside the pinned stretch, so it moves the spread rather than just
+ * reporting on it.
  *
- * Wide screens only. Pinning an act and turning scroll sideways is a poor
- * trade on a phone, where the stacked timeline reads better.
+ * One layout at every width. The columns and type shrink, but a phone gets
+ * the same spread rather than a different section.
  */
-
-/** Which vertical drop each column takes, repeating down the spread. */
-const DROPS = [0, 2, 1, 0, 2];
 
 export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
   const panel = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
+  const strip = useRef<HTMLDivElement>(null);
+  const trigger = useRef<ScrollTrigger | null>(null);
   const [progress, setProgress] = useState(0);
   const [at, setAt] = useState(0);
 
@@ -40,10 +39,7 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
     const panelNode = panel.current;
     const trackNode = track.current;
     if (!panelNode || !trackNode) return;
-
-    const wide = window.matchMedia("(min-width: 1040px)");
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!wide.matches || still.matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // Pin the act, not this panel: pinning the inner box leaves the rest of
     // the page free to scroll up behind it and the next section slides in
@@ -53,9 +49,9 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
 
     const context = gsap.context(() => {
       const distance = () =>
-        Math.max(0, trackNode.scrollWidth - panelNode.clientWidth + 80);
+        Math.max(0, trackNode.scrollWidth - panelNode.clientWidth + 48);
 
-      gsap.to(trackNode, {
+      const tween = gsap.to(trackNode, {
         x: () => -distance(),
         ease: "none",
         scrollTrigger: {
@@ -76,6 +72,8 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
           },
         },
       });
+
+      trigger.current = tween.scrollTrigger ?? null;
     }, act);
 
     // The marks change the width of the spread as they decode, and the pin
@@ -93,20 +91,47 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
       image.addEventListener("error", settle, { once: true });
     }
 
-    return () => context.revert();
+    return () => {
+      trigger.current = null;
+      context.revert();
+    };
   }, []);
+
+  /** Put the window where the given fraction of the spread would be. */
+  const seek = (ratio: number) => {
+    const st = trigger.current;
+    if (!st) return;
+    const clamped = Math.min(1, Math.max(0, ratio));
+    window.scrollTo({
+      top: st.start + clamped * (st.end - st.start),
+      behavior: "auto",
+    });
+  };
+
+  const seekFromPointer = (clientX: number) => {
+    const node = strip.current;
+    if (!node) return;
+    const box = node.getBoundingClientRect();
+    seek((clientX - box.left) / box.width);
+  };
+
+  const onStripDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId);
+    seekFromPointer(event.clientX);
+  };
+
+  const onStripMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+    seekFromPointer(event.clientX);
+  };
 
   const current = logEntries[at];
 
   return (
     <div className="bl-spread" ref={panel}>
-      {/* the bar across the top of the panel */}
       <header className="bl-spread-bar">
         <span className="bl-spread-brand">TheLog</span>
-        <p>
-          Five rooms between June 2025 and now. Scroll to read across the
-          spread.
-        </p>
+        <p>Five rooms, June 2025 to now. Scroll, or drag the strip below.</p>
         <span className="bl-spread-meter" aria-hidden="true">
           <i />
           <i />
@@ -115,7 +140,8 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
           <i />
         </span>
         <span className="bl-spread-count">
-          {String(at + 1).padStart(2, "0")} / {String(logEntries.length).padStart(2, "0")}
+          {String(at + 1).padStart(2, "0")} /{" "}
+          {String(logEntries.length).padStart(2, "0")}
         </span>
         <span className="bl-spread-flags" aria-hidden="true">
           <i />
@@ -132,7 +158,8 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
               <article
                 className="bl-spread-col"
                 key={entry.id}
-                data-drop={DROPS[index % DROPS.length]}
+                /* up, down, up, down: the eye moves vertically as it moves right */
+                data-drop={index % 2 === 0 ? "up" : "down"}
                 data-on={at === index}
                 style={{ "--tint": entry.tint } as React.CSSProperties}
               >
@@ -167,37 +194,63 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
               </article>
             );
           })}
-
-          {/* the rule the spread is set against */}
-          <span className="bl-spread-divider" aria-hidden="true" />
         </div>
       </div>
 
-      {/* the ruled strip, with the same five marks on it */}
-      <footer className="bl-spread-strip">
+      {/* the scrubber: drag it, or click anywhere along it */}
+      <footer
+        className="bl-spread-strip"
+        ref={strip}
+        onPointerDown={onStripDown}
+        onPointerMove={onStripMove}
+        role="slider"
+        tabIndex={0}
+        aria-label="Move through the spread"
+        aria-valuemin={1}
+        aria-valuemax={logEntries.length}
+        aria-valuenow={at + 1}
+        aria-valuetext={current?.company}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            seek((at + 1) / (logEntries.length - 1));
+          } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            seek((at - 1) / (logEntries.length - 1));
+          }
+        }}
+      >
         <span className="bl-spread-ticks" aria-hidden="true" />
         <span
           className="bl-spread-fill"
           aria-hidden="true"
           style={{ transform: `scaleX(${Math.max(0.004, progress)})` }}
         />
+        <span
+          className="bl-spread-head-pos"
+          aria-hidden="true"
+          style={{ left: `${progress * 100}%` }}
+        />
+
         <ol>
           {logEntries.map((entry, index) => (
             <li key={entry.id} data-on={at === index}>
-              <Plate
-                dir="log"
-                name={entry.id}
-                src={entry.image}
-                monogram={entry.monogram}
-                alt=""
-                bare
-              />
+              <span className="bl-spread-thumb">
+                <Plate
+                  dir="log"
+                  name={entry.id}
+                  src={entry.image}
+                  monogram={entry.monogram}
+                  alt=""
+                  bare
+                />
+              </span>
+              {/* the years and months the strip is ruled in */}
+              <em>{entry.year}</em>
+              <i>{entry.period.split(" to ")[0]}</i>
             </li>
           ))}
         </ol>
-        <span className="bl-spread-now" aria-live="polite">
-          {current?.company}
-        </span>
       </footer>
     </div>
   );

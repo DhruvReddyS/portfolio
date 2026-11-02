@@ -6,7 +6,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   awards,
-  logEntries,
   logStories,
   profile,
   sections,
@@ -310,136 +309,6 @@ const LINK_MARK = {
   repo: MarkGithub,
 } as const;
 
-/**
- * One internship, as a stop on the line.
- *
- * The logo sits on the axis as a medallion and the card hangs off it. Drop a
- * file at /public/assets/log/<id>.png and it appears on the next load; until
- * then the monogram holds the same space, so the line never looks broken
- * while the logos are still being gathered.
- *
- * The spotlight follows the pointer across the card through two custom
- * properties rather than React state, so moving the mouse never re-renders.
- */
-function LogStop({
-  entry,
-  index,
-  onOpen,
-}: {
-  entry: LogEntry;
-  index: number;
-  onOpen: () => void;
-}) {
-  const card = useRef<HTMLDivElement>(null);
-  const story = logStories[entry.id];
-
-  const track = (event: React.PointerEvent<HTMLDivElement>) => {
-    const node = card.current;
-    if (!node) return;
-    const box = node.getBoundingClientRect();
-    node.style.setProperty("--px", `${event.clientX - box.left}px`);
-    node.style.setProperty("--py", `${event.clientY - box.top}px`);
-  };
-
-  return (
-    <article
-      className="bl-stop"
-      data-status={entry.status}
-      data-index={index}
-      data-side={index % 2 === 0 ? "left" : "right"}
-      style={{ "--tint": entry.tint } as React.CSSProperties}
-    >
-      <span className="bl-stop-arm" aria-hidden="true" />
-
-      <div className="bl-stop-axis">
-        <span className="bl-stop-glow" aria-hidden="true" />
-        <span className="bl-stop-badge">
-          <Plate
-            dir="log"
-            name={entry.id}
-            src={entry.image}
-            monogram={entry.monogram}
-            alt={`${entry.company} logo`}
-            bare
-          />
-        </span>
-        <span className="bl-stop-when">
-          {entry.period}
-          <em>{entry.location}</em>
-        </span>
-      </div>
-
-      <div
-        ref={card}
-        className="bl-stop-card"
-        onPointerMove={track}
-        onClick={onOpen}
-        role="button"
-        tabIndex={0}
-        aria-label={`Open the full entry for ${entry.company}`}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            onOpen();
-          }
-        }}
-      >
-        <span className="bl-job-glow" aria-hidden="true" />
-
-        <header className="bl-stop-head">
-          <h3 className="bl-stop-name">
-            {entry.company}
-            {entry.org && <small>{entry.org}</small>}
-          </h3>
-          {entry.status === "current" && (
-            <span className="bl-entry-flag">
-              <i aria-hidden="true" /> Current
-            </span>
-          )}
-        </header>
-
-        <p className="bl-job-role">{entry.role}</p>
-        <p className="bl-stop-brief">{story?.brief ?? entry.headline}</p>
-
-        <div className="bl-job-chips">
-          {entry.stack.slice(0, 4).map((tech) => (
-            <span className="bl-chip" key={tech}>
-              {tech}
-            </span>
-          ))}
-        </div>
-
-        <footer className="bl-job-foot">
-          <span className="bl-job-read">
-            Read the entry <MarkArrow size={12} />
-          </span>
-
-          {story?.links && story.links.length > 0 && (
-            <span className="bl-job-links">
-              {story.links.map((link) => {
-                const Icon = LINK_MARK[link.kind];
-                return (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    title={link.label}
-                    aria-label={link.label}
-                    onClick={(event) => event.stopPropagation()}
-                  >
-                    <Icon size={14} />
-                  </a>
-                );
-              })}
-            </span>
-          )}
-        </footer>
-      </div>
-    </article>
-  );
-}
-
 /** The whole account, over the page. */
 export function LogModal({
   entry,
@@ -567,121 +436,16 @@ export function LogModal({
 
 export function LogSection() {
   const [open, setOpen] = useState<LogEntry | null>(null);
-  const track = useRef<HTMLDivElement>(null);
-
-  // The line draws itself as the act is read, and each stop lights when it
-  // reaches the reading line, so the section reports your own progress back.
-  useEffect(() => {
-    const node = track.current;
-    if (!node) return;
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const context = gsap.context(() => {
-      const fill = node.querySelector(".bl-line-fill");
-
-      if (fill && !still.matches) {
-        gsap.fromTo(
-          fill,
-          { scaleY: 0 },
-          {
-            scaleY: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: node,
-              start: "top 72%",
-              end: "bottom 62%",
-              scrub: 0.5,
-            },
-          },
-        );
-      } else if (fill) {
-        gsap.set(fill, { scaleY: 1 });
-      }
-
-      gsap.utils.toArray<HTMLElement>(".bl-stop").forEach((stop) => {
-        ScrollTrigger.create({
-          trigger: stop,
-          start: "top 80%",
-          end: "bottom 25%",
-          invalidateOnRefresh: true,
-          onToggle: (self) => stop.setAttribute("data-live", String(self.isActive)),
-        });
-
-        if (still.matches) return;
-
-        // The entrance is CSS keyed on data-seen, set by an observer below,
-        // not a GSAP .from(). A .from() applies its start state immediately
-        // and then waits for a trigger that has to be measured; when the
-        // logos resized the cards and the refresh landed after the stop was
-        // already scrolled past, the trigger never ran and five badges sat
-        // at opacity 0 for good. An observer cannot lose that race.
-      });
-    }, node);
-
-    const seen = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.setAttribute("data-seen", "true");
-          seen.unobserve(entry.target);
-        }
-      },
-      { rootMargin: "0px 0px -14% 0px", threshold: 0.12 },
-    );
-    for (const stop of node.querySelectorAll(".bl-stop")) seen.observe(stop);
-
-    // The logos change every card's height as they decode, and ScrollTrigger
-    // measured the act before that happened: every stop ended up with a range
-    // that no scroll position satisfied, so none of them ever lit. Recompute
-    // once the last one is in.
-    const images = Array.from(node.querySelectorAll("img"));
-    let pending = images.length;
-    const settle = () => {
-      pending -= 1;
-      if (pending <= 0) ScrollTrigger.refresh();
-    };
-
-    if (!images.length) {
-      ScrollTrigger.refresh();
-    } else {
-      for (const image of images) {
-        if (image.complete) settle();
-        else image.addEventListener("load", settle, { once: true });
-        image.addEventListener("error", settle, { once: true });
-      }
-    }
-
-    return () => {
-      seen.disconnect();
-      context.revert();
-    };
-  }, []);
 
   return (
     <section className="bl-section bl-log" id="log">
       <SectionHeader
         label="01 / Experience"
         title="Where it happened"
-        lead="Five rooms, five different problems. Open any stop for the whole account."
+        lead="Five rooms, five different problems. Open any one for the whole account."
       />
 
-      {/* sideways on a wide screen, stacked on a narrow one */}
       <Reel onOpen={setOpen} />
-
-      <div className="bl-line" ref={track}>
-        <span className="bl-line-rail" aria-hidden="true">
-          <i className="bl-line-fill" />
-        </span>
-
-        {logEntries.map((entry, index) => (
-          <LogStop
-            key={entry.id}
-            entry={entry}
-            index={index}
-            onOpen={() => setOpen(entry)}
-          />
-        ))}
-      </div>
 
       {open && <LogModal entry={open} onClose={() => setOpen(null)} />}
     </section>
