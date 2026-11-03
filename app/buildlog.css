@@ -10135,3 +10135,122 @@ body,
   .bl-roster li span { grid-column: 1 / -1; }
   .bl-roster li em { grid-column: 1 / -1; justify-self: start; }
 }
+
+/* ==========================================================================
+   THE BANNER
+   What a build gets on the rack when there is no screenshot of it, which is
+   half of them: back-ends, submissions, and one that never shipped. The
+   marks keep their own colours. They belong to the projects, not to this
+   page, and a wall where every logo has been recoloured to match the wall
+   is a wall showing one project.
+   ========================================================================== */
+
+.bl-banner {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  overflow: hidden;
+  background:
+    radial-gradient(
+      85% 70% at var(--bl-banner-x, 50%) var(--bl-banner-y, 12%),
+      color-mix(in srgb, var(--bl-accent) 22%, transparent),
+      transparent 62%
+    ),
+    linear-gradient(203deg, #16130f 0%, #0a0908 78%);
+}
+
+/* a field of dots, which is a ground rather than a texture pretending to be paper */
+.bl-banner-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--bl-ink) 13%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 1.15rem 1.15rem;
+  mask-image: radial-gradient(120% 110% at 50% 40%, #000 35%, transparent 85%);
+}
+
+.bl-banner > :not(.bl-banner-grid) { position: relative; z-index: 1; }
+
+.bl-banner-kind {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-banner-mark {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.bl-banner-mark img {
+  width: auto;
+  max-width: 62%;
+  height: auto;
+  max-height: clamp(3.4rem, 9vw, 6.2rem);
+  object-fit: contain;
+  /* the mark sits on the card, so it gets the shadow a thing on a card has */
+  filter: drop-shadow(0 0.6rem 1.4rem rgba(0, 0, 0, 0.55));
+}
+
+/* the initials, for the builds that were never branded */
+.bl-banner-mono {
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 112%;
+  font-size: clamp(3rem, 9vw, 5.6rem);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--bl-ink) 34%, transparent);
+}
+
+.bl-banner-name {
+  margin: 0;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 104%;
+  font-size: clamp(1.15rem, 2.6vw, 1.75rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  color: var(--bl-ink);
+}
+
+.bl-banner-stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+}
+
+.bl-banner-stack span,
+.bl-banner-stack em {
+  padding: 0.22rem 0.45rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-style: normal;
+  font-size: 0.48rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--bl-ink-soft);
+}
+
+.bl-banner-stack em {
+  border-color: color-mix(in srgb, var(--bl-accent) 45%, transparent);
+  color: var(--bl-accent);
+}

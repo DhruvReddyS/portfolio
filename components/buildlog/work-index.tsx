@@ -1,10 +1,11 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
 import { Coverflow } from "@/components/ui/coverflow";
 import { MarkArrow, MarkGithub, MarkRosette, MarkWindow } from "./marks";
 import { Plate } from "./plate";
+import { ProjectBanner, type BannerLogo } from "./banner";
 import { SectionHeader } from "./sections";
 import { MarkedLine } from "./marked";
 
@@ -27,6 +28,23 @@ import { MarkedLine } from "./marked";
  * shows one at a time; a crawler, a reader with no JavaScript and the test
  * suite all see all eight.
  */
+
+/*
+ * Marks pulled out of the projects' own repositories. Only two of the eight
+ * have one; the rest are back-ends and submissions that were never branded,
+ * and those get their initials set instead.
+ */
+const LOGOS: Record<string, BannerLogo> = {
+  trinetra: { src: "/assets/work/logos/trinetra.png", width: 504, height: 516 },
+  codesync: { src: "/assets/work/logos/codesync.png", width: 609, height: 289 },
+};
+
+/** The initials a build is filed under when it has no mark of its own. */
+function initials(name: string) {
+  const words = name.replace(/[^A-Za-z ]/g, " ").trim().split(/\s+/);
+  if (words.length > 1) return words.slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+  return name.slice(0, 2).toUpperCase();
+}
 
 /** The figure a card is filed under, or what kind of build it was. */
 function filedUnder(file: CaseFile) {
@@ -114,15 +132,14 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                   alt={`${row.name}, ${row.kind}`}
                 />
               ) : (
-                <p className="bl-card-set">
-                  {row.stack.slice(0, 9).map((part, i) => (
-                    <Fragment key={part}>
-                      {i > 0 && <i aria-hidden="true">·</i>}
-                      <span>{part}</span>
-                    </Fragment>
-                  ))}
-                  <span className="bl-sr">{row.name}</span>
-                </p>
+                <ProjectBanner
+                  id={row.id}
+                  name={row.name}
+                  kind={row.kind}
+                  stack={row.stack}
+                  logo={LOGOS[row.id]}
+                  monogram={initials(row.name)}
+                />
               )}
 
               <span className="bl-card-num">{row.index}</span>
