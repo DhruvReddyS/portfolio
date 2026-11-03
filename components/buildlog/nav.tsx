@@ -154,6 +154,23 @@ export function BuildLogNav({ active }: { active: string }) {
             ))}
           </nav>
 
+          {/*
+            Where the spine does not fit. A bar that only prints the name of
+            the site you are already looking at is telling you the one thing
+            you know; this tells you which act you are in, and falls back to
+            the book's own name on the cover, where there is no act yet.
+          */}
+          <p className="bl-nav-here" aria-hidden="true">
+            {current ? (
+              <>
+                <sup>{String(sections.indexOf(current) + 1).padStart(2, "0")}</sup>
+                <span key={current.id}>{current.label}</span>
+              </>
+            ) : (
+              <span key="cover">The Build Log</span>
+            )}
+          </p>
+
           <div className="bl-nav-end">
             <a
               className="bl-resume"

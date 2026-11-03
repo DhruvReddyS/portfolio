@@ -2356,29 +2356,47 @@ html.bl-locked body { overflow: hidden; }
     padding-top: clamp(4.5rem, 12vh, 6rem);
   }
 
+  /*
+   * The cover is one picture on a laptop: a name across the whole sheet
+   * with the man standing through it. On a phone it had come apart into
+   * three stacked things, a small centred name, a floating portrait and a
+   * block of text, none of them touching. Same picture here, built the
+   * same way, only narrower.
+   */
   .bl-hero-wordmark {
     position: static;
     height: auto;
     transform: none;
-    text-align: center;
+    text-align: left;
+    justify-items: start;
+    /* out through the gutter, so the long line runs off the edge */
+    margin-inline: calc(var(--bl-gutter) * -1);
+    padding-inline: var(--bl-gutter) 0;
   }
 
-  .bl-hero-wordmark [data-line="1"] { font-size: clamp(1.4rem, 7.5vw, 2.4rem); }
-  .bl-hero-wordmark [data-line="2"] { font-size: clamp(2rem, 11.5vw, 3.6rem); }
+  .bl-hero-wordmark [data-line="1"] {
+    font-size: clamp(1.5rem, 8.4vw, 2.6rem);
+    letter-spacing: 0.085em;
+  }
+
+  /* enough to run off the edge, not enough to cost a letter */
+  .bl-hero-wordmark [data-line="2"] { font-size: clamp(2.2rem, 12.2vw, 3.8rem); }
 
   .bl-hero-grid {
     display: flex;
     flex-direction: column;
-    gap: 1.1rem;
+    gap: 0.9rem;
   }
 
   .bl-hero-figure {
     order: -1;
-    width: min(60vw, 14rem);
+    width: min(64vw, 15rem);
     min-height: 0;
     aspect-ratio: 1122 / 1402;
     align-self: center;
     transform: none;
+    /* up into the name, which is the whole of the composition */
+    margin-top: clamp(-3.4rem, -9vw, -2rem);
   }
 
   .bl-hero-am { font-size: clamp(1.25rem, 6.5vw, 1.7rem); }
@@ -7087,6 +7105,25 @@ html.bl-locked body { overflow: hidden; }
  */
 
 @media (scripting: enabled) {
+  /*
+   * Painted before anything else is, and in the sheet's own tint, so the
+   * cover arriving over it is not a change anyone can see. It is driven by
+   * the same held flag the rest of this block uses, which is rendered
+   * rather than written from script, so it is in the first byte of HTML and
+   * not a frame late.
+   */
+  .bl-preboot {
+    position: fixed;
+    inset: 0;
+    z-index: 119;
+    background: #070605;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.45s linear;
+  }
+
+  .bl-root[data-held="true"] .bl-preboot { opacity: 1; }
+
   .bl-root[data-held="true"] .bl-hero-wordmark span {
     animation-play-state: paused;
   }
@@ -7102,6 +7139,12 @@ html.bl-locked body { overflow: hidden; }
    never had cause to until now */
 .bl-grain-layer {
   transition: opacity 0.9s linear;
+}
+
+/* There is no cover for anyone who has asked for less motion, so there is
+   nothing for a ground to stand in for either. */
+@media (prefers-reduced-motion: reduce) {
+  .bl-preboot { display: none; }
 }
 
 /*
@@ -9453,15 +9496,58 @@ body,
 .bl-nav-menu:hover i { background: var(--bl-accent); }
 .bl-nav-menu:hover i:last-child { width: 8px; }
 
+/* ---- where the spine will not fit ---- */
+
 /*
- * Seven numerals and a name need about a laptop. Under that the spine goes
- * and the contents opens as a page of its own, which it does on every size
- * anyway from the button at the end.
+ * The act you are in, in the room the spine leaves behind. Hidden by
+ * default, since above a laptop the spine is already saying it.
+ */
+.bl-nav-here {
+  display: none;
+  align-items: baseline;
+  gap: 0.4em;
+  margin: 0 auto 0 0.3rem;
+  min-width: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  color: var(--bl-ink);
+}
+
+.bl-nav-here sup {
+  font-size: 0.68em;
+  line-height: 0;
+  color: var(--bl-accent);
+}
+
+/* a new act does not replace the last one, it arrives */
+.bl-nav-here span {
+  display: inline-block;
+  animation: bl-here-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes bl-here-in {
+  from { opacity: 0; transform: translateY(0.5em); }
+  to { opacity: 1; transform: none; }
+}
+
+/*
+ * Seven numerals and a name need about a laptop. Under that the spine goes,
+ * the brand keeps the mark and gives up its title to the line above, and
+ * the contents opens as a page of its own.
  */
 @media (max-width: 1180px) {
   .bl-spine { display: none; }
+  .bl-nav-here { display: flex; }
+  .bl-brand-title { display: none; }
   .bl-nav-menu { display: grid; }
-  .bl-nav-end { margin-left: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-nav-here span { animation: none; }
 }
 
 /*
@@ -9483,9 +9569,7 @@ body,
   .bl-nav .bl-resume span { display: none; }
 }
 
-@media (max-width: 340px) {
-  .bl-brand-title { display: none; }
-}
+
 
 /* ==========================================================================
    THE BACK COVER

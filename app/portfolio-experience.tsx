@@ -109,6 +109,13 @@ function BuildLog() {
       <a className="bl-skip" href="#log">
         Skip to the log
       </a>
+      {/*
+        The ground the cover is drawn on, in the markup from the first byte.
+        <Cover /> renders nothing until it has mounted and read a font off
+        the document, and for those few frames the hero was simply the page:
+        his photograph, then the intro starting over the top of it.
+      */}
+      <div className="bl-preboot" aria-hidden="true" />
       <Cursor />
       <Cover />
       <div className="bl-grain-layer" aria-hidden="true" />
