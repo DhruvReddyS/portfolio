@@ -30,6 +30,17 @@ type Splat = { id: number; x: number; y: number; a: number };
 
 const clamp = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
 
+/*
+ * Path numbers, rounded.
+ *
+ * The web is drawn from sines and cosines, and the last bits of a double do
+ * not have to agree between the renderer on the server and the one in the
+ * browser. React compares the two `d` strings character by character, finds
+ * them different, and reports a hydration mismatch over a web nobody can
+ * see the difference in. Three places is finer than one device pixel here.
+ */
+const n3 = (v: number) => Number(v.toFixed(3));
+
 export interface BugHuntProps {
   /** How far up the box the bug is allowed to wander, 0 to 1. */
   roam?: number;
@@ -52,8 +63,8 @@ const Web = ({ flip = false }: { flip?: boolean }) => (
         key={deg}
         x1="0"
         y1="0"
-        x2={120 * Math.cos((deg * Math.PI) / 180)}
-        y2={120 * Math.sin((deg * Math.PI) / 180)}
+        x2={n3(120 * Math.cos((deg * Math.PI) / 180))}
+        y2={n3(120 * Math.sin((deg * Math.PI) / 180))}
       />
     ))}
     {/* and the spiral, as arcs sagging between them */}
@@ -64,9 +75,9 @@ const Web = ({ flip = false }: { flip?: boolean }) => (
           .map((deg) => {
             const t = (deg * Math.PI) / 180;
             const pull = r * 0.86;
-            return `Q${pull * Math.cos(t - 0.16)} ${pull * Math.sin(t - 0.16)} ${
-              r * Math.cos(t)
-            } ${r * Math.sin(t)}`;
+            return `Q${n3(pull * Math.cos(t - 0.16))} ${n3(pull * Math.sin(t - 0.16))} ${n3(
+              r * Math.cos(t),
+            )} ${n3(r * Math.sin(t))}`;
           })
           .join(" ")}`}
       />

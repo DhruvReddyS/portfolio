@@ -85,11 +85,19 @@ export function useInView<T extends HTMLElement>(
 export function Reveal({
   children,
   delay = 0,
+  rise,
   className,
   as: Tag = "div",
 }: {
   children: React.ReactNode;
   delay?: number;
+  /**
+   * How far it travels, in pixels. Given a different distance per item in a
+   * stack, the group arrives as a fan rather than as a block sliding up:
+   * the near things move further and the far things barely at all, which is
+   * the same depth cue the page uses on the way out.
+   */
+  rise?: number;
   className?: string;
   as?: "div" | "section" | "li" | "article" | "header" | "p";
 }) {
@@ -101,7 +109,12 @@ export function Reveal({
       ref={ref as any}
       className={["bl-reveal", className].filter(Boolean).join(" ")}
       data-in={inView ? "true" : "false"}
-      style={{ "--bl-reveal-delay": `${delay}ms` } as React.CSSProperties}
+      style={
+        {
+          "--bl-reveal-delay": `${delay}ms`,
+          ...(rise === undefined ? null : { "--bl-reveal-rise": `${rise}px` }),
+        } as React.CSSProperties
+      }
     >
       {children}
     </Tag>

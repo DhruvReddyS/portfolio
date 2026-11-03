@@ -95,37 +95,19 @@ const TALLY = [
   { figure: "05", label: "Internships", note: "Five rooms, five problems" },
   { figure: "08", label: "Shipped", note: "Six platforms, two side quests" },
   { figure: "02", label: "Degrees", note: "Both running right now" },
+  { figure: "9.34", label: "CGPA", note: "Carried while running both" },
 ];
 
-/** Words that fill the space around the figure, at a whisper. */
-const FIELD = [
-  { text: "React", x: 6, y: 20 },
-  { text: "Next.js", x: 17, y: 62 },
-  { text: "FastAPI", x: 9, y: 80 },
-  { text: "LangGraph", x: 78, y: 17 },
-  { text: "Qdrant", x: 90, y: 44 },
-  { text: "Neo4j", x: 82, y: 72 },
-  { text: "TypeScript", x: 28, y: 12 },
-  { text: "Python", x: 68, y: 86 },
-  { text: "RAG", x: 94, y: 28 },
-  { text: "Vue", x: 3, y: 46 },
-];
-
+/*
+ * The ground behind the cover: a technical grid, masked off at the edges.
+ *
+ * It used to carry ten drifting tool names as well. The stack has a whole
+ * act of its own further down with thirty-one of them in it, so all this
+ * did was say the same thing first, quieter, over the one picture on the
+ * page that has to land in a second.
+ */
 function HeroField() {
-  return (
-    <div className="bl-field" aria-hidden="true">
-      {/* the toolkit, scattered and faint */}
-      {FIELD.map((item) => (
-        <span
-          key={item.text}
-          className="bl-field-word"
-          style={{ left: `${item.x}%`, top: `${item.y}%` }}
-        >
-          {item.text}
-        </span>
-      ))}
-    </div>
-  );
+  return <div className="bl-field" aria-hidden="true" />;
 }
 
 const ROLES = [
@@ -192,12 +174,40 @@ export function Hero({ time }: { time: string }) {
         },
       });
 
+      /*
+       * Every layer leaves at its own rate, which is the whole of the trick:
+       * the name furthest and fastest because it is nearest, the grid behind
+       * it slower, the portrait slower still. Inside the two columns the
+       * same thing happens again, item by item, so the hero comes apart as
+       * a depth of field rather than as one sheet sliding off.
+       *
+       * The targets are the contents of each reveal, never the reveal
+       * itself: that element's transform belongs to the CSS that brings it
+       * in, and two owners of one transform means whichever wrote last wins.
+       */
       exit
-        .to(".bl-hero-wordmark", { yPercent: -36, opacity: 0.1, ease: "none" }, 0)
-        .to(".bl-hero-figure", { yPercent: -16, scale: 1.05, opacity: 0.25, ease: "none" }, 0)
-        .to(".bl-hero-left", { yPercent: -8, opacity: 0, ease: "none" }, 0)
-        .to(".bl-tally", { yPercent: -5, opacity: 0, ease: "none" }, 0)
-        .to(".bl-field", { yPercent: -22, opacity: 0, ease: "none" }, 0);
+        .to(".bl-hero-wordmark", { yPercent: -44, opacity: 0.06, ease: "none" }, 0)
+        .to(".bl-field", { yPercent: -26, opacity: 0, ease: "none" }, 0)
+        .to(".bl-hero-figure", { yPercent: -13, scale: 1.06, opacity: 0.22, ease: "none" }, 0)
+        .to(
+          ".bl-hero-left .bl-reveal > *",
+          // pixels, not percent: these five are a caption, a headline, a
+          // paragraph and two rows of links, and a share of each one's own
+          // height puts the tall middle of the stack out in front of the
+          // things below it instead of behind them
+          { y: (i: number) => -(12 + i * 26), opacity: 0, ease: "none" },
+          0,
+        )
+        .to(
+          ".bl-tally-row dt",
+          { yPercent: (i: number) => -14 - i * 12, opacity: 0, ease: "none" },
+          0,
+        )
+        .to(
+          ".bl-tally-row dd",
+          { yPercent: (i: number) => -5 - i * 8, opacity: 0, ease: "none" },
+          0,
+        );
     }, node);
 
     return () => context.revert();
@@ -250,20 +260,20 @@ export function Hero({ time }: { time: string }) {
 
       <div className="bl-hero-grid">
         <div className="bl-hero-left">
-          <Reveal delay={60}>
+          <Reveal delay={60} rise={14}>
             <span className="bl-pill">
               <i aria-hidden="true" />
               Open to work · {time} IST
             </span>
           </Reveal>
 
-          <Reveal delay={150}>
+          <Reveal delay={150} rise={20}>
             <p className="bl-hero-am">
               I&apos;m <Rotator words={ROLES} />
             </p>
           </Reveal>
 
-          <Reveal delay={210}>
+          <Reveal delay={210} rise={27}>
             <p className="bl-hero-blurb">
               Building real-world products at the intersection of web,{" "}
               <Marked kind="circle" delay={900}>
@@ -277,22 +287,27 @@ export function Hero({ time }: { time: string }) {
             </p>
           </Reveal>
 
-          <Reveal delay={270}>
+          {/*
+            One button. There were four rounded outlines stacked down this
+            column before (two buttons, two social chips) and under a name
+            that size they read as a row of tabs, with nothing among them
+            saying which one to press.
+          */}
+          <Reveal delay={270} rise={34}>
             <div className="bl-hero-cta">
               <Magnetic>
                 <a className="bl-btn bl-btn-solid" href="#work">
                   Explore projects <MarkArrow size={13} />
                 </a>
               </Magnetic>
-              <Magnetic>
-                <a className="bl-btn" href={`mailto:${profile.email}`}>
-                  <MarkMail size={14} /> Hire me
-                </a>
-              </Magnetic>
+              <a className="bl-hero-link" href={`mailto:${profile.email}`}>
+                <MarkMail size={13} />
+                Hire me
+              </a>
             </div>
           </Reveal>
 
-          <Reveal delay={330}>
+          <Reveal delay={340} rise={40}>
             <ul className="bl-socials">
               {SOCIALS.map((item) => (
                 <li key={item.label}>
@@ -328,7 +343,7 @@ export function Hero({ time }: { time: string }) {
             <Reveal as="div" className="bl-tally-row" key={item.label} delay={360 + index * 90}>
               <dt>
                 {item.figure}
-                <i aria-hidden="true">.</i>
+                {!item.figure.includes(".") && <i aria-hidden="true">.</i>}
               </dt>
               <dd>
                 <b>{item.label}</b>

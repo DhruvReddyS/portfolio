@@ -1188,7 +1188,7 @@ html.bl-locked body { overflow: hidden; }
 @media (scripting: enabled) {
   .bl-reveal {
     opacity: 0;
-    transform: translateY(26px);
+    transform: translateY(var(--bl-reveal-rise, 26px));
     transition:
       opacity 0.8s var(--bl-ease) var(--bl-reveal-delay, 0ms),
       transform 0.8s var(--bl-ease) var(--bl-reveal-delay, 0ms);
@@ -2738,34 +2738,6 @@ html.bl-locked body { overflow: hidden; }
   mask-image: radial-gradient(ellipse 72% 68% at 50% 52%, #000 25%, transparent 85%);
 }
 
-.bl-field-word {
-  position: absolute;
-  translate: -50% -50%;
-  font-family: var(--bl-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--bl-ink) 26%, transparent);
-  white-space: nowrap;
-  animation: bl-drift 7s ease-in-out infinite;
-}
-
-.bl-field-word:nth-child(odd) { animation-duration: 9s; animation-delay: -2s; }
-.bl-field-word:nth-child(3n) { animation-duration: 11s; animation-delay: -4s; }
-
-@keyframes bl-drift {
-  0%, 100% { transform: translateY(0); opacity: 0.55; }
-  50% { transform: translateY(-7px); opacity: 1; }
-}
-
-@media (max-width: 900px) {
-  .bl-field-word { display: none; }
-  }
-
-@media (prefers-reduced-motion: reduce) {
-  .bl-field-word { animation: none; }
-}
-
 /* ==========================================================================
    Hero detail styles.
    Kept at the end of the file with the buttons: a region replacement higher
@@ -2931,15 +2903,72 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-ink-dim);
 }
 
-.bl-hero-cta { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+/* ==========================================================================
+   THE LEFT COLUMN
+   Under a name that size, four rounded outlines down one column read as a
+   row of tabs. One thing here is a button; everything else is a line of
+   type that happens to be a link.
+   ========================================================================== */
 
-/* The only two buttons on the site that stand side by side in a column this
-   narrow. At the common size they broke onto two rows and the pair stopped
-   reading as a choice. */
-.bl-hero-cta .bl-btn {
-  padding: 0.75rem 1.1rem;
+.bl-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.1rem;
+}
+
+.bl-hero-cta .bl-btn-solid {
+  padding: 0.78rem 1.3rem;
   font-size: 0.64rem;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.14em;
+}
+
+/* "Hire me", beside the button rather than competing with it */
+.bl-hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.2rem 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+  border-bottom: 1px solid var(--bl-rule);
+  transition:
+    color 0.25s var(--bl-ease),
+    border-color 0.25s var(--bl-ease);
+}
+
+.bl-hero-link:hover {
+  color: var(--bl-ink);
+  border-color: var(--bl-accent);
+}
+
+/* The status line loses its outline too: it is a caption, not a control. */
+.bl-hero-left .bl-pill {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.58rem;
+  color: var(--bl-ink-dim);
+}
+
+/* And the two socials become what they always were: two words. */
+.bl-hero-left .bl-socials { gap: 0 1.3rem; }
+
+.bl-hero-left .bl-socials a {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  gap: 0.4rem;
+  font-size: 0.56rem;
+  color: var(--bl-ink-dim);
+}
+
+.bl-hero-left .bl-socials a:hover {
+  background: none;
+  color: var(--bl-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4407,21 +4436,25 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-tally {
   display: grid;
+  /* One column for every figure and one for every label, declared here and
+     borrowed by the rows: "9.34" is 20px wider than "05." and without this
+     its label alone sits out of line with the other three. */
+  grid-template-columns: auto minmax(0, 1fr);
   align-content: end;
-  gap: clamp(0.85rem, 2.2vh, 1.5rem);
+  gap: clamp(0.7rem, 1.9vh, 1.3rem);
   margin: 0;
   padding: 0;
 }
 
 .bl-tally-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: baseline;
   column-gap: clamp(0.65rem, 1.3vw, 1.05rem);
 }
 
-/* The figure. Tabular, so three rows of digits sit in one column, and wide
-   enough that "05" reserves the room "9.34" would have taken. */
+/* The figure, tabular so the digits stack in one column down the rail. */
 .bl-tally-row dt {
   min-width: 2.1em;
   font-family: var(--bl-poster);
@@ -4469,8 +4502,8 @@ html.bl-locked body { overflow: hidden; }
    and the count share the row under it, so the count stays a list: three
    figures side by side in half a tablet put the labels into each other. */
 @media (min-width: 641px) and (max-width: 1024px) {
-  .bl-tally { grid-column: 2; grid-row: 2; gap: clamp(0.5rem, 1.6vh, 1rem); }
-  .bl-tally-row dt { font-size: clamp(2rem, 4.6vw, 3rem); }
+  .bl-tally { grid-column: 2; grid-row: 2; gap: clamp(0.4rem, 1.3vh, 0.8rem); }
+  .bl-tally-row dt { font-size: clamp(1.8rem, 4.2vw, 2.7rem); }
   .bl-tally-row dd em { display: none; }
 }
 
@@ -7838,18 +7871,19 @@ body,
     gap: clamp(0.5rem, 1.2vh, 0.9rem);
   }
 
-  /* Three stacked rows cost more of the fold than they are worth. Side by
-     side the figures still read, and the second line goes. */
+  /* Four stacked rows cost more of the fold than they are worth, and four
+     across is too narrow to read. Two by two, with the second line gone. */
   .bl-tally {
     /* The hero grid turns into a column flex here and keeps align-items: end
        from the base rule, which in that direction means hard right. */
     width: 100%;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-    gap: clamp(0.6rem, 3vw, 1.1rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.5rem, 2.4vw, 0.9rem) clamp(0.8rem, 5vw, 1.6rem);
   }
 
+  /* out of the shared figure column: each cell stands on its own here */
   .bl-tally-row {
+    grid-column: auto;
     grid-template-columns: minmax(0, 1fr);
     row-gap: 0.1rem;
   }
