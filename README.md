@@ -18,6 +18,32 @@ npm run build
 
 This starter does not use `wrangler.jsonc`.
 
+## Deploying to Vercel
+
+vinext builds for Cloudflare Workers: static files into `dist/client`, one
+Web-standard `{ fetch }` module into `dist/server`. Vercel sees `next` in the
+dependencies, runs its own Next.js builder, finds no `.next`, and stops.
+
+`vercel.json` turns the framework preset off and points the build at
+`scripts/vercel-build.mjs`, which lays the same output out as the
+[Build Output API](https://vercel.com/docs/build-output-api/v3):
+`dist/client` becomes the static root, and `dist/server` becomes one Node
+function that everything not on disk falls through to. Nothing about the
+Cloudflare path changes; `npm run build` and `wrangler deploy` still work.
+
+```bash
+npm run vercel-build   # what Vercel runs, runnable locally
+```
+
+Two things differ from the Workers deployment:
+
+- **Images are passed through, not transformed.** The optimiser reaches for
+  Cloudflare's `IMAGES` binding, which does not exist here, and vinext falls
+  back to serving the original file. Vercel's own optimiser could take it
+  over, since it uses the same `url`, `w` and `q` parameters.
+- **No D1.** Nothing on the site reads it, so nothing is lost, but
+  `db/getDb()` would throw if something started to.
+
 ## Included Shape
 
 - edit site code under `app/`
