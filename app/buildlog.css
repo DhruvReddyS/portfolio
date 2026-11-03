@@ -142,73 +142,6 @@ body {
 }
 
 
-
-.bl-tabs {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.1rem;
-  margin: 0 auto;
-}
-
-.bl-tab {
-  position: relative;
-  appearance: none;
-  border: 0;
-  background: transparent;
-  padding: 0.5rem 0.9rem;
-  font-family: var(--bl-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  cursor: pointer;
-  transition: color 0.25s var(--bl-ease);
-  white-space: nowrap;
-}
-
-.bl-tab:hover,
-.bl-tab[data-active="true"] { color: var(--bl-ink); }
-
-.bl-tab sup {
-  font-size: 0.6em;
-  color: var(--bl-accent);
-  margin-right: 0.35em;
-}
-
-/* a pen ring, drawn slightly off-square, that slides between tabs */
-.bl-tab-ring {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  height: 2.2rem;
-  translate: 0 -50%;
-  pointer-events: none;
-  border: 1.4px solid var(--bl-hand);
-  border-radius: 47% 53% 46% 54% / 57% 43% 57% 43%;
-  transition: transform 0.5s var(--bl-ease), width 0.5s var(--bl-ease);
-}
-
-.bl-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.bl-lamp {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--bl-rule);
-  background: transparent;
-  color: var(--bl-ink-soft);
-  cursor: pointer;
-  transition: color 0.25s, border-color 0.25s;
-}
-
-.bl-lamp:hover { color: var(--bl-amber); border-color: var(--bl-amber); }
-
 .bl-resume {
   display: inline-flex;
   align-items: center;
@@ -225,46 +158,6 @@ body {
 }
 
 .bl-resume:hover { filter: brightness(1.1); }
-
-.bl-burger {
-  display: none;
-  appearance: none;
-  border: 1px solid var(--bl-rule);
-  background: transparent;
-  color: var(--bl-ink);
-  padding: 0.45rem 0.55rem;
-  cursor: pointer;
-}
-
-.bl-mobile-nav {
-  position: fixed;
-  inset: 0;
-  z-index: 69;
-  display: grid;
-  align-content: center;
-  padding: 6rem var(--bl-gutter) 3rem;
-  background: var(--bl-bg);
-}
-
-.bl-mobile-nav a {
-  font-family: var(--bl-display);
-  font-size: clamp(2rem, 10vw, 3.2rem);
-  line-height: 1.15;
-  color: var(--bl-ink);
-  border-bottom: 1px solid var(--bl-rule-soft);
-  padding: 0.55rem 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.bl-mobile-nav a span {
-  font-family: var(--bl-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
-  color: var(--bl-accent);
-}
 
 /* ---------- hero --------------------------------------------------------- */
 
@@ -1125,11 +1018,6 @@ body {
 
 html.bl-locked,
 html.bl-locked body { overflow: hidden; }
-
-@media (max-width: 1040px) {
-  .bl-tabs { display: none; }
-  .bl-burger { display: inline-flex; }
-}
 
 @media (max-width: 560px) {
   .bl-resume { display: none; }
@@ -2125,24 +2013,6 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-ink-dim);
 }
 
-/* ---------- nav links roll on hover --------------------------------------- */
-
-.bl-tab-roll {
-  display: inline-grid;
-  overflow: hidden;
-  vertical-align: bottom;
-}
-
-.bl-tab-roll span {
-  grid-area: 1 / 1;
-  transition: transform 0.42s cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-.bl-tab-roll span:last-child { transform: translateY(105%); }
-
-.bl-tab:hover .bl-tab-roll span:first-child { transform: translateY(-105%); }
-.bl-tab:hover .bl-tab-roll span:last-child { transform: translateY(0); }
-
 /* ---------- hover, made obvious ------------------------------------------- */
 
 .bl-case-live:hover,
@@ -2662,62 +2532,6 @@ html.bl-locked body { overflow: hidden; }
 /* the bar itself fades its rule in only once the page has moved */
 .bl-nav { border-bottom-color: transparent; }
 .bl-nav[data-stuck="true"] { border-bottom-color: var(--bl-rule); }
-
-.bl-brand,
-.bl-tabs .bl-tab,
-.bl-nav-actions > * {
-  animation: bl-nav-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-}
-
-.bl-brand { animation-delay: 0.15s; }
-.bl-tabs .bl-tab:nth-child(2) { animation-delay: 0.2s; }
-.bl-tabs .bl-tab:nth-child(3) { animation-delay: 0.26s; }
-.bl-tabs .bl-tab:nth-child(4) { animation-delay: 0.32s; }
-.bl-tabs .bl-tab:nth-child(5) { animation-delay: 0.38s; }
-.bl-tabs .bl-tab:nth-child(6) { animation-delay: 0.44s; }
-.bl-tabs .bl-tab:nth-child(7) { animation-delay: 0.5s; }
-.bl-tabs .bl-tab:nth-child(8) { animation-delay: 0.56s; }
-.bl-nav-actions > * { animation-delay: 0.6s; }
-
-@keyframes bl-nav-in {
-  from { opacity: 0; transform: translateY(-70%); }
-  to { opacity: 1; transform: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bl-brand,
-  .bl-tabs .bl-tab,
-  .bl-nav-actions > * { animation: none; }
-}
-
-/* the wordmark: initials wrapped in brackets, the way a tag is written */
-.bl-brand-mark {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.1rem;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid var(--bl-rule);
-  border-radius: 10px;
-  font-family: var(--bl-mono);
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  transition: border-color 0.3s var(--bl-ease), background 0.3s var(--bl-ease);
-}
-
-.bl-brand:hover .bl-brand-mark {
-  border-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
-  background: color-mix(in srgb, var(--bl-accent) 10%, transparent);
-}
-
-.bl-brand-mark i {
-  font-style: normal;
-  color: var(--bl-accent);
-  transition: transform 0.35s var(--bl-ease);
-}
-
-.bl-brand:hover .bl-brand-mark i:first-child { transform: translateX(-2px); }
-.bl-brand:hover .bl-brand-mark i:last-child { transform: translateX(2px); }
 
 /* ==========================================================================
    The field behind the hero: rings centred on the figure, a faint grid, and
@@ -6464,67 +6278,6 @@ html.bl-locked body { overflow: hidden; }
   will-change: transform;
 }
 
-.bl-act {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  flex: 1;
-  min-width: 0;
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: 0.45rem 0;
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  text-align: left;
-}
-
-.bl-act-no {
-  font-family: var(--bl-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.1em;
-  color: var(--bl-accent);
-}
-
-.bl-act-name {
-  font-family: var(--bl-display);
-  font-size: 0.98rem;
-  font-variation-settings: "SOFT" 26, "WONK" 1, "opsz" 20;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--bl-ink);
-}
-
-.bl-act-rule {
-  flex: 1;
-  min-width: 1rem;
-  height: 1px;
-  background: var(--bl-rule);
-  transition: background 0.25s var(--bl-ease);
-}
-
-.bl-act-word {
-  font-family: var(--bl-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  white-space: nowrap;
-  transition: color 0.25s var(--bl-ease);
-}
-
-.bl-act:hover .bl-act-rule { background: var(--bl-accent); }
-.bl-act:hover .bl-act-word { color: var(--bl-accent); }
-
-@media (max-width: 620px) {
-  .bl-act-word,
-  .bl-act-rule { display: none; }
-  .bl-act { flex: 0 1 auto; margin: 0; }
-}
-
 /* ---------- the contents, as a page of its own ------------------------ */
 
 .bl-contents {
@@ -6556,12 +6309,41 @@ html.bl-locked body { overflow: hidden; }
 }
 
 .bl-contents-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
   margin: 0;
   font-family: var(--bl-mono);
   font-size: 0.6rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--bl-ink-dim);
+}
+
+/* the rule between the book and the act you left open in it */
+.bl-contents-kicker i {
+  width: clamp(1rem, 4vw, 2.2rem);
+  height: 1px;
+  background: var(--bl-rule);
+}
+
+.bl-contents-kicker b {
+  font-weight: 400;
+  color: var(--bl-accent);
+}
+
+/* what each act is, under its name rather than instead of it */
+.bl-contents-note {
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .bl-contents-note { display: none; }
 }
 
 .bl-contents-close {
@@ -7757,13 +7539,6 @@ body,
 }
 
 .bl-resume:hover { transform: translateY(-1px); }
-
-.bl-brand-mark i {
-  transition: color 0.3s var(--bl-ease), opacity 0.3s var(--bl-ease);
-  opacity: 0.45;
-}
-
-.bl-brand:hover .bl-brand-mark i { opacity: 1; color: var(--bl-accent); }
 
 /* ---- the shelf, one name at a time ---- */
 
@@ -9445,82 +9220,254 @@ body,
 }
 
 /* ==========================================================================
-   THE RUNNING HEAD
-   A bar that behaves like the top of a printed page: the book on the left,
-   the act you are in across the middle, and the folio on the right.
+   THE BAR
+   A capsule, floated clear of all four edges rather than a band ruled across
+   the top. The page under it is a poster that bleeds off both sides, and a
+   full-width strip laid over that crops the picture.
    ========================================================================== */
+
+.bl-nav {
+  display: block;
+  padding: clamp(0.55rem, 1.3vh, 0.9rem) var(--bl-gutter);
+  /* the glass belongs to the capsule, not to the width of the window */
+  background: none;
+  backdrop-filter: none;
+  border-bottom: 0;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s var(--bl-ease);
+}
+
+.bl-nav[data-hidden="true"] { transform: translateY(-140%); opacity: 0; }
+
+.bl-nav-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 1.4vw, 1rem);
+  max-width: 82rem;
+  margin: 0 auto;
+  padding: 0.42rem 0.42rem 0.42rem 0.5rem;
+  border: 1px solid var(--bl-rule-soft);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bl-bg) 70%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  /* so the reading line is cut to the capsule and not to a rectangle */
+  overflow: hidden;
+  transition:
+    border-color 0.4s var(--bl-ease),
+    background 0.4s var(--bl-ease),
+    box-shadow 0.4s var(--bl-ease);
+}
+
+/* off the top of the page it earns its weight */
+.bl-nav[data-stuck="true"] .bl-nav-shell {
+  border-color: var(--bl-rule);
+  background: color-mix(in srgb, var(--bl-bg) 88%, transparent);
+  box-shadow: 0 0.9rem 2.4rem rgba(0, 0, 0, 0.5);
+}
+
+/* ---- the mark ---- */
 
 .bl-brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.55rem;
   flex: none;
+  padding-right: 0.3rem;
 }
 
-/* the monogram, stamped rather than typed */
 .bl-brand-stamp {
   display: grid;
   place-items: center;
-  width: 1.95rem;
-  height: 1.95rem;
-  border: 1px solid var(--bl-rule);
-  border-radius: 4px;
+  width: 1.85rem;
+  height: 1.85rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bl-accent);
   font-family: var(--bl-mono);
-  font-size: 0.56rem;
+  font-size: 0.5rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--bl-ink);
-  transition: border-color 0.3s var(--bl-ease), color 0.3s var(--bl-ease);
+  letter-spacing: 0.06em;
+  color: var(--bl-accent-ink);
+  transition: transform 0.35s var(--bl-ease);
 }
 
-.bl-brand:hover .bl-brand-stamp {
-  border-color: var(--bl-accent);
-  color: var(--bl-accent);
-}
+.bl-brand:hover .bl-brand-stamp { transform: rotate(-8deg) scale(1.06); }
 
 .bl-brand-title {
   font-family: var(--bl-display);
   font-weight: 400;
   font-variation-settings: "SOFT" 24, "WONK" 1, "opsz" 20;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   letter-spacing: -0.01em;
   white-space: nowrap;
   color: var(--bl-ink);
 }
 
-/* ---- the folio ---- */
+/* ---- the spine: all seven acts, one of them named ---- */
 
-.bl-folio {
+.bl-spine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  /* its own box, so a name opening inside it never moves the mark or the
+     button at the other end */
+  flex: 1;
+  min-width: 0;
+}
+
+.bl-spine-act {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.3rem;
-  margin: 0;
+  align-items: center;
   flex: none;
-  font-family: var(--bl-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
+  padding: 0.4rem 0.52rem;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
   color: var(--bl-ink-dim);
+  cursor: pointer;
+  transition:
+    color 0.3s var(--bl-ease),
+    background 0.3s var(--bl-ease);
+}
+
+.bl-spine-no {
+  font-family: var(--bl-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/*
+ * The name opens to exactly its own width. A max-width would have to guess
+ * at a number big enough for "Case Files" and then every shorter act eases
+ * across the slack before it arrives.
+ */
+.bl-spine-name {
+  display: grid;
+  grid-template-columns: 0fr;
+  transition: grid-template-columns 0.45s var(--bl-ease);
+}
+
+.bl-spine-name > span {
+  overflow: hidden;
   white-space: nowrap;
+  padding-left: 0.5em;
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-.bl-folio i { font-style: normal; }
-
-.bl-folio b {
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 24;
-  font-size: 1.05rem;
-  line-height: 1;
-  letter-spacing: 0;
+.bl-spine-act:hover,
+.bl-spine-act:focus-visible {
   color: var(--bl-ink);
+  background: color-mix(in srgb, var(--bl-ink) 8%, transparent);
 }
 
-@media (max-width: 1040px) {
+.bl-spine-act[data-active="true"] {
+  color: var(--bl-accent-ink);
+  background: var(--bl-accent);
+}
+
+.bl-spine-act:hover .bl-spine-name,
+.bl-spine-act:focus-visible .bl-spine-name,
+.bl-spine-act[data-active="true"] .bl-spine-name { grid-template-columns: 1fr; }
+
+/* ---- the end of the bar ---- */
+
+.bl-nav-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: none;
+}
+
+.bl-nav .bl-resume {
+  padding: 0.56rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.57rem;
+  letter-spacing: 0.16em;
+}
+
+.bl-nav-menu {
+  display: none;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  appearance: none;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.3s var(--bl-ease);
+}
+
+.bl-nav-menu i {
+  display: block;
+  width: 13px;
+  height: 1.5px;
+  background: var(--bl-ink);
+  transition: width 0.3s var(--bl-ease), background 0.3s var(--bl-ease);
+}
+
+.bl-nav-menu:hover { border-color: var(--bl-accent); }
+.bl-nav-menu:hover i { background: var(--bl-accent); }
+.bl-nav-menu:hover i:last-child { width: 8px; }
+
+/* ---- how far through ---- */
+
+.bl-nav-read {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--bl-accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  opacity: 1;
+  will-change: transform;
+}
+
+/*
+ * Seven numerals and a name need about a laptop. Under that the spine goes
+ * and the contents opens as a page of its own, which it does on every size
+ * anyway from the button at the end.
+ */
+@media (max-width: 1100px) {
+  .bl-spine { display: none; }
+  .bl-nav-menu { display: grid; }
+  .bl-nav-end { margin-left: auto; }
+}
+
+/*
+ * On a phone the bar was down to a monogram and a menu button, because the
+ * CV button hides under 560 and the title hid under 420. Two round buttons
+ * cost 70px between them, which a 375 screen has: the CV keeps its place
+ * and loses its word, and the title stays until the capsule genuinely runs
+ * out of room.
+ */
+@media (max-width: 560px) {
+  .bl-nav .bl-resume {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    padding: 0;
+  }
+
+  .bl-nav .bl-resume span { display: none; }
+}
+
+@media (max-width: 340px) {
   .bl-brand-title { display: none; }
-}
-
-@media (max-width: 760px) {
-  .bl-folio { display: none; }
 }
 
 /* ==========================================================================
