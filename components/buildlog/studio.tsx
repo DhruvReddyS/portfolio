@@ -1,10 +1,11 @@
 "use client";
 
 import { Fragment } from "react";
+import Image from "next/image";
 import { studio } from "@/lib/portfolio-data";
 import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
-import { SectionHeader } from "./sections";
+import { Roll, SectionHeader } from "./sections";
 import { MarkedLine } from "./marked";
 import { MarkArrow, MarkMail } from "./marks";
 
@@ -14,17 +15,15 @@ import { MarkArrow, MarkMail } from "./marks";
  * Two things were wrong with the last one. It read as another section of this
  * site rather than as another business, which is the whole claim the heading
  * makes; and it was selling a studio with three round numbers while seven
- * named clients sat in the data file, unrendered, four of them delivered.
- * "100% custom builds" is a thing anyone can type. "WestBrook Homes,
- * delivered" is not.
+ * The work is counted, not named. Who a studio builds for is the client's
+ * to announce, and a roster of other people's brands on his portfolio is a
+ * claim they never agreed to make; seven builds, four delivered and two of
+ * them for clients in the US says the same thing and is his to say.
  *
- * So the roster leads, and the card takes its own colour: every accent inside
- * it resolves to the studio's green instead of the log's red pen, which is a
- * single token override and makes it read as a letterhead from somewhere
- * else without touching a line of the page around it.
+ * The card used to take a green of its own so it would read as a letterhead
+ * from somewhere else. It is not somewhere else. One site, one accent.
  */
 
-const delivered = studio.clients.filter((client) => client.status === "Delivered").length;
 
 export function StudioSection() {
   return (
@@ -32,15 +31,15 @@ export function StudioSection() {
       <SectionHeader
         label="06 / Independent"
         title="And a studio he runs"
-        lead="Clients, not coursework. Seven brands so far, and a year of support after each one goes live."
-        note={`${studio.clients.length} brands · ${delivered} delivered`}
+        lead="Clients, not coursework. Seven builds so far, two of them for clients in the US, and a year of support after each one goes live."
+        note={`${studio.shipped} builds · ${studio.delivered} delivered`}
       />
 
       <Reveal>
         <div className="bl-studio-card">
           <header className="bl-studio-head">
-            <span className="bl-studio-logo" aria-hidden="true">
-              {studio.initials}
+            <span className="bl-studio-logo">
+              <Image src={studio.logo} alt={studio.name} width={949} height={297} priority={false} />
             </span>
 
             <div className="bl-studio-id">
@@ -58,22 +57,29 @@ export function StudioSection() {
               </p>
 
               <div className="bl-studio-actions">
-                <a className="bl-btn bl-btn-solid" href={studio.site} target="_blank" rel="noreferrer">
-                  Visit the studio <MarkArrow size={13} />
+                <a
+                  className="bl-btn bl-btn-solid bl-go"
+                  href={studio.site}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Roll>Visit the studio</Roll>
+                  <span className="bl-go-mark" aria-hidden="true">
+                    <MarkArrow size={13} />
+                    <MarkArrow size={13} />
+                  </span>
                 </a>
-                <a className="bl-btn" href={`mailto:${studio.email}`}>
-                  <MarkMail size={14} /> {studio.email}
+                <a className="bl-btn bl-btn-lit bl-go" href={`mailto:${studio.email}`}>
+                  <span className="bl-go-mark bl-go-mark-lead" aria-hidden="true">
+                    <MarkMail size={14} />
+                    <MarkMail size={14} />
+                  </span>
+                  <Roll>{studio.email}</Roll>
                 </a>
               </div>
             </div>
 
             <dl className="bl-studio-figures">
-              <div>
-                <dt>Brands</dt>
-                <dd>
-                  <Counter value={String(studio.clients.length)} />
-                </dd>
-              </div>
               {studio.marks.map((mark) => (
                 <div key={mark.label}>
                   <dt>{mark.label}</dt>
@@ -85,21 +91,22 @@ export function StudioSection() {
             </dl>
           </div>
 
-          {/* the roster, which is the part that was sitting in the data file */}
+          {/* what the work is, counted rather than named */}
           <div className="bl-roster">
             <p className="bl-roster-head">
-              <span>The roster</span>
+              <span>The work</span>
               <i aria-hidden="true" />
               <em>{studio.services.join(" · ")}</em>
             </p>
 
             <ul>
-              {studio.clients.map((client) => (
-                <li key={client.name}>
-                  <strong>{client.name}</strong>
-                  <span>{client.note}</span>
-                  <em data-state={client.status === "Delivered" ? "done" : "building"}>
-                    {client.status}
+              {studio.work.map((lot) => (
+                <li key={lot.kind}>
+                  <b>{lot.count}</b>
+                  <strong>{lot.kind}</strong>
+                  <span>{lot.note}</span>
+                  <em data-state={lot.state.includes("deliver") ? "done" : "building"}>
+                    {lot.state}
                   </em>
                 </li>
               ))}

@@ -110,7 +110,7 @@ const TALLY = [
  * word arrives from below, so the button answers the pointer with the one
  * thing it has to say rather than with a change of colour.
  */
-function Roll({ children }: { children: string }) {
+export function Roll({ children }: { children: string }) {
   return (
     <span className="bl-roll">
       <span>{children}</span>

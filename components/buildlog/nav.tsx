@@ -6,6 +6,26 @@ import { useSmoothScroll } from "./smooth";
 import { MarkArrow, MarkClose, MarkDownload } from "./marks";
 
 /**
+ * The site's mark: the D, set in its own counter, with the dot that goes
+ * with it. The lime it was drawn in belongs to no other thing on this page,
+ * so it is the accent here and the square carries it.
+ */
+function BrandMark() {
+  return (
+    <span className="bl-brand-stamp" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none">
+        <rect className="bl-brand-plate" width="64" height="64" rx="18" />
+        <path
+          className="bl-brand-letter"
+          d="M16 16h15c11 0 18 6 18 16s-7 16-18 16H16V16Zm10 9v14h5c5 0 8-2 8-7s-3-7-8-7h-5Z"
+        />
+        <circle className="bl-brand-dot" cx="49" cy="15" r="5" />
+      </svg>
+    </span>
+  );
+}
+
+/**
  * The bar, and the contents page behind it.
  *
  * It is a capsule rather than a strip across the top: the page under it is a
@@ -85,16 +105,14 @@ export function BuildLogNav({ active }: { active: string }) {
               scrollTo(0);
             }}
           >
-            <span className="bl-brand-stamp" aria-hidden="true">
-              SDR
-            </span>
+            <BrandMark />
             <span className="bl-brand-title" aria-hidden="true">
               The Build Log
             </span>
             <span className="bl-sr">S. Dhruv Reddy, home</span>
           </a>
 
-          {/* the spine: every act at once, only the open one named */}
+          {/* the spine: every act, named */}
           <nav className="bl-spine" aria-label="Sections">
             {sections.map((item) => (
               <button
@@ -104,10 +122,7 @@ export function BuildLogNav({ active }: { active: string }) {
                 data-active={active === item.id}
                 onClick={() => go(item.id)}
               >
-                <span className="bl-spine-no">{item.act}</span>
-                <span className="bl-spine-name">
-                  <span>{item.label}</span>
-                </span>
+                {item.label}
               </button>
             ))}
           </nav>

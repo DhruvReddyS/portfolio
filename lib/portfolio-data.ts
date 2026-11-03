@@ -745,10 +745,11 @@ export const studio = {
     "An independent digital studio building modern, purposeful websites for brands that care how they are seen. Every build is custom: clean structure, crafted layouts, no templates.",
   site: "https://freelance.byus4u.in/",
   email: "team.byusforu@gmail.com",
-  logo: "/assets/byusforu-logo.png",
+  /** Cropped to the mark and carried on transparency, so the card's own ground shows through. */
+  logo: "/assets/byusforu-mark.png",
   marks: [
-    { value: "5+", label: "projects shipped" },
-    { value: "100%", label: "custom builds" },
+    { value: "07", label: "builds shipped" },
+    { value: "02", label: "clients in the US" },
     { value: "1 yr", label: "support included" },
   ],
   services: [
@@ -765,15 +766,28 @@ export const studio = {
     { step: "05", title: "Review & launch", note: "Final refinements, then it goes live." },
     { step: "06", title: "Ongoing support", note: "A full year of it, after launch." },
   ],
-  clients: [
-    { name: "WestBrook Homes", note: "A refined presence for a brand built on trust", status: "Delivered" },
-    { name: "Zyca Café & Kitchen", note: "Lively and expressive, built on social energy", status: "Delivered" },
-    { name: "Ukasa Café", note: "A calm, earthy identity built on balance", status: "Delivered" },
-    { name: "Ember & Oak Café", note: "Warm and immersive, built around mood", status: "Delivered" },
-    { name: "WestBrook Luxury Homes", note: "Bespoke homes, premium finishes, cost clarity", status: "In build" },
-    { name: "Sai Enterprises", note: "Graphic machinery suppliers across two continents", status: "In build" },
-    { name: "Axon Development", note: "Future-ready digital infrastructure", status: "In build" },
+  /*
+   * Counted, not named. Who a studio builds for is the client's to announce,
+   * and a roster of logos on somebody else's portfolio is a claim they did
+   * not agree to make. The numbers are the same work either way.
+   */
+  work: [
+    {
+      kind: "Client builds",
+      count: "04",
+      note: "Property and industrial brands, two of them in the US. Scoped, built and handed over.",
+      state: "1 delivered · 3 in build",
+    },
+    {
+      kind: "Demo builds",
+      count: "03",
+      note: "Hospitality sites built to show the range rather than to a brief, each one a different voice.",
+      state: "All delivered",
+    },
   ],
+  /** Totals, since the roster no longer prints them a line at a time. */
+  shipped: 7,
+  delivered: 4,
 };
 
 export const sections = [

@@ -9,6 +9,7 @@ import { StudioSection } from "@/components/buildlog/studio";
 import { WorkIndex } from "@/components/buildlog/work-index";
 import { SmoothScroll } from "@/components/buildlog/smooth";
 import { Cover } from "@/components/buildlog/cover";
+import { Cursor } from "@/components/buildlog/cursor";
 import { useCurtainHeld } from "@/lib/curtain";
 import {
   BuildLogFooter,
@@ -108,6 +109,7 @@ function BuildLog() {
       <a className="bl-skip" href="#log">
         Skip to the log
       </a>
+      <Cursor />
       <Cover />
       <div className="bl-grain-layer" aria-hidden="true" />
 

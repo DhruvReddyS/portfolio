@@ -5895,15 +5895,9 @@ html.bl-locked body { overflow: hidden; }
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-bottom: 1px solid var(--bl-rule-soft);
-  /* ruled, for the five builds with no screenshot to put here. It is the
-     one texture on this site that says a thing was worked out rather than
-     simply being dark. */
+  /* a lit field for the builds with no screenshot: the ruled paper that was
+     here read as lined notebook stock behind a product shot */
   background:
-    repeating-linear-gradient(
-      180deg,
-      rgba(243, 241, 234, 0.05) 0 1px,
-      transparent 1px 1.5rem
-    ),
     radial-gradient(
       120% 95% at 85% 8%,
       color-mix(in srgb, var(--bl-accent) 18%, transparent),
@@ -6740,13 +6734,7 @@ html.bl-locked body { overflow: hidden; }
   border: 0;
   border-radius: 2px;
   margin-bottom: 0.95rem;
-  background:
-    repeating-linear-gradient(
-      180deg,
-      rgba(243, 241, 234, 0.055) 0 1px,
-      transparent 1px 1.45rem
-    ),
-    linear-gradient(200deg, #14110e 0%, #0a0908 85%);
+  background: linear-gradient(200deg, #14110e 0%, #0a0908 85%);
 }
 
 /* the margin rule, as on a page of the book itself */
@@ -7306,15 +7294,7 @@ body,
   margin-bottom: 0;
   border-radius: 0;
   border-bottom: 1px solid var(--bl-rule);
-  /* ruled, for the five builds with no screenshot: paper now, not a dark
-     field with a glow on it */
-  background:
-    repeating-linear-gradient(
-      180deg,
-      var(--bl-rule-soft) 0 1px,
-      transparent 1px 1.45rem
-    ),
-    var(--bl-surface-2);
+  background: var(--bl-surface-2);
 }
 
 .bl-card-set { color: var(--bl-ink-soft); }
@@ -7851,13 +7831,7 @@ body,
   overflow: hidden;
   border: 1px solid var(--bl-rule);
   border-radius: 12px;
-  background:
-    repeating-linear-gradient(
-      180deg,
-      var(--bl-rule-soft) 0 1px,
-      transparent 1px 1.45rem
-    ),
-    var(--bl-surface);
+  background: var(--bl-surface);
   touch-action: pan-y;
 }
 
@@ -8713,20 +8687,6 @@ body,
 }
 
 /* ruled, like the paper everything else here is set on */
-.bl-degree::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    180deg,
-    var(--bl-rule-soft) 0 1px,
-    transparent 1px 1.45rem
-  );
-  opacity: 0.6;
-}
-
 .bl-degree > * { position: relative; z-index: 1; }
 
 .bl-degree-where {
@@ -8923,10 +8883,9 @@ body,
    card, and every rule, chip and button inside it follows.
    ========================================================================== */
 
+/* It had a green of its own, to read as a letterhead from somewhere else.
+   One site, one accent: the studio is his, not a third party. */
 .bl-studio-card {
-  --bl-accent: #5fa89b;
-  --bl-accent-ink: #06100e;
-  --bl-accent-soft: rgba(95, 168, 155, 0.14);
   position: relative;
   overflow: hidden;
   border: 1px solid var(--bl-rule);
@@ -8944,18 +8903,20 @@ body,
   border-bottom: 1px solid var(--bl-rule);
 }
 
+/* The mark is a wordmark at better than three to one. Squeezed into the
+   square the initials used to sit in it was four unreadable millimetres, so
+   it is set as the lockup it is and the card's own ground carries it. */
 .bl-studio-logo {
-  display: grid;
-  place-items: center;
-  width: 2.9rem;
-  height: 2.9rem;
+  display: block;
   flex: none;
-  border: 1px solid var(--bl-accent);
-  border-radius: 8px;
-  font-family: var(--bl-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  color: var(--bl-accent);
+  height: clamp(1.5rem, 3vw, 2.1rem);
+  aspect-ratio: 949 / 297;
+}
+
+.bl-studio-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .bl-studio-id { flex: 1; min-width: 0; }
@@ -9081,7 +9042,7 @@ body,
 
 .bl-roster li {
   display: grid;
-  grid-template-columns: minmax(10rem, 0.8fr) minmax(0, 1.6fr) auto;
+  grid-template-columns: auto minmax(8rem, 0.7fr) minmax(0, 1.5fr) auto;
   align-items: baseline;
   gap: 0.3rem clamp(1rem, 2.5vw, 2rem);
   padding: 0.72rem 0;
@@ -9091,6 +9052,17 @@ body,
 
 .bl-roster li:last-child { border-bottom: 1px solid var(--bl-rule-soft); }
 .bl-roster li:hover { border-color: var(--bl-accent); }
+
+/* the count, in the poster face, because it is the thing being claimed */
+.bl-roster li b {
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 108%;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: var(--bl-accent);
+}
 
 .bl-roster li strong {
   font-family: var(--bl-sans);
@@ -9247,17 +9219,6 @@ body,
 /* a maker's mark drawn in flat black needs to be drawn in the page's ink */
 .bl-tool-mark { color: var(--bl-ink); }
 
-/* the rules have to be restated with the fill, or setting one colour here
-   throws away the gradient the box was ruled with */
-.bl-pile {
-  background:
-    repeating-linear-gradient(
-      180deg,
-      var(--bl-rule-soft) 0 1px,
-      transparent 1px 1.45rem
-    ),
-    var(--bl-surface);
-}
 .bl-pile::after { opacity: 0.32; }
 
 /* the transcript plates, lifted off the ground they now share with it */
@@ -9340,22 +9301,25 @@ body,
 }
 
 .bl-brand-stamp {
-  display: grid;
-  place-items: center;
-  width: 1.85rem;
-  height: 1.85rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--bl-accent);
-  font-family: var(--bl-mono);
-  font-size: 0.5rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--bl-accent-ink);
-  transition: transform 0.35s var(--bl-ease);
+  display: block;
+  width: 1.95rem;
+  height: 1.95rem;
+  transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 
-.bl-brand:hover .bl-brand-stamp { transform: rotate(-8deg) scale(1.06); }
+.bl-brand-stamp svg { display: block; width: 100%; height: 100%; }
+
+.bl-brand-plate { fill: var(--bl-accent); }
+.bl-brand-letter { fill: var(--bl-accent-ink); }
+.bl-brand-dot {
+  fill: var(--bl-ink);
+  transition: transform 0.4s cubic-bezier(0.34, 1.4, 0.5, 1);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.bl-brand:hover .bl-brand-stamp { transform: rotate(-7deg); }
+.bl-brand:hover .bl-brand-dot { transform: scale(1.5); }
 
 .bl-brand-title {
   font-family: var(--bl-display);
@@ -9381,14 +9345,18 @@ body,
 }
 
 .bl-spine-act {
-  display: inline-flex;
-  align-items: center;
+  position: relative;
   flex: none;
-  padding: 0.4rem 0.52rem;
+  padding: 0.44rem clamp(0.5rem, 0.95vw, 0.85rem);
   appearance: none;
   border: 0;
   border-radius: 999px;
   background: transparent;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--bl-ink-dim);
   cursor: pointer;
   transition:
@@ -9396,38 +9364,25 @@ body,
     background 0.3s var(--bl-ease);
 }
 
-.bl-spine-no {
-  font-family: var(--bl-mono);
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-}
-
-/*
- * The name opens to exactly its own width. A max-width would have to guess
- * at a number big enough for "Case Files" and then every shorter act eases
- * across the slack before it arrives.
- */
-.bl-spine-name {
-  display: grid;
-  grid-template-columns: 0fr;
-  transition: grid-template-columns 0.45s var(--bl-ease);
-}
-
-.bl-spine-name > span {
-  overflow: hidden;
-  white-space: nowrap;
-  padding-left: 0.5em;
-  font-family: var(--bl-mono);
-  font-size: 0.54rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+/* the hairline a name is underscored with before it is the one you are on */
+.bl-spine-act::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: 0.18rem;
+  height: 1px;
+  background: var(--bl-accent);
+  transition: left 0.35s var(--bl-ease), right 0.35s var(--bl-ease);
 }
 
 .bl-spine-act:hover,
-.bl-spine-act:focus-visible {
-  color: var(--bl-ink);
-  background: color-mix(in srgb, var(--bl-ink) 8%, transparent);
+.bl-spine-act:focus-visible { color: var(--bl-ink); }
+
+.bl-spine-act:hover::after,
+.bl-spine-act:focus-visible::after {
+  left: clamp(0.5rem, 0.95vw, 0.85rem);
+  right: clamp(0.5rem, 0.95vw, 0.85rem);
 }
 
 .bl-spine-act[data-active="true"] {
@@ -9435,9 +9390,7 @@ body,
   background: var(--bl-accent);
 }
 
-.bl-spine-act:hover .bl-spine-name,
-.bl-spine-act:focus-visible .bl-spine-name,
-.bl-spine-act[data-active="true"] .bl-spine-name { grid-template-columns: 1fr; }
+.bl-spine-act[data-active="true"]::after { opacity: 0; }
 
 /* ---- the end of the bar ---- */
 
@@ -9503,7 +9456,7 @@ body,
  * and the contents opens as a page of its own, which it does on every size
  * anyway from the button at the end.
  */
-@media (max-width: 1100px) {
+@media (max-width: 1180px) {
   .bl-spine { display: none; }
   .bl-nav-menu { display: grid; }
   .bl-nav-end { margin-left: auto; }
@@ -10037,4 +9990,148 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .bl-mark,
   .bl-mark > * { transition: none; animation: none !important; }
+}
+
+/* ==========================================================================
+   THE POINTER
+   Two parts, because one says nothing: a dot exactly where the pointer is,
+   and a ring always a little behind it. The lag is the whole effect. A ring
+   locked to the cursor is a cursor in a different shape; a ring catching up
+   reads as weight.
+   ========================================================================== */
+
+.bl-cursor-on,
+.bl-cursor-on * { cursor: none !important; }
+
+/* except where a caret is the only honest answer */
+.bl-cursor-on :is(input, textarea, [contenteditable="true"]) { cursor: text !important; }
+
+.bl-cursor-dot,
+.bl-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.bl-cursor-dot {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--bl-accent);
+  transition: opacity 0.2s var(--bl-ease), scale 0.25s var(--bl-ease);
+}
+
+.bl-cursor-ring {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin: -1.05rem 0 0 -1.05rem;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--bl-ink) 42%, transparent);
+  transition:
+    width 0.32s var(--bl-ease),
+    height 0.32s var(--bl-ease),
+    margin 0.32s var(--bl-ease),
+    border-color 0.32s var(--bl-ease),
+    border-radius 0.32s var(--bl-ease),
+    background 0.32s var(--bl-ease),
+    opacity 0.2s var(--bl-ease);
+}
+
+/* the four ticks that only come out as a reticle */
+.bl-cursor-ring i {
+  position: absolute;
+  width: 1px;
+  height: 5px;
+  background: var(--bl-accent);
+  opacity: 0;
+  transition: opacity 0.25s var(--bl-ease), transform 0.32s var(--bl-ease);
+}
+
+.bl-cursor-ring i:nth-child(1) { transform: translateY(-0.5rem); }
+.bl-cursor-ring i:nth-child(2) { transform: translateY(0.5rem); }
+.bl-cursor-ring i:nth-child(3) { transform: rotate(90deg) translateY(-0.5rem); }
+.bl-cursor-ring i:nth-child(4) { transform: rotate(90deg) translateY(0.5rem); }
+
+/* ---- over something you can press ---- */
+
+.bl-cursor-ring[data-state="link"] {
+  width: 3.1rem;
+  height: 3.1rem;
+  margin: -1.55rem 0 0 -1.55rem;
+  border-color: var(--bl-accent);
+  background: color-mix(in srgb, var(--bl-accent) 12%, transparent);
+}
+
+.bl-cursor-dot[data-state="link"] { scale: 0; }
+
+/* ---- over text ---- */
+
+.bl-cursor-ring[data-state="text"] {
+  width: 2px;
+  height: 1.5rem;
+  margin: -0.75rem 0 0 -1px;
+  border-radius: 1px;
+  border-color: transparent;
+  background: var(--bl-accent);
+}
+
+.bl-cursor-dot[data-state="text"] { scale: 0; }
+
+/* ---- over the bug ---- */
+
+.bl-cursor-ring[data-state="hunt"] {
+  width: 2.6rem;
+  height: 2.6rem;
+  margin: -1.3rem 0 0 -1.3rem;
+  border-color: color-mix(in srgb, var(--bl-accent) 70%, transparent);
+  background: transparent;
+}
+
+.bl-cursor-ring[data-state="hunt"] i { opacity: 1; }
+.bl-cursor-ring[data-state="hunt"] i:nth-child(1) { transform: translateY(-1.05rem); }
+.bl-cursor-ring[data-state="hunt"] i:nth-child(2) { transform: translateY(1.05rem); }
+.bl-cursor-ring[data-state="hunt"] i:nth-child(3) { transform: rotate(90deg) translateY(-1.05rem); }
+.bl-cursor-ring[data-state="hunt"] i:nth-child(4) { transform: rotate(90deg) translateY(1.05rem); }
+
+/* ---- pressed, and off the window ---- */
+
+.bl-cursor-ring[data-down="true"] { scale: 0.82; }
+.bl-cursor-dot[data-out="true"],
+.bl-cursor-ring[data-out="true"] { opacity: 0; }
+
+/* ==========================================================================
+   THE TWO ADDRESSES
+   The studio's site and its inbox are the only two things on that card
+   anyone is meant to act on, so they are lit rather than left as outlines.
+   ========================================================================== */
+
+.bl-btn-lit {
+  border-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--bl-accent) 12%, transparent);
+  color: var(--bl-accent);
+}
+
+.bl-btn-lit:hover {
+  border-color: var(--bl-accent);
+  background: color-mix(in srgb, var(--bl-accent) 20%, transparent);
+  color: var(--bl-ink);
+}
+
+/* the address itself is the case-sensitive part, so it keeps its case */
+.bl-studio-actions .bl-btn-lit { text-transform: none; letter-spacing: 0.06em; }
+
+@media (max-width: 760px) {
+  .bl-roster li {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 0.35rem;
+  }
+
+  .bl-roster li span { grid-column: 1 / -1; }
+  .bl-roster li em { grid-column: 1 / -1; justify-self: start; }
 }
