@@ -24,15 +24,22 @@ const SmoothContext = createContext<SmoothValue>({ scrollTo: () => {} });
 
 /**
  * Inertia scrolling, driven by GSAP's ticker so that ScrollTrigger pinning
- * stays in step with it. Skipped entirely when the visitor asks for reduced
- * motion, which leaves native scrolling in place.
+ * stays in step with it.
+ *
+ * Left out entirely on a touch screen, and when the visitor has asked for
+ * reduced motion. A phone's own scrolling is already handed off to the
+ * compositor and runs whatever else the page is doing; putting it back on
+ * the main thread, behind a frame loop and a ScrollTrigger update on every
+ * event, is how a site that scrolls beautifully on a laptop comes to stutter
+ * in a hand. Native scrolling is the better inertia here, and it is free.
  */
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenis = useRef<Lenis | null>(null);
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const touch = window.matchMedia("(pointer: coarse)").matches;
+    if (reduced || touch) return;
 
     const instance = new Lenis({
       lerp: 0.085,

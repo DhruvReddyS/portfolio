@@ -30,6 +30,14 @@
   --bl-display: var(--font-display), "Iowan Old Style", Georgia, serif;
   --bl-sans: var(--font-sans), system-ui, sans-serif;
   --bl-poster: var(--font-poster), var(--font-sans), system-ui, sans-serif;
+  /*
+   * One inset for everything that is a card, so the text inside two cards
+   * in neighbouring acts starts at the same place. They had been three
+   * separate clamps landing on 20, 21 and 23 at phone width, which is
+   * exactly the sort of difference you feel scrolling without being able
+   * to name it.
+   */
+  --bl-pad-card: clamp(1.25rem, 2.6vw, 2.25rem);
   --bl-mono: var(--font-mono), ui-monospace, monospace;
   --bl-gutter: clamp(1.25rem, 5vw, 6rem);
   --bl-rail: 0rem;
@@ -60,15 +68,34 @@ body {
  * drawn at the real line height so text sits on it.
  */
 
+/*
+ * The grain.
+ *
+ * This was inset -150%, which is four viewports wide by four tall: sixteen
+ * screens of noise, held on the GPU by will-change and re-composited every
+ * 0.35s for the whole life of the page. On a 375 x 812 phone at 2x that is
+ * nineteen million device pixels of permanently live texture, and it was
+ * the single largest thing the site was doing. The keyframes move it by two
+ * percent, so two percent of slack is all it ever needed.
+ */
 .bl-grain-layer {
   position: fixed;
-  inset: -150%;
+  inset: -6%;
   z-index: 60;
   pointer-events: none;
   opacity: var(--bl-grain);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: bl-grain 0.7s steps(2) infinite;
   will-change: transform;
+}
+
+/*
+ * And on a touch device it does not move at all. The shimmer is the part
+ * nobody can name afterwards; the texture is the part they can, and that
+ * costs one paint instead of three a second.
+ */
+@media (pointer: coarse) {
+  .bl-grain-layer { animation: none; will-change: auto; }
 }
 
 @keyframes bl-grain {
@@ -1080,8 +1107,12 @@ html.bl-locked body { overflow: hidden; }
     transition:
       opacity 0.8s var(--bl-ease) var(--bl-reveal-delay, 0ms),
       transform 0.8s var(--bl-ease) var(--bl-reveal-delay, 0ms);
-    will-change: opacity, transform;
   }
+
+  /* Promised only while it still has somewhere to go. There are twenty-odd
+     of these on the page and each one was holding its own compositor layer
+     for the whole session over an animation that runs once. */
+  .bl-reveal:not([data-in="true"]) { will-change: opacity, transform; }
 
   .bl-reveal[data-in="true"] {
     opacity: 1;
@@ -2387,6 +2418,11 @@ html.bl-locked body { overflow: hidden; }
     flex-direction: column;
     gap: 0.9rem;
   }
+
+  /* The grid keeps align-items: end from the base rule, and down a column
+     that means hard right: the whole middle of the cover sat 16px in from
+     the gutter its own name and figures were set to. */
+  .bl-hero-left { width: 100%; }
 
   .bl-hero-figure {
     order: -1;
@@ -8701,7 +8737,7 @@ body,
   gap: 0.7rem;
   align-content: start;
   height: 100%;
-  padding: clamp(1.4rem, 2.6vw, 2.25rem);
+  padding: var(--bl-pad-card);
   border: 1px solid var(--bl-rule);
   border-radius: 12px;
   background: var(--bl-surface);
@@ -8921,7 +8957,7 @@ body,
   display: flex;
   align-items: center;
   gap: clamp(0.85rem, 2vw, 1.4rem);
-  padding: clamp(1.1rem, 2.4vw, 1.75rem) clamp(1.25rem, 2.6vw, 2.25rem);
+  padding: clamp(1.1rem, 2.4vw, 1.75rem) var(--bl-pad-card);
   border-bottom: 1px solid var(--bl-rule);
 }
 
@@ -8981,7 +9017,7 @@ body,
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   gap: clamp(1.25rem, 3vw, 2.5rem);
-  padding: clamp(1.25rem, 2.6vw, 2.25rem);
+  padding: var(--bl-pad-card);
   border-bottom: 1px solid var(--bl-rule);
 }
 
@@ -9035,7 +9071,7 @@ body,
 
 /* ---- the roster ---- */
 
-.bl-roster { padding: clamp(1.25rem, 2.6vw, 2.25rem); }
+.bl-roster { padding: var(--bl-pad-card); }
 
 .bl-roster-head {
   display: flex;
@@ -9303,6 +9339,18 @@ body,
     border-color 0.4s var(--bl-ease),
     background 0.4s var(--bl-ease),
     box-shadow 0.4s var(--bl-ease);
+}
+
+/*
+ * A live blur behind a fixed bar is re-read every frame of every scroll,
+ * and on a phone that is the bar taxing the whole page for an effect that
+ * reads as "slightly translucent". Solid enough to sit on, instead.
+ */
+@media (pointer: coarse) {
+  .bl-nav-shell {
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--bl-bg) 94%, transparent);
+  }
 }
 
 /* off the top of the page it earns its weight */
@@ -10238,7 +10286,7 @@ body,
   gap: 0.5rem;
   width: 100%;
   height: 100%;
-  padding: clamp(1rem, 2.4vw, 1.6rem);
+  padding: var(--bl-pad-card);
   overflow: hidden;
   background:
     radial-gradient(
