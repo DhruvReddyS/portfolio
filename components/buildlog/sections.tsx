@@ -21,7 +21,6 @@ import { Marked, MarkedLine } from "./marked";
 import { Reel } from "./reel";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import { CrowdCanvas } from "@/components/ui/skiper39";
-import { BugHunt } from "@/components/ui/bug-hunt";
 import { PolaroidLine } from "@/components/ui/polaroid-line";
 import { StampedWordmark } from "@/components/ui/stamped-wordmark";
 import {
@@ -106,6 +105,20 @@ const TALLY = [
  * did was say the same thing first, quieter, over the one picture on the
  * page that has to land in a second.
  */
+/**
+ * A label that rolls over on hover: the word leaves upward and the same
+ * word arrives from below, so the button answers the pointer with the one
+ * thing it has to say rather than with a change of colour.
+ */
+function Roll({ children }: { children: string }) {
+  return (
+    <span className="bl-roll">
+      <span>{children}</span>
+      <span aria-hidden="true">{children}</span>
+    </span>
+  );
+}
+
 function HeroField() {
   return <div className="bl-field" aria-hidden="true" />;
 }
@@ -261,10 +274,7 @@ export function Hero({ time }: { time: string }) {
       <div className="bl-hero-grid">
         <div className="bl-hero-left">
           <Reveal delay={60} rise={14}>
-            <span className="bl-pill">
-              <i aria-hidden="true" />
-              Open to work · {time} IST
-            </span>
+            <span className="bl-pill">Open to work · {time} IST</span>
           </Reveal>
 
           <Reveal delay={150} rise={20}>
@@ -296,13 +306,20 @@ export function Hero({ time }: { time: string }) {
           <Reveal delay={270} rise={34}>
             <div className="bl-hero-cta">
               <Magnetic>
-                <a className="bl-btn bl-btn-solid" href="#work">
-                  Explore projects <MarkArrow size={13} />
+                <a className="bl-btn bl-btn-solid bl-go" href="#work">
+                  <Roll>Explore projects</Roll>
+                  <span className="bl-go-mark" aria-hidden="true">
+                    <MarkArrow size={13} />
+                    <MarkArrow size={13} />
+                  </span>
                 </a>
               </Magnetic>
-              <a className="bl-hero-link" href={`mailto:${profile.email}`}>
-                <MarkMail size={13} />
-                Hire me
+              <a className="bl-hero-link bl-go" href={`mailto:${profile.email}`}>
+                <span className="bl-go-mark bl-go-mark-lead" aria-hidden="true">
+                  <MarkMail size={13} />
+                  <MarkMail size={13} />
+                </span>
+                <Roll>Hire me</Roll>
               </a>
             </div>
           </Reveal>
@@ -497,13 +514,6 @@ export function LogSection() {
 
   return (
     <section className="bl-section bl-log" id="log">
-      {/*
-        Webs, a spider, and one bug to fix. It lives here rather than on the
-        contact sheet, which already has a crowd walking across it: two things
-        moving in one frame and neither of them is noticed.
-      */}
-      <BugHunt roam={0.56} />
-
       <SectionHeader
         label="01 / Experience"
         title="Where it happened"

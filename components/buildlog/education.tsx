@@ -5,6 +5,7 @@ import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
 import { SectionHeader } from "./sections";
 import { MarkPaper } from "./marks";
+import { BugHunt } from "@/components/ui/bug-hunt";
 
 /**
  * Two degrees, as two transcripts, with the mark given the size it earned.
@@ -22,6 +23,13 @@ import { MarkPaper } from "./marks";
 export function EducationSection() {
   return (
     <section className="bl-section bl-study" id="education">
+      {/*
+        A web slung off the end of the heading, with something living on it.
+        Two degrees left running in parallel is the one heading on the page
+        that has been sitting there a while, which is where a web turns up.
+      */}
+      <BugHunt />
+
       <SectionHeader
         label="03 / Study"
         title="A dual degree, run in parallel"
