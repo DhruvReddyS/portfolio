@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Archivo, Fraunces, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 import "./buildlog.css";
@@ -17,6 +17,19 @@ const fraunces = Fraunces({
 const instrument = Instrument_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
+});
+
+/**
+ * The poster voice, and the only thing it is allowed to set: the name across
+ * the cover and the three numbers beside it. Instrument Sans stops at 700,
+ * which is a good deal lighter than a word that has to carry a whole screen,
+ * and it has no width axis to open the letters out with.
+ */
+const archivo = Archivo({
+  variable: "--font-poster",
+  subsets: ["latin"],
+  axes: ["wdth"],
   display: "swap",
 });
 
@@ -75,7 +88,7 @@ export default function RootLayout({
     // resolve them; declared on <body> they are invisible to :root.
     <html
       lang="en"
-      className={`dark ${fraunces.variable} ${instrument.variable} ${jetbrains.variable}`}
+      className={`dark ${fraunces.variable} ${instrument.variable} ${jetbrains.variable} ${archivo.variable}`}
       data-lamp="off"
     >
       <body className="antialiased">{children}</body>

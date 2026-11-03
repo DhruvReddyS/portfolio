@@ -29,6 +29,7 @@
 :root {
   --bl-display: var(--font-display), "Iowan Old Style", Georgia, serif;
   --bl-sans: var(--font-sans), system-ui, sans-serif;
+  --bl-poster: var(--font-poster), var(--font-sans), system-ui, sans-serif;
   --bl-mono: var(--font-mono), ui-monospace, monospace;
   --bl-gutter: clamp(1.25rem, 5vw, 6rem);
   --bl-rail: 0rem;
@@ -2321,7 +2322,9 @@ html.bl-locked body { overflow: hidden; }
   position: absolute;
   left: 0;
   right: 0;
-  top: clamp(5rem, 11vh, 7rem);
+  /* Low enough that the head crosses it. The two used to stack, with a band
+     of empty screen between the name and the man it belongs to. */
+  top: clamp(6rem, 14vh, 9rem);
   height: 46%;
   z-index: 0;
   margin: 0;
@@ -2329,10 +2332,13 @@ html.bl-locked body { overflow: hidden; }
   align-content: center;
   justify-items: center;
   gap: 0.01em;
-  font-family: var(--bl-sans);
-  font-weight: 700;
-  line-height: 0.82;
-  letter-spacing: -0.05em;
+  /* Instrument Sans tops out at 700 and has no width axis; across a whole
+     screen that reads as body copy blown up rather than as a poster. */
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 108%;
+  line-height: 0.78;
+  letter-spacing: -0.052em;
   pointer-events: none;
   transform: translate3d(calc(var(--mx) * -12px), calc(var(--my) * -7px), 0);
 }
@@ -2351,12 +2357,12 @@ html.bl-locked body { overflow: hidden; }
 }
 
 .bl-hero-wordmark [data-line="1"] {
-  font-size: clamp(2rem, 8.2vw, 8.4rem);
-  letter-spacing: 0.04em;
+  font-size: clamp(1.9rem, 7.4vw, 7.6rem);
+  letter-spacing: 0.055em;
 }
 
 .bl-hero-wordmark [data-line="2"] {
-  font-size: clamp(2.8rem, 13.4vw, 14rem);
+  font-size: clamp(2.6rem, 12.1vw, 12.6rem);
   background: linear-gradient(
     180deg,
     var(--bl-accent) 0%,
@@ -2387,7 +2393,10 @@ html.bl-locked body { overflow: hidden; }
   z-index: 1;
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr) minmax(0, 1fr);
+  /* The portrait has to reach up into the name for the two to read as one
+     picture; contained in a 0.82fr column it rendered short and sat in a
+     band of its own below the type, with dead screen between them. */
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.5fr) minmax(0, 1fr);
   align-items: end;
   gap: clamp(1rem, 3vw, 2.5rem);
 }
@@ -2922,7 +2931,16 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-ink-dim);
 }
 
-.bl-hero-cta { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+.bl-hero-cta { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* The only two buttons on the site that stand side by side in a column this
+   narrow. At the common size they broke onto two rows and the pair stopped
+   reading as a choice. */
+.bl-hero-cta .bl-btn {
+  padding: 0.75rem 1.1rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.13em;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .bl-rotator-word { animation: none !important; }
@@ -4387,73 +4405,73 @@ html.bl-locked body { overflow: hidden; }
    as a dashboard, not as a person. They are a ruled sheet instead: a short
    label, a dotted leader across the gap, then the fact.                    */
 
-.bl-specs {
+.bl-tally {
   display: grid;
   align-content: end;
-  gap: 0;
+  gap: clamp(0.85rem, 2.2vh, 1.5rem);
   margin: 0;
   padding: 0;
 }
 
-.bl-spec {
+.bl-tally-row {
   display: grid;
-  grid-template-columns: auto minmax(1.5rem, 1fr) auto;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.62rem 0;
-  border-bottom: 1px solid var(--bl-rule-soft);
-}
-
-.bl-spec:first-child { border-top: 1px solid var(--bl-rule-soft); }
-
-.bl-spec dt {
-  font-family: var(--bl-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  white-space: nowrap;
-}
-
-/* the leader */
-.bl-spec i {
-  height: 0;
-  border-bottom: 1px dotted color-mix(in srgb, var(--bl-ink) 22%, transparent);
-}
-
-.bl-spec dd {
-  display: flex;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: baseline;
-  gap: 0.5rem;
-  margin: 0;
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-size: clamp(1rem, 1.5vw, 1.25rem);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  color: var(--bl-ink);
-  white-space: nowrap;
+  column-gap: clamp(0.65rem, 1.3vw, 1.05rem);
 }
 
-.bl-spec dd em {
+/* The figure. Tabular, so three rows of digits sit in one column, and wide
+   enough that "05" reserves the room "9.34" would have taken. */
+.bl-tally-row dt {
+  min-width: 2.1em;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 112%;
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  line-height: 0.78;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--bl-accent);
+}
+
+/* the full stop, a shade back from the number it follows */
+.bl-tally-row dt i {
+  font-style: normal;
+  color: color-mix(in srgb, var(--bl-accent) 42%, transparent);
+}
+
+.bl-tally-row dd {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+}
+
+.bl-tally-row dd b {
+  font-family: var(--bl-mono);
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink);
+}
+
+.bl-tally-row dd em {
   font-family: var(--bl-mono);
   font-style: normal;
   font-size: 0.54rem;
+  line-height: 1.45;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--bl-ink-dim);
 }
 
+/* Between a phone and a laptop the figure takes the full width and the copy
+   and the count share the row under it, so the count stays a list: three
+   figures side by side in half a tablet put the labels into each other. */
 @media (min-width: 641px) and (max-width: 1024px) {
-  .bl-specs { grid-column: 2; grid-row: 2; }
-  .bl-spec { padding: 0.5rem 0; }
-  .bl-spec dd { font-size: 0.95rem; }
-  .bl-spec dd em { display: none; }
-}
-
-@media (max-width: 640px) {
-  .bl-spec { gap: 0.5rem; }
-  .bl-spec dd em { display: inline; }
+  .bl-tally { grid-column: 2; grid-row: 2; gap: clamp(0.5rem, 1.6vh, 1rem); }
+  .bl-tally-row dt { font-size: clamp(2rem, 4.6vw, 3rem); }
+  .bl-tally-row dd em { display: none; }
 }
 
 /* ---- the core ---- */
@@ -7789,42 +7807,6 @@ body,
   color: transparent;
 }
 
-/* ---- the credentials, as a set of facts rather than a receipt ---- */
-
-.bl-specs { gap: 0; }
-
-.bl-spec {
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: baseline;
-  gap: 0.25rem 1rem;
-  padding: 0.7rem 0;
-  border-bottom: 1px solid var(--bl-rule-soft);
-  transition: border-color 0.3s var(--bl-ease);
-}
-
-.bl-spec:hover { border-color: var(--bl-rule); }
-
-/* the dotted leader joined two things that were already next to each other */
-.bl-spec i { display: none; }
-
-.bl-spec dt {
-  font-size: var(--bl-t-label);
-  letter-spacing: 0.2em;
-  color: var(--bl-ink-dim);
-  transition: color 0.3s var(--bl-ease);
-}
-
-.bl-spec:hover dt { color: var(--bl-accent); }
-
-.bl-spec dd {
-  justify-self: end;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  font-size: clamp(1.05rem, 1.55vw, 1.35rem);
-}
-
-.bl-spec dd em { font-size: 0.52rem; }
-
 @media (prefers-reduced-motion: reduce) {
   .bl-hero-aura { transition: none; }
 }
@@ -7856,22 +7838,25 @@ body,
     gap: clamp(0.5rem, 1.2vh, 0.9rem);
   }
 
-  .bl-specs {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: clamp(1rem, 4vw, 1.75rem);
+  /* Three stacked rows cost more of the fold than they are worth. Side by
+     side the figures still read, and the second line goes. */
+  .bl-tally {
+    /* The hero grid turns into a column flex here and keeps align-items: end
+       from the base rule, which in that direction means hard right. */
+    width: 100%;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: clamp(0.6rem, 3vw, 1.1rem);
   }
 
-  .bl-spec {
+  .bl-tally-row {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.15rem;
-    padding: 0.5rem 0;
+    row-gap: 0.1rem;
   }
 
-  .bl-spec dd {
-    justify-self: start;
-    justify-content: flex-start;
-    font-size: clamp(0.95rem, 4vw, 1.15rem);
-  }
+  .bl-tally-row dt { font-size: clamp(2rem, 9vw, 2.9rem); min-width: 0; }
+  .bl-tally-row dd b { font-size: 0.52rem; letter-spacing: 0.14em; }
+  .bl-tally-row dd em { display: none; }
 }
 
 /* ---------- the two full-screen overlays ------------------------------ */

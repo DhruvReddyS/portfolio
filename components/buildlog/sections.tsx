@@ -84,11 +84,17 @@ export function SectionHeader({
 /** The credentials that belong beside the name, not buried in a section. */
 /* Read as a spec sheet, so the left column stays short and the right column
    carries the substance. The icons went with the boxes. */
-const CREDENTIALS = [
-  { label: "CGPA", value: "9.34 / 10", note: "MVSR" },
-  { label: "Degree", value: "B.E. CSIT", note: "MVSR, Hyderabad" },
-  { label: "Second degree", value: "BS Data Science", note: "IIT Madras" },
-  { label: "Freelance", value: "ByUsForU", note: "Founder · 5+ shipped" },
+/*
+ * Three numbers, counted off the rest of the page rather than claimed: five
+ * entries in the log, six case files and two side quests, two degrees that
+ * are both running. Anything that needed a sentence to stand up (the CGPA,
+ * the studio, which degree is which) belongs in the act that covers it,
+ * where there is room to say it properly.
+ */
+const TALLY = [
+  { figure: "05", label: "Internships", note: "Five rooms, five problems" },
+  { figure: "08", label: "Shipped", note: "Six platforms, two side quests" },
+  { figure: "02", label: "Degrees", note: "Both running right now" },
 ];
 
 /** Words that fill the space around the figure, at a whisper. */
@@ -190,7 +196,7 @@ export function Hero({ time }: { time: string }) {
         .to(".bl-hero-wordmark", { yPercent: -36, opacity: 0.1, ease: "none" }, 0)
         .to(".bl-hero-figure", { yPercent: -16, scale: 1.05, opacity: 0.25, ease: "none" }, 0)
         .to(".bl-hero-left", { yPercent: -8, opacity: 0, ease: "none" }, 0)
-        .to(".bl-specs", { yPercent: -5, opacity: 0, ease: "none" }, 0)
+        .to(".bl-tally", { yPercent: -5, opacity: 0, ease: "none" }, 0)
         .to(".bl-field", { yPercent: -22, opacity: 0, ease: "none" }, 0);
     }, node);
 
@@ -316,14 +322,16 @@ export function Hero({ time }: { time: string }) {
           />
         </div>
 
-        {/* the credentials, each given room to breathe */}
-        <dl className="bl-specs">
-          {CREDENTIALS.map((item, index) => (
-            <Reveal as="div" className="bl-spec" key={item.label} delay={360 + index * 70}>
-              <dt>{item.label}</dt>
-              <i aria-hidden="true" />
+        {/* the count, in the poster face */}
+        <dl className="bl-tally">
+          {TALLY.map((item, index) => (
+            <Reveal as="div" className="bl-tally-row" key={item.label} delay={360 + index * 90}>
+              <dt>
+                {item.figure}
+                <i aria-hidden="true">.</i>
+              </dt>
               <dd>
-                {item.value}
+                <b>{item.label}</b>
                 <em>{item.note}</em>
               </dd>
             </Reveal>

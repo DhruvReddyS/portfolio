@@ -51,7 +51,12 @@ test("server-renders the build log", async () => {
   assert.match(html, /linkedin\.com\/in\/sripathi-dhruv-reddy/);
   assert.match(html, /SRIPATHI/);
   assert.match(html, /DHRUV REDDY/);
-  assert.match(html, /9\.34 \/ 10/);
+  // the hero counts three things off the rest of the page
+  assert.match(html, /Internships/);
+  assert.match(html, /Six platforms, two side quests/);
+  assert.match(html, /Both running right now/);
+  // and the mark itself is claimed in the act that can back it up
+  assert.match(html, /9\.34/);
 
   // every section head is present
   for (const head of [
