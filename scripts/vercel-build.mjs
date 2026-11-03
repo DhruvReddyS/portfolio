@@ -29,6 +29,36 @@ const fn = join(out, "functions", "index.func");
 /** Node version to ask Vercel for, kept in step with package.json engines. */
 const RUNTIME = "nodejs22.x";
 
+/*
+ * The widths the client is allowed to ask for, which have to be vinext's own
+ * two lists exactly: next/image only ever emits a width from them, and
+ * Vercel's optimiser answers 400 to any width it was not told about. Sorted
+ * and de-duplicated, since the two lists are declared separately upstream.
+ *
+ * Imported rather than copied, so a change upstream cannot quietly leave the
+ * two in disagreement.
+ */
+const { DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } = await import(
+  "vinext/server/image-optimization"
+);
+const IMAGE_SIZES = [...new Set([...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES])].sort(
+  (a, b) => a - b,
+);
+
+/*
+ * The page rounds its images' declared widths up to one of these before it
+ * asks for them, using its own copy of the list in lib/image-sizes.ts. If
+ * that copy and vinext's ever fall out of step the page starts asking for
+ * widths the optimiser answers 400 to, and the only sign is a logo that
+ * does not appear. Better to fail here.
+ */
+const declared = (await import("../lib/image-sizes.ts")).IMAGE_WIDTHS;
+if (String(declared) !== String(IMAGE_SIZES)) {
+  throw new Error(
+    `lib/image-sizes.ts is out of step with vinext.\n  vinext: ${IMAGE_SIZES}\n  lib:    ${declared}`,
+  );
+}
+
 async function exists(path) {
   try {
     await access(path);
@@ -178,7 +208,32 @@ async function main() {
     JSON.stringify(
       {
         version: 3,
+        /*
+         * Vercel's own optimiser, which the rewrite below hands the image
+         * endpoint to. It takes the same three parameters next/image already
+         * emits (url, w, q), so the client needs no telling.
+         */
+        images: {
+          sizes: IMAGE_SIZES,
+          formats: ["image/avif", "image/webp"],
+          minimumCacheTTL: 2678400,
+          // the endpoint only ever sees paths off this deployment
+          domains: [],
+          remotePatterns: [],
+        },
         routes: [
+          /*
+           * The optimiser the Worker build uses is Cloudflare's IMAGES
+           * binding, which is not here, and without it vinext serves the
+           * original file: 2.3MB of portrait on every first paint. This
+           * hands the same request to Vercel's instead.
+           *
+           * If it ever stops matching, the request falls through to the
+           * function at the foot of this list, which still answers it the
+           * old way. The fallback is a worse picture, not a broken one.
+           */
+          { src: "/_vinext/image", dest: "/_vercel/image" },
+
           // hashed build assets never change under their own name
           {
             src: "/assets/(.*)\\.(js|css|woff2?)$",

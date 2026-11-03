@@ -3,6 +3,7 @@
 import { Fragment } from "react";
 import Image from "next/image";
 import { studio } from "@/lib/portfolio-data";
+import { servable } from "@/lib/image-sizes";
 import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
 import { Roll, SectionHeader } from "./sections";
@@ -39,7 +40,7 @@ export function StudioSection() {
         <div className="bl-studio-card">
           <header className="bl-studio-head">
             <span className="bl-studio-logo">
-              <Image src={studio.logo} alt={studio.name} width={949} height={297} priority={false} />
+              <Image src={studio.logo} alt={studio.name} {...servable(949, 297)} />
             </span>
 
             <div className="bl-studio-id">

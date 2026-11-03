@@ -16,6 +16,7 @@
  */
 
 import Image from "next/image";
+import { servable } from "@/lib/image-sizes";
 
 export type BannerLogo = { src: string; width: number; height: number };
 
@@ -61,7 +62,8 @@ export function ProjectBanner({
 
       <div className="bl-banner-mark">
         {logo ? (
-          <Image src={logo.src} alt="" width={logo.width} height={logo.height} />
+          // declared at a width the optimiser will serve, not the file's own
+          <Image src={logo.src} alt="" {...servable(logo.width, logo.height)} />
         ) : (
           <span className="bl-banner-mono" aria-hidden="true">
             {monogram}
