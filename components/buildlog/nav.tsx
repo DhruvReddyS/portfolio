@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { profile, sections } from "@/lib/portfolio-data";
 import { useSmoothScroll } from "./smooth";
 import { MarkArrow, MarkClose, MarkDownload } from "./marks";
@@ -47,16 +47,13 @@ export function BuildLogNav({ active }: { active: string }) {
   const [hidden, setHidden] = useState(false);
   const [stuck, setStuck] = useState(false);
   const [open, setOpen] = useState(false);
-  const [read, setRead] = useState(0);
+  const spine = useRef<HTMLElement>(null);
   const lastScroll = useRef(0);
 
-  // Hide on the way down, bring it back on the way up, and keep the hairline
-  // pinned to how much of the page is behind you.
+  // Hide on the way down, bring it back on the way up.
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;
-      const span = document.documentElement.scrollHeight - window.innerHeight;
-      setRead(span > 0 ? Math.min(1, Math.max(0, y / span)) : 0);
       setHidden(y > 320 && y > lastScroll.current);
       setStuck(y > 12);
       lastScroll.current = y;
@@ -93,6 +90,29 @@ export function BuildLogNav({ active }: { active: string }) {
 
   const current = sections.find((item) => item.id === active);
 
+  /*
+   * Put the pill under whichever act is open, in the spine's own
+   * coordinates. Measured rather than counted: the names are different
+   * lengths and the padding between them is a clamp, so there is no
+   * arithmetic that gets this right at every width.
+   */
+  const place = useCallback(() => {
+    const rail = spine.current;
+    if (!rail) return;
+    const on = rail.querySelector<HTMLElement>('[data-active="true"]');
+    if (!on) return;
+    rail.style.setProperty("--bl-pill-x", `${on.offsetLeft}px`);
+    rail.style.setProperty("--bl-pill-w", `${on.offsetWidth}px`);
+  }, []);
+
+  useEffect(() => {
+    place();
+    // the names set in a webfont, so their widths change once it lands
+    document.fonts?.ready.then(place).catch(() => {});
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [place, active]);
+
   return (
     <>
       <header className="bl-nav" data-hidden={hidden && !open} data-stuck={stuck}>
@@ -112,9 +132,15 @@ export function BuildLogNav({ active }: { active: string }) {
             <span className="bl-sr">S. Dhruv Reddy, home</span>
           </a>
 
-          {/* the spine: every act, named */}
-          <nav className="bl-spine" aria-label="Sections">
-            {sections.map((item) => (
+          {/*
+            The spine: every act, numbered and named, with one pill that
+            travels between them rather than seven that take turns lighting
+            up. Where it is going is the thing worth animating; a pill that
+            simply appears under the new name says nothing about the move.
+          */}
+          <nav className="bl-spine" ref={spine} aria-label="Sections">
+            <span className="bl-spine-pill" aria-hidden="true" data-on={Boolean(current)} />
+            {sections.map((item, index) => (
               <button
                 key={item.id}
                 type="button"
@@ -122,6 +148,7 @@ export function BuildLogNav({ active }: { active: string }) {
                 data-active={active === item.id}
                 onClick={() => go(item.id)}
               >
+                <sup>{String(index + 1).padStart(2, "0")}</sup>
                 {item.label}
               </button>
             ))}
@@ -156,11 +183,6 @@ export function BuildLogNav({ active }: { active: string }) {
             </button>
           </div>
 
-          <span
-            className="bl-nav-read"
-            aria-hidden="true"
-            style={{ transform: `scaleX(${read})` }}
-          />
         </div>
       </header>
 

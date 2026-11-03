@@ -6320,20 +6320,6 @@ html.bl-locked body { overflow: hidden; }
     color 0.5s var(--bl-ease), border-color 0.5s var(--bl-ease);
 }
 
-/* how far through the page you are: the one thing a bar can say that the
-   contents page cannot */
-.bl-nav-read {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  background: var(--bl-accent);
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-  will-change: transform;
-}
-
 /* ---------- the contents, as a page of its own ------------------------ */
 
 .bl-contents {
@@ -7470,13 +7456,6 @@ body,
   text-transform: uppercase;
   line-height: 1.18;
   max-width: 18ch;
-}
-
-/* ---------- the reading line, quieter ---------------------------------- */
-
-.bl-nav-read {
-  height: 1px;
-  opacity: 0.8;
 }
 
 /* the head's own margin is the rhythm now; this was a second helping of it */
@@ -9334,6 +9313,7 @@ body,
 /* ---- the spine: all seven acts, one of them named ---- */
 
 .bl-spine {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9344,8 +9324,37 @@ body,
   min-width: 0;
 }
 
+/*
+ * One pill, moved, rather than seven taking turns being lit. It is behind
+ * the names and sized off the open one, so the travel between two acts is
+ * the thing you see instead of a light going out and another coming on.
+ */
+.bl-spine-pill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 0;
+  height: calc(100% - 0.1rem);
+  width: var(--bl-pill-w, 0);
+  border-radius: 999px;
+  background: var(--bl-accent);
+  opacity: 0;
+  transform: translate(var(--bl-pill-x, 0), -50%);
+  transition:
+    transform 0.52s cubic-bezier(0.34, 1.26, 0.4, 1),
+    width 0.52s cubic-bezier(0.34, 1.26, 0.4, 1),
+    opacity 0.3s var(--bl-ease);
+  pointer-events: none;
+}
+
+.bl-spine-pill[data-on="true"] { opacity: 1; }
+
 .bl-spine-act {
   position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.34em;
   flex: none;
   padding: 0.44rem clamp(0.5rem, 0.95vw, 0.85rem);
   appearance: none;
@@ -9376,6 +9385,15 @@ body,
   transition: left 0.35s var(--bl-ease), right 0.35s var(--bl-ease);
 }
 
+/* the number, half size and raised, which is how a folio is marked */
+.bl-spine-act sup {
+  font-size: 0.68em;
+  line-height: 0;
+  letter-spacing: 0.06em;
+  color: var(--bl-accent);
+  transition: color 0.3s var(--bl-ease), opacity 0.3s var(--bl-ease);
+}
+
 .bl-spine-act:hover,
 .bl-spine-act:focus-visible { color: var(--bl-ink); }
 
@@ -9385,10 +9403,9 @@ body,
   right: clamp(0.5rem, 0.95vw, 0.85rem);
 }
 
-.bl-spine-act[data-active="true"] {
-  color: var(--bl-accent-ink);
-  background: var(--bl-accent);
-}
+/* the open one sits on the pill, so it takes the pill's ink */
+.bl-spine-act[data-active="true"] { color: var(--bl-accent-ink); }
+.bl-spine-act[data-active="true"] sup { color: var(--bl-accent-ink); opacity: 0.6; }
 
 .bl-spine-act[data-active="true"]::after { opacity: 0; }
 
@@ -9435,21 +9452,6 @@ body,
 .bl-nav-menu:hover { border-color: var(--bl-accent); }
 .bl-nav-menu:hover i { background: var(--bl-accent); }
 .bl-nav-menu:hover i:last-child { width: 8px; }
-
-/* ---- how far through ---- */
-
-.bl-nav-read {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: var(--bl-accent);
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-  opacity: 1;
-  will-change: transform;
-}
 
 /*
  * Seven numerals and a name need about a laptop. Under that the spine goes
