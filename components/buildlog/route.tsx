@@ -476,7 +476,7 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
             {/*
               What the room was, in the order it is asked: the job, the
               thing that came of it, and when and where. The middle line
-              is the one that earns the stop — a role and a date say a
+              is the one that earns the stop: a role and a date say a
               post was held, and the page is meant to say what was done
               in it.
             */}

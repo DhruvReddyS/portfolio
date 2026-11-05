@@ -2233,6 +2233,105 @@ html.bl-locked body { overflow: hidden; }
   transform: translate3d(calc(var(--mx) * -12px), calc(var(--my) * -7px), 0);
 }
 
+/* ---- the cover's score -------------------------------------------------
+   One order, counted from the moment the cover goes, so the whole thing
+   arrives as a sequence instead of three animations racing:
+
+     0.00  the ground settles
+     0.30  the man rises into it
+     0.40  the light behind him
+     0.45  SRIPATHI
+     0.60  DHRUV REDDY
+     0.80  open to work
+     0.92  I'm a ...
+     1.04  the paragraph
+     1.16  the buttons
+     1.28  the links
+     1.42  05, then 08, 02, 9.34, every 0.12
+     1.95  the ink, last, over the next three seconds
+
+   The first four are a GSAP timeline and the name is a CSS animation,
+   both in Hero; the column and the figures are Reveal delays; the ink is
+   below. Change one and change the comment.                            */
+
+/* ---- the ink -----------------------------------------------------------
+   Four strokes down the margins, laid in once everything else has
+   arrived. They are filled shapes rather than stroked lines, because a
+   stroke is the same width all the way along and a pen is not: these
+   start at nothing, swell past the middle and run out again.
+
+   Drawn by wiping a mask along the centreline, so the only thing that
+   changes is how much of the shape is uncovered. The shape itself is
+   never redrawn.                                                       */
+
+.bl-inks {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bl-ink {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: clamp(130px, 22vw, 350px);
+}
+
+.bl-ink[data-side="left"] { left: 0; }
+.bl-ink[data-side="right"] { right: 0; }
+
+.bl-ink-body {
+  fill: var(--bl-accent);
+  opacity: 0.34;
+}
+
+.bl-ink-wipe {
+  fill: none;
+  stroke: #fff;
+  /* wider than the widest part of the stroke it uncovers */
+  stroke-width: 18;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+ * Only where there is script to raise the curtain: without it nothing
+ * ever gives the cue, and four strokes would sit at nought for good.
+ */
+@media (scripting: enabled) {
+  .bl-ink-wipe {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: bl-ink-draw 2.1s cubic-bezier(0.33, 0.9, 0.36, 1) forwards;
+    /* last of everything, and one after another */
+    animation-delay: calc(1.95s + var(--at, 0s));
+  }
+}
+
+@keyframes bl-ink-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.bl-root[data-held="true"] .bl-ink-wipe {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-ink-wipe {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}
+
+/* On a phone the cover stacks and there is no margin left to draw in;
+   the strokes would run behind the name and the portrait instead of
+   beside them. */
+@media (max-width: 640px) {
+  .bl-inks { display: none; }
+}
+
 /* ---- the light ---------------------------------------------------------
    A cover is a printed sheet, and this one is read in the dark. So there
    is a light on it, and the reader is holding it: a pool of warmth that
@@ -2379,8 +2478,9 @@ html.bl-locked body { overflow: hidden; }
     opacity: 0;
     animation: bl-depth 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  .bl-hero-wordmark [data-line="1"] { animation-delay: 0.6s; }
-  .bl-hero-wordmark [data-line="2"] { animation-delay: 0.78s; }
+  /* beats 0.45 and 0.60 of the cover's score. See THE COVER'S SCORE. */
+  .bl-hero-wordmark [data-line="1"] { animation-delay: 0.45s; }
+  .bl-hero-wordmark [data-line="2"] { animation-delay: 0.6s; }
 }
 
 @keyframes bl-depth {

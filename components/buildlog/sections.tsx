@@ -15,6 +15,7 @@ import {
 import { Reveal } from "./reveal";
 import { whenCurtainOpens } from "@/lib/curtain";
 import { Counter, Magnetic, useSmoothScroll } from "./smooth";
+import { HeroInk } from "./ink";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
@@ -273,9 +274,17 @@ export function Hero({ time }: { time: string }) {
     return () => context.revert();
   }, []);
 
-  // The opening: the ground settles, the portrait rises into it, and the
-  // detail arrives after both. The wordmark has its own CSS animation, so
-  // this works around it rather than fighting it for the same properties.
+  // The opening, in one order: the ground settles, the man rises into it,
+  // the name resolves, then the detail and the figures arrive one at a
+  // time down the column, and the ink goes on last. Everything here is
+  // counted from the same moment, the cover going, because three things
+  // opening on three clocks is not a sequence, it is a pile-up, and that
+  // is what this was. The name used to land half a second after the copy
+  // that is supposed to follow it.
+  //
+  // The beats are kept in one place: this timeline, the delays on the
+  // Reveals below, and the two CSS animations (the wordmark, and the ink)
+  // all read off the same score, written out in bl-hero in the css.
   //
   // Held until the cover starts leaving. It used to run on mount, which is
   // three seconds before anyone could see it, so the sheet dissolved onto a
@@ -295,9 +304,9 @@ export function Hero({ time }: { time: string }) {
           .from(
             ".bl-hero-figure",
             { yPercent: 9, opacity: 0, duration: 1.25, clearProps: "opacity" },
-            0.35,
+            0.3,
           )
-          .from(".bl-hero-aura", { opacity: 0, scale: 0.75, duration: 1.4 }, 0.45);
+          .from(".bl-hero-aura", { opacity: 0, scale: 0.75, duration: 1.4 }, 0.4);
       }, node);
     });
 
@@ -320,6 +329,9 @@ export function Hero({ time }: { time: string }) {
         <i />
       </div>
 
+      {/* and the ink down the margins, which goes on last of all */}
+      <HeroInk />
+
       {/* the name, large, behind everything */}
       <h1 className="bl-hero-wordmark" aria-hidden="true">
         {/* the word is given twice: once as the sheet, and once more on
@@ -335,17 +347,17 @@ export function Hero({ time }: { time: string }) {
 
       <div className="bl-hero-grid">
         <div className="bl-hero-left">
-          <Reveal delay={60} rise={14}>
+          <Reveal delay={800} rise={14}>
             <span className="bl-pill">Open to work · {time} IST</span>
           </Reveal>
 
-          <Reveal delay={150} rise={20}>
+          <Reveal delay={920} rise={20}>
             <p className="bl-hero-am">
               I&apos;m <Rotator words={ROLES} />
             </p>
           </Reveal>
 
-          <Reveal delay={210} rise={27}>
+          <Reveal delay={1040} rise={27}>
             <p className="bl-hero-blurb">
               Building real-world products at the intersection of web,{" "}
               <Marked kind="circle" delay={900}>
@@ -365,7 +377,7 @@ export function Hero({ time }: { time: string }) {
             that size they read as a row of tabs, with nothing among them
             saying which one to press.
           */}
-          <Reveal delay={270} rise={34}>
+          <Reveal delay={1160} rise={34}>
             <div className="bl-hero-cta">
               <Magnetic>
                 <a className="bl-btn bl-btn-solid bl-go" href="#work">
@@ -386,7 +398,7 @@ export function Hero({ time }: { time: string }) {
             </div>
           </Reveal>
 
-          <Reveal delay={340} rise={40}>
+          <Reveal delay={1280} rise={40}>
             <ul className="bl-socials">
               {SOCIALS.map((item) => (
                 <li key={item.label}>
@@ -419,7 +431,7 @@ export function Hero({ time }: { time: string }) {
         {/* the count, in the poster face */}
         <dl className="bl-tally">
           {TALLY.map((item, index) => (
-            <Reveal as="div" className="bl-tally-row" key={item.label} delay={360 + index * 90}>
+            <Reveal as="div" className="bl-tally-row" key={item.label} delay={1420 + index * 120}>
               <dt>
                 {item.figure}
                 {!item.figure.includes(".") && <i aria-hidden="true">.</i>}
