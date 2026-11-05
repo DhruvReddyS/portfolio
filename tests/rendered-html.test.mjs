@@ -63,7 +63,7 @@ test("server-renders the build log", async () => {
     "Where it happened",
     "What got built",
     "Two degrees, one timetable",
-    "Thirty-one things I build with",
+    "Everything on the bench",
     "What it won",
     "And a studio he runs",
     "How the next one starts",

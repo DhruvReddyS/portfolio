@@ -744,8 +744,13 @@ export const education: School[] = [
 export const studio = {
   name: "ByUsForU",
   initials: "BFU",
-  tagline: "Digital Experiences. Built With Intent.",
+  tagline: "Designed to bring people in.",
   role: "Founder & Lead Engineer",
+  /* Where it came from, in one sentence. A studio founded at nineteen has
+     a beginning worth saying out loud; dressing it up as an agency origin
+     story would be the one false note on the page. */
+  story:
+    "It started as a group of friends building things for each other, and kept going until enough people asked for the same thing that it needed a name.",
   /* What the head above it does not already say. The first half of this
      used to be a second telling of the two lines on the masthead. */
   summary:
@@ -774,14 +779,24 @@ export const studio = {
       note: "Designed and built from the brief up, not dropped into a template.",
     },
     {
-      label: "SEO",
-      mark: "seek",
-      note: "Structure, speed and markup, so the thing can be found once it is live.",
+      label: "Apps",
+      mark: "phone",
+      note: "The same build, made to work in a hand as well as on a desk.",
+    },
+    {
+      label: "AI agents",
+      mark: "agent",
+      note: "Something that does the job rather than describing it, wired into what the business already runs.",
     },
     {
       label: "Chatbots",
       mark: "chat",
-      note: "Assistants that answer out of what the business already has written down.",
+      note: "Assistants that answer out of what the business has already written down.",
+    },
+    {
+      label: "SEO",
+      mark: "seek",
+      note: "Structure, speed and markup, so the thing can be found once it is live.",
     },
     {
       label: "Automations",
@@ -790,8 +805,13 @@ export const studio = {
     },
     {
       label: "Marketing",
-      mark: "rise",
+      mark: "speaker",
       note: "The launch, and the part afterwards where somebody has to keep showing up.",
+    },
+    {
+      label: "Analytics",
+      mark: "rise",
+      note: "Numbers that answer a question somebody actually asked, not a dashboard of everything.",
     },
   ],
   process: [

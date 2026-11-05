@@ -722,6 +722,9 @@ export function WinsSection() {
 
       <PolaroidLine
         className="bl-wall"
+        /* taller than the default, because the bar under the line now
+           carries two or three lines on each win as well as its name */
+        height="35rem"
         prints={awards.map((award) => ({
           cover: (
             <Plate
@@ -736,6 +739,10 @@ export function WinsSection() {
           note: award.kind,
           title: award.title,
           caption: `${award.org} · ${award.place}`,
+          /* the two or three lines that say what it actually was. The
+             line used to carry a name and a place and nothing else,
+             which told a reader a prize existed and not what for. */
+          blurb: award.body,
           alt: award.title,
         }))}
         onOpen={(index) => setOpen(awards[index])}
@@ -799,15 +806,15 @@ export function ContactSection() {
       */}
       <Reveal delay={120}>
         <p className="bl-lede">
-          Every room above started the same way: somebody with a hard
-          problem took a chance on someone who wanted it. If you are hiring
-          for{" "}
+          Seven acts of evidence, all of it dated and most of it still
+          running. The one thing this page cannot prove is what I would do
+          inside your team, on your deadline, with your constraints. If you
+          are hiring for{" "}
           <Marked kind="circle" delay={320}>
             full-stack or applied AI
           </Marked>
-          , the case files are the interview. Read one, then send me the
-          brief and I will tell you straight whether I am the right person
-          for it.
+          , send me those three things and I will tell you straight whether
+          I am the right person for it.
         </p>
       </Reveal>
 
@@ -888,6 +895,40 @@ export function ContactSection() {
               <dd>Within a day, usually sooner</dd>
             </div>
           </dl>
+        </div>
+      </Reveal>
+
+      {/*
+        And the last thing said before the crowd.
+
+        The close above it is the useful half: an address, a résumé and
+        three facts, laid out like a form because that part is meant to
+        be used. This is the other half, and it is the only place on the
+        page that asks the reader for anything. It is set as a challenge
+        rather than a plea on purpose: everything above it is evidence,
+        and the honest end of an argument made entirely out of evidence
+        is to point out the one claim that is still untested and hand it
+        over.
+
+        It sits directly over the figures walking along the foot of the
+        page, which is what it is about.
+      */}
+      <Reveal delay={240}>
+        <div className="bl-dare">
+          <p className="bl-dare-kicker">
+            <i aria-hidden="true" />
+            The part that is up to you
+          </p>
+
+          <p className="bl-dare-line">
+            Nobody above hired a CV.
+            <em>They hired the thing I showed them.</em>
+          </p>
+
+          <p className="bl-dare-note">
+            So bring the problem you have not solved yet. One week in, you
+            will know which of us was right.
+          </p>
         </div>
       </Reveal>
 

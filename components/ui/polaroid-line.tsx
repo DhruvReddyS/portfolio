@@ -83,6 +83,8 @@ export type Print = {
   note?: string;
   title?: string;
   caption?: string;
+  /** Two or three lines on what the thing actually was. */
+  blurb?: string;
   alt?: string;
   /** Drawn in the frame when there is no photograph. */
   monogram?: string;
@@ -388,6 +390,7 @@ export function PolaroidLine({
         <div className="bl-line-cap" key={active}>
           {showing.title && <span className="bl-line-title">{showing.title}</span>}
           {showing.caption && <span className="bl-line-sub">{showing.caption}</span>}
+          {showing.blurb && <span className="bl-line-blurb">{showing.blurb}</span>}
         </div>
 
         <span className="bl-line-count" aria-hidden="true">

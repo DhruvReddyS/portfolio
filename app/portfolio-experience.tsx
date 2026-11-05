@@ -133,10 +133,14 @@ function BuildLog() {
           of it.
         */}
         <section className="bl-say" aria-label="What he is for">
-          <p className="bl-say-kicker">A word before the log</p>
-          <Statement>
-            Most of what I know came out of the part nobody demos: the second month,
-            when it is live and the edge cases start arriving.
+          <p className="bl-say-kicker">
+            <i aria-hidden="true" />
+            A word before the log
+            <i aria-hidden="true" />
+          </p>
+          <Statement cite="Learned the expensive way, twice">
+            A demo is a promise. The second month is when you find out whether
+            you were good for it.
           </Statement>
         </section>
 

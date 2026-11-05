@@ -7670,13 +7670,46 @@ body,
 .bl-pile-cue em { font-style: normal; }
 .bl-pile-cue i { width: 2rem; height: 1px; background: var(--bl-rule); }
 
-/* the box they land in: ruled, like the rest of the paper */
+/*
+ * The box they land in: a bench, ruled like the rest of the paper.
+ *
+ * It was a flat panel, which made a heap of three-dimensional objects
+ * look like stickers on a card. Graph paper gives the chips something to
+ * be lying on, the light at the foot gives the heap a floor to be lit
+ * from, and the whole thing is still one surface and one radius.
+ */
 .bl-pile {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--bl-rule);
   border-radius: 12px;
-  background: var(--bl-surface);
+  background:
+    radial-gradient(
+      70% 58% at 50% 108%,
+      color-mix(in srgb, var(--bl-accent) 17%, transparent),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(242, 239, 230, 0.045) 0 1px,
+      transparent 1px 38px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(242, 239, 230, 0.045) 0 1px,
+      transparent 1px 38px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(242, 239, 230, 0.07) 0 1px,
+      transparent 1px 190px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(242, 239, 230, 0.07) 0 1px,
+      transparent 1px 190px
+    ),
+    var(--bl-surface);
   touch-action: pan-y;
 }
 
@@ -7774,9 +7807,9 @@ body,
 }
 
 .bl-shelf-key > div {
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
+  display: grid;
+  gap: 0.2rem;
+  align-content: start;
 }
 
 .bl-shelf-key dt {
@@ -7787,11 +7820,14 @@ body,
   color: var(--bl-ink-soft);
 }
 
+/* what the shelf is, not how many are on it */
 .bl-shelf-key dd {
   margin: 0;
-  font-family: var(--bl-mono);
-  font-size: 0.6rem;
-  color: var(--bl-stamp);
+  font-family: var(--bl-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--bl-ink-dim);
 }
 
 @media (max-width: 700px) {
@@ -7909,56 +7945,24 @@ body,
    ========================================================================== */
 
 /* the wall itself: plaster, lit from above left, with a picture rail */
+/*
+ * Tighter than the rest, and on the page's own ground.
+ *
+ * It used to paint itself a room: lit plaster, a picture rail and a
+ * fall-off into the corners, which made one act of eight into a panel
+ * sitting on the page with a border of darkness around it. The prints
+ * are the subject and they already have a line, pegs and shadows of
+ * their own; the wall behind them was scenery for scenery.
+ */
 .bl-wall-act {
   position: relative;
   overflow: hidden;
-  /*
-   * Tighter than the rest. Every other act is a column of type that
-   * wants air around it; this one is a line of photographs hung across
-   * a room, and the room was reading as two empty bands with a washing
-   * line between them.
-   */
-  padding-block: calc(var(--bl-s-act) * 0.62);
+  padding-block: calc(var(--bl-s-act) * 0.52);
 }
 
+/* and the heading sits down on the line rather than a screen above it */
 .bl-wall-act .bl-head {
-  margin-bottom: calc(var(--bl-s-head) * 0.55);
-}
-
-.bl-wall-act::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    /*
-     * One lamp, above and to the left, the way a wall of framed things
-     * is always lit. Then the plaster, then the fall-off into the
-     * corners, so the line of prints sits in the brightest part of a
-     * room rather than on a flat black field.
-     */
-    radial-gradient(
-      90% 70% at 22% -6%,
-      rgba(255, 236, 210, 0.14),
-      transparent 64%
-    ),
-    radial-gradient(
-      120% 90% at 50% 46%,
-      rgba(255, 240, 220, 0.05),
-      transparent 70%
-    ),
-    repeating-linear-gradient(
-      91deg,
-      rgba(255, 255, 255, 0.016) 0 2px,
-      transparent 2px 7px
-    ),
-    repeating-linear-gradient(
-      3deg,
-      rgba(0, 0, 0, 0.14) 0 1px,
-      transparent 1px 9px
-    ),
-    linear-gradient(180deg, #141210 0%, #0b0a09 56%, #060606 100%);
+  margin-bottom: calc(var(--bl-s-head) * 0.3);
 }
 
 /* the shadow the hung line throws onto the wall under it */
@@ -7978,25 +7982,6 @@ body,
     transparent 76%
   );
   filter: blur(6px);
-}
-
-/* the rail the line is tied off to */
-.bl-wall-act::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(var(--bl-s-act) * 0.42);
-  height: 1px;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(242, 239, 230, 0.07) 12%,
-    rgba(242, 239, 230, 0.07) 88%,
-    transparent
-  );
 }
 
 .bl-wall-act > * { position: relative; z-index: 1; }
@@ -8181,6 +8166,25 @@ body,
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--bl-ink-dim);
+}
+
+/* and what the thing actually was, under its name */
+.bl-line-blurb {
+  margin-top: 0.5rem;
+  max-width: 62ch;
+  font-family: var(--bl-sans);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--bl-ink-dim);
+  /* three lines at most, so a long entry cannot push the bar up into
+     the photographs hanging over it */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .bl-line-count {
@@ -10633,6 +10637,30 @@ body,
   stroke: var(--bl-accent);
 }
 
+/*
+ * The dots running up the part of the route that has not been drawn yet.
+ * Short dashes with round caps on a thin stroke, travelling forwards: a
+ * road with something moving on it rather than a grey line waiting to be
+ * coloured in. The dash is in screen pixels, because the stroke has the
+ * scaling taken out of it like the other two.
+ */
+.bl-route-dots {
+  fill: none;
+  stroke: color-mix(in srgb, var(--bl-accent) 42%, transparent);
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 34;
+  animation: bl-route-run 1.1s linear infinite;
+}
+
+@keyframes bl-route-run {
+  to { stroke-dashoffset: -34; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-route-dots { animation: none; opacity: 0.5; }
+}
+
 /* ---- the nib ----------------------------------------------------------
    A small light where the ink has got to. It is the one thing on this
    page that says how far through the five you are, and it says it by
@@ -10660,6 +10688,30 @@ body,
 .bl-route-tip[data-on="true"] {
   opacity: 1;
   transform: scale(1);
+}
+
+/*
+ * The tail. A wedge of light lying along the ink the nib has just come
+ * up, turned to whatever direction the route is going in at that point,
+ * which the draw works out from the two samples behind the head.
+ */
+.bl-route-tip b {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    270deg,
+    color-mix(in srgb, var(--bl-accent) 52%, transparent),
+    transparent 78%
+  );
+  filter: blur(7px);
+  transform: translate(-100%, -50%) rotate(var(--ang, 0deg));
+  transform-origin: right center;
+  opacity: 0.85;
+  pointer-events: none;
 }
 
 /* and a ring going off it, so it reads as live rather than parked */
@@ -10865,40 +10917,141 @@ body,
   transform: rotate(3.2deg);
 }
 
+/* the top line: what the job was, and when, read together */
+.bl-route-job {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5em 0.75em;
+  margin: 0;
+}
+
 .bl-route-tag b {
-  display: block;
   font-family: var(--bl-sans);
-  font-weight: 600;
-  font-size: clamp(0.8rem, 1.2vw, 1.02rem);
-  line-height: 1.25;
+  font-weight: 650;
+  font-size: clamp(0.86rem, 1.25vw, 1.08rem);
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--bl-ink);
+}
+
+/*
+ * The dates, stamped rather than set. They were the smallest, greyest
+ * line on the card and they are one of the two things anybody reading a
+ * CV is actually looking for, so they get a box, a rule and the accent.
+ */
+.bl-route-when {
+  flex: none;
+  padding: 0.3em 0.62em;
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 45%, transparent);
+  border-radius: 0.4em;
+  background: color-mix(in srgb, var(--bl-accent) 11%, transparent);
+  font-family: var(--bl-mono);
+  font-size: clamp(0.56rem, 0.78vw, 0.68rem);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--bl-accent);
 }
 
 .bl-route-tag q {
   display: block;
-  margin-top: 0.45em;
+  margin-top: 0.7em;
   max-width: 24em;
   font-family: var(--bl-sans);
-  font-size: clamp(0.76rem, 1.05vw, 0.92rem);
-  line-height: 1.4;
+  font-size: clamp(0.78rem, 1.05vw, 0.94rem);
+  line-height: 1.45;
   color: var(--bl-ink-soft);
   quotes: none;
 }
 
-.bl-route-tag span {
-  display: block;
-  margin-top: 0.55em;
+/* and where, which is the last thing anybody needs */
+.bl-route-at {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0.7em 0 0;
   font-family: var(--bl-mono);
-  font-size: clamp(0.6rem, 0.82vw, 0.72rem);
-  letter-spacing: 0.08em;
+  font-size: clamp(0.56rem, 0.78vw, 0.68rem);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--bl-ink-soft);
+  color: var(--bl-ink-dim);
 }
 
-.bl-route-tag span i::before {
-  content: "·";
-  margin: 0 0.6em;
-  opacity: 0.6;
+.bl-route-at i {
+  width: 1.1em;
+  height: 1px;
+  background: var(--bl-rule);
+}
+
+/* ---- reached, or not reached yet --------------------------------------
+   The ink is a measure of how far the reader has got, so the rooms it
+   has not arrived at are drawn as not arrived at: the marks are out,
+   the names are in the page's grey, and the dates have not lit. It
+   costs nothing and it turns one drawn line into five moments.      */
+
+.bl-route-chip,
+.bl-route-tag,
+.bl-route-when {
+  transition:
+    filter 0.55s var(--bl-ease),
+    opacity 0.55s var(--bl-ease),
+    color 0.45s var(--bl-ease),
+    border-color 0.45s var(--bl-ease),
+    background-color 0.45s var(--bl-ease),
+    box-shadow 0.55s var(--bl-ease),
+    transform 0.45s var(--bl-ease);
+}
+
+.bl-route-stop[data-passed="false"] .bl-route-chip {
+  filter: grayscale(1) brightness(0.52);
+}
+
+.bl-route-stop[data-passed="false"] .bl-route-name {
+  color: var(--bl-ink-dim);
+}
+
+.bl-route-stop[data-passed="false"] .bl-route-tag {
+  border-color: var(--bl-rule);
+}
+
+.bl-route-stop[data-passed="false"] .bl-route-when {
+  border-color: var(--bl-rule);
+  background: transparent;
+  color: var(--bl-ink-dim);
+}
+
+/* a ring going off the mark at the moment the ink arrives at it, once */
+.bl-route-chip::after {
+  content: "";
+  position: absolute;
+  inset: -0.14em;
+  border-radius: 0.24em;
+  border: 1px solid var(--bl-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bl-route-stop[data-passed="true"] .bl-route-chip::after {
+  animation: bl-route-reach 0.85s var(--bl-ease) 1;
+}
+
+@keyframes bl-route-reach {
+  0% { opacity: 0.9; transform: scale(0.92); }
+  100% { opacity: 0; transform: scale(1.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-route-stop[data-passed="true"] .bl-route-chip::after { animation: none; }
+}
+
+/* and the moment it is reached, the mark catches the light off the line */
+.bl-route-stop[data-passed="true"] .bl-route-chip {
+  box-shadow:
+    0 0.05em 0.2em rgba(0, 0, 0, 0.55),
+    0 0 0 0.06em color-mix(in srgb, var(--bl-accent) 60%, transparent),
+    0 0 1.6em -0.2em color-mix(in srgb, var(--bl-accent) 55%, transparent);
 }
 
 .bl-route-now {
@@ -11045,14 +11198,18 @@ body,
 
 .bl-say {
   display: grid;
+  justify-items: center;
   gap: clamp(1.2rem, 3vh, 2.2rem);
   padding: clamp(5rem, 16vh, 11rem) var(--bl-gutter);
+  text-align: center;
 }
 
 .bl-say-kicker {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
+  width: min(100%, 34rem);
   margin: 0;
   font-family: var(--bl-mono);
   font-size: var(--bl-t-label, 0.58rem);
@@ -11061,46 +11218,108 @@ body,
   color: var(--bl-ink-dim);
 }
 
-/* the rule that carries the eye in from the gutter */
-.bl-say-kicker::after {
-  content: "";
+/* a rule either side, so the kicker reads as a caption and not a heading */
+.bl-say-kicker i {
   flex: 1;
   height: 1px;
-  background: var(--bl-rule-soft);
+  background: linear-gradient(90deg, transparent, var(--bl-rule));
+}
+
+.bl-say-kicker i:last-child {
+  background: linear-gradient(90deg, var(--bl-rule), transparent);
+}
+
+/* ---- the quote itself -------------------------------------------------- */
+
+.bl-saybox {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.1rem, 3vh, 1.9rem);
+  width: 100%;
+  margin: 0;
+}
+
+/*
+ * The open quote, set enormous and kept behind the words. It is the one
+ * mark that says "this is somebody talking" without a line of copy, and
+ * at this size it is furniture rather than punctuation, which is why it
+ * is drawn in the ground and not in the ink.
+ */
+.bl-saybox::before {
+  content: "\201C";
+  position: absolute;
+  left: 50%;
+  top: clamp(-5.5rem, -9vw, -2.6rem);
+  z-index: 0;
+  font-family: var(--bl-display);
+  font-size: clamp(9rem, 22vw, 18rem);
+  line-height: 1;
+  color: color-mix(in srgb, var(--bl-accent) 13%, transparent);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .bl-statement {
-  max-width: 20ch;
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-family: var(--bl-display);
   font-weight: 400;
   font-variation-settings: "SOFT" 28, "WONK" 1, "opsz" 64;
-  font-size: clamp(2rem, 6.2vw, 5.4rem);
-  line-height: 1.02;
-  letter-spacing: -0.028em;
+  font-size: clamp(1.7rem, 4.6vw, 3.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.026em;
+  /* in ch, and on the element that is actually set in the display face:
+     a ch on the figure around it is a ch of the body face, which is a
+     third of the size and makes this column a quarter as wide as meant */
+  max-width: 19ch;
+  text-wrap: balance;
   color: var(--bl-ink);
 }
 
 .bl-statement-word { display: inline; }
 
 /*
- * Only the inner span is faded, so the space between two words belongs to
- * neither and the line never breaks in a different place mid-animation.
+ * Only the inner span is worked on, so the space between two words belongs
+ * to neither and the line never breaks in a different place mid-animation.
  */
 .bl-statement-word > span {
   display: inline-block;
-  opacity: 0.16;
+  opacity: 0.12;
+  color: var(--bl-accent);
+  filter: blur(7px);
+  will-change: filter, opacity, color;
 }
 
-/* the clause that is the actual claim */
-.bl-statement-word:nth-last-child(-n + 5) > span { color: var(--bl-accent); }
+/* the signature under it */
+.bl-saycite {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-saycite i {
+  width: 1.75rem;
+  height: 1px;
+  background: var(--bl-accent);
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .bl-statement-word > span { opacity: 1; }
+  .bl-statement-word > span {
+    opacity: 1;
+    filter: none;
+    color: var(--bl-ink);
+  }
 }
 
 @media (max-width: 760px) {
-  .bl-statement { max-width: none; }
+  .bl-statement { max-width: 15ch; }
 }
 
 /* ==========================================================================
@@ -11341,4 +11560,684 @@ body,
 /* the wipe is a hover, and a touch screen has none to give */
 @media (pointer: coarse) {
   .bl-wk-wipe, .bl-wk-go { display: none; }
+}
+
+/* ==========================================================================
+   THE BENCH
+   The one act that is a heap of physical objects was falling through
+   empty space. Graph paper round the box as well as inside it, with the
+   ruling fading out before it reaches the heading.
+   ========================================================================== */
+
+.bl-tools { position: relative; }
+
+.bl-tools::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      66% 46% at 50% 76%,
+      color-mix(in srgb, var(--bl-accent) 10%, transparent),
+      transparent 72%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(242, 239, 230, 0.03) 0 1px,
+      transparent 1px 46px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(242, 239, 230, 0.03) 0 1px,
+      transparent 1px 46px
+    );
+  -webkit-mask-image: radial-gradient(96% 74% at 50% 62%, #000 34%, transparent 100%);
+  mask-image: radial-gradient(96% 74% at 50% 62%, #000 34%, transparent 100%);
+}
+
+.bl-tools > * { position: relative; z-index: 1; }
+
+/* ==========================================================================
+   THE STUDIO, AS A SHELF
+   The mark over it, the eight things it does standing on it, and
+   everything a reader actually needs set beside it.
+   ========================================================================== */
+
+.bl-bfu {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  gap: clamp(2rem, 4.5vw, 4.5rem);
+  align-items: center;
+  padding-top: clamp(1rem, 3vh, 2.5rem);
+}
+
+.bl-shelf-unit {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ---- the mark, over the shelf ----------------------------------------
+   Mounted on the wall above the books, with a rule running off it to
+   the edge of the unit, the way a sign over a shelf actually sits.  */
+
+.bl-shelf-mast {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.8rem, 2vw, 1.4rem);
+  margin: 0 0 clamp(1.1rem, 2.6vw, 2rem);
+  padding-left: clamp(0.3rem, 1vw, 0.75rem);
+}
+
+.bl-shelf-sign {
+  display: block;
+  flex: none;
+  line-height: 0;
+}
+
+.bl-shelf-sign img {
+  width: auto;
+  height: clamp(2.3rem, 4.6vw, 3.6rem);
+  object-fit: contain;
+  /* the mark is drawn for white paper, so it is given its own light
+     rather than a white tile to sit on */
+  filter: drop-shadow(0 0 1.5rem color-mix(in srgb, var(--bl-accent) 34%, transparent));
+}
+
+.bl-shelf-mast i {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--bl-rule), transparent);
+}
+
+.bl-shelf-mast em {
+  flex: none;
+  font-family: var(--bl-mono);
+  font-size: 0.52rem;
+  font-style: normal;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+/* ---- the shelf -------------------------------------------------------- */
+
+/* the books stand on the plank, so the rack is measured from its foot up */
+.bl-shelf-rack {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(0.14rem, 0.5vw, 0.3rem);
+  height: clamp(12rem, 24vw, 17.5rem);
+  padding: 0 clamp(0.3rem, 1vw, 0.75rem);
+}
+
+.bl-books {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(0.1rem, 0.4vw, 0.22rem);
+  min-width: 0;
+  height: 100%;
+}
+
+/* ---- one book --------------------------------------------------------- */
+
+.bl-book {
+  position: relative;
+  flex: none;
+  width: var(--thick);
+  height: var(--tall);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  /* pulled out from the foot, the way a book leaves a shelf */
+  transform-origin: bottom center;
+  transform: rotate(var(--lean, 0deg));
+  transition: transform 0.42s var(--bl-ease);
+}
+
+.bl-book-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: center;
+  overflow: hidden;
+  border-radius: 2px 4px 4px 2px;
+  /*
+   * A spine is a cylinder, so the light runs down the middle of it and
+   * both edges go dark. Without this they are rectangles of flat colour
+   * standing in a row, which is a bar chart.
+   */
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(255, 255, 255, 0.07) 26%,
+      rgba(255, 255, 255, 0.03) 58%,
+      rgba(0, 0, 0, 0.42) 100%
+    ),
+    var(--paper, #262320);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 18px -12px rgba(0, 0, 0, 0.9);
+  transition: box-shadow 0.42s var(--bl-ease);
+}
+
+/* five bindings, so a row of eight is not a row of one colour */
+.bl-book[data-tone="0"] { --paper: #b8552a; --letter: #1b0f08; }
+.bl-book[data-tone="1"] { --paper: #23201c; --letter: #cdbfae; }
+.bl-book[data-tone="2"] { --paper: #d9d2c4; --letter: #2a2420; }
+.bl-book[data-tone="3"] { --paper: #3b2a1f; --letter: #d8b58d; }
+.bl-book[data-tone="4"] { --paper: #2d3330; --letter: #b9cac2; }
+
+/* the two rules near the ends, which is most of what makes a spine a spine */
+.bl-book-band {
+  position: absolute;
+  inset: 9% 12%;
+  border-top: 1px solid color-mix(in srgb, var(--letter) 55%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--letter) 55%, transparent);
+  pointer-events: none;
+}
+
+.bl-book-title {
+  /* up the spine, which is the way a title is set on one in this half of
+     the world, and keeps the row readable at a glance */
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  margin-top: 0.8rem;
+  font-family: var(--bl-mono);
+  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--letter);
+}
+
+.bl-book-mark {
+  display: grid;
+  place-items: center;
+  margin-bottom: 0.55rem;
+  color: color-mix(in srgb, var(--letter) 80%, transparent);
+}
+
+.bl-book-mark svg { width: 13px; height: 13px; }
+
+/* ---- the one that is out ---------------------------------------------- */
+
+.bl-book[data-out="true"] {
+  transform: rotate(calc(var(--lean, 0deg) - 6deg)) translateY(-14px);
+  z-index: 2;
+}
+
+.bl-book[data-out="true"] .bl-book-face {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px color-mix(in srgb, var(--bl-accent) 55%, transparent),
+    0 18px 30px -14px rgba(0, 0, 0, 0.95),
+    0 0 2.2rem -0.4rem color-mix(in srgb, var(--bl-accent) 45%, transparent);
+}
+
+.bl-book:focus-visible { outline: none; }
+
+.bl-book:focus-visible .bl-book-face {
+  box-shadow:
+    0 0 0 2px var(--bl-accent),
+    0 18px 30px -14px rgba(0, 0, 0, 0.95);
+}
+
+/* something for the leaning one to lean on */
+.bl-shelf-end {
+  flex: none;
+  width: 0.4rem;
+  height: 58%;
+  margin-left: 0.1rem;
+  border-radius: 1px;
+  background: linear-gradient(90deg, #43403a 0%, #22201c 70%, #15130f 100%);
+  box-shadow: 0 8px 14px -10px rgba(0, 0, 0, 0.9);
+}
+
+/* ---- the plank -------------------------------------------------------- */
+
+.bl-shelf-plank {
+  position: relative;
+  display: block;
+  height: clamp(0.6rem, 1.3vw, 0.9rem);
+  border-radius: 2px;
+  background: linear-gradient(
+    180deg,
+    #4a4238 0%,
+    #332c25 38%,
+    #1d1814 78%,
+    #120f0c 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.07) inset,
+    0 18px 28px -16px rgba(0, 0, 0, 1);
+}
+
+/* and the shadow it throws on the wall under it */
+.bl-shelf-plank::after {
+  content: "";
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 100%;
+  height: 2.6rem;
+  background: radial-gradient(60% 100% at 50% 0%, rgba(0, 0, 0, 0.6), transparent 72%);
+  pointer-events: none;
+}
+
+/* ---- what is in the one that is out ----------------------------------- */
+
+.bl-shelf-say {
+  display: grid;
+  gap: 0.3rem;
+  margin: clamp(1.6rem, 4vw, 2.4rem) 0 0;
+  min-height: 4.2rem;
+  padding-left: clamp(0.3rem, 1vw, 0.75rem);
+}
+
+.bl-shelf-say b {
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-shelf-say span {
+  max-width: 46ch;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--bl-ink-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-book { transition: none; }
+}
+
+/* ---- and what it says ------------------------------------------------- */
+
+.bl-bfu-say {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: start;
+  align-content: center;
+}
+
+.bl-bfu-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.3rem;
+  padding: 0.28rem 0.7rem 0.28rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 45%, transparent);
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-bfu-kicker i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--bl-accent);
+  animation: bl-nib-ping 2.6s ease-out infinite;
+}
+
+.bl-bfu-name {
+  margin: 0;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 72;
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.03em;
+  color: var(--bl-ink);
+}
+
+.bl-bfu-what {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-bfu-job {
+  margin: 0.55rem 0 0;
+  max-width: 24ch;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.15rem, 2.3vw, 1.75rem);
+  line-height: 1.2;
+  color: var(--bl-accent);
+}
+
+.bl-bfu-story {
+  margin: 0.7rem 0 0;
+  max-width: 42ch;
+  font-size: 0.95rem;
+  line-height: 1.62;
+  color: var(--bl-ink-dim);
+}
+
+.bl-bfu-count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 1rem 0 0.4rem;
+}
+
+.bl-bfu-count strong {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  color: var(--bl-ink);
+}
+
+.bl-bfu-count span {
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-bfu-ways {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.bl-bfu-site,
+.bl-bfu-mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--bl-ink);
+  transition:
+    border-color 0.3s var(--bl-ease),
+    color 0.3s var(--bl-ease),
+    background 0.3s var(--bl-ease),
+    transform 0.3s var(--bl-ease);
+}
+
+.bl-bfu-site {
+  background: var(--bl-accent);
+  border-color: var(--bl-accent);
+  color: var(--bl-accent-ink);
+}
+
+.bl-bfu-site:hover { transform: translateY(-2px); }
+.bl-bfu-site svg { transition: transform 0.3s var(--bl-ease); }
+.bl-bfu-site:hover svg { transform: translate(3px, -3px); }
+
+.bl-bfu-mail:hover {
+  border-color: var(--bl-accent);
+  color: var(--bl-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-bfu-kicker i { animation: none; }
+}
+
+@media (max-width: 960px) {
+  .bl-bfu {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(1.75rem, 5vw, 2.75rem);
+  }
+}
+
+/*
+ * On a phone the shelf is wider than the page, so it becomes a shelf you
+ * walk along rather than one you see all of.
+ */
+@media (max-width: 720px) {
+  .bl-shelf-rack {
+    overflow-x: auto;
+    overflow-y: visible;
+    height: clamp(11rem, 42vw, 14rem);
+    padding-bottom: 0.9rem;
+    margin-bottom: -0.9rem;
+    scrollbar-width: none;
+  }
+
+  .bl-shelf-rack::-webkit-scrollbar { display: none; }
+
+  /* the row has to be allowed to be wider than the rack, or the rack has
+     nothing to scroll and the last two books are simply cut off */
+  .bl-books { width: max-content; min-width: auto; }
+
+  .bl-shelf-say { min-height: 5.4rem; }
+}
+
+/* ==========================================================================
+   THE DARE
+   The last thing said before the crowd: the one claim on the page that is
+   still untested, handed to the reader.
+   ========================================================================== */
+
+.bl-dare {
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.8rem, 2vh, 1.3rem);
+  margin-top: clamp(3.5rem, 9vh, 7rem);
+  padding-top: clamp(2.2rem, 5vh, 3.6rem);
+  text-align: center;
+  border-top: 1px solid var(--bl-rule-soft);
+}
+
+.bl-dare-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label, 0.58rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-dare-kicker i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bl-accent);
+}
+
+/*
+ * Two sentences, and the second one is the whole point, so it gets its
+ * own line and the accent. Set in the poster face rather than the
+ * display one: everything else down here is written, and this is said.
+ */
+.bl-dare-line {
+  display: grid;
+  gap: 0.12em;
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 4.4vw, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--bl-ink);
+}
+
+.bl-dare-line em {
+  font-style: normal;
+  color: var(--bl-accent);
+}
+
+.bl-dare-note {
+  margin: 0;
+  max-width: 44ch;
+  font-size: clamp(0.88rem, 1.2vw, 1rem);
+  line-height: 1.6;
+  color: var(--bl-ink-dim);
+}
+
+@media (max-width: 560px) {
+  .bl-dare-line { max-width: 13ch; }
+}
+
+/* ==========================================================================
+   THE LAST PAGE, UNDER THE POINTER
+   A colophon is the one part of a site nobody has to read, which is the
+   reason to make it answer when it is touched. Everything down here now
+   does something, and all of it is the same small vocabulary the rest of
+   the page uses: a rule drawing, a mark moving, the accent arriving.
+   ========================================================================== */
+
+.bl-colo-mail {
+  position: relative;
+  transition:
+    color 0.25s var(--bl-ease),
+    text-decoration-color 0.3s var(--bl-ease),
+    letter-spacing 0.4s var(--bl-ease);
+}
+
+/* it opens out a hair under the pointer, the way a thing being offered does */
+.bl-colo-mail:hover {
+  letter-spacing: 0.012em;
+  text-decoration-color: var(--bl-accent);
+}
+
+/*
+ * The light beside the time was a dot. It is the only thing on this page
+ * that is still happening while you read it, so it is given a pulse.
+ */
+.bl-colo-where i { position: relative; }
+
+.bl-colo-where i::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--bl-stamp);
+  animation: bl-nib-ping 3.2s ease-out infinite;
+}
+
+.bl-colo-links a svg { transition: transform 0.35s var(--bl-ease); }
+.bl-colo-links a:hover svg { transform: translateY(-2px) scale(1.08); }
+
+/*
+ * Four facts nobody asked for, and the nicest thing a page can do with
+ * those is let the reader pick one up. A rule slides in from the left,
+ * the label takes the accent and the line comes up to full ink.
+ */
+.bl-colo-set > div {
+  position: relative;
+  padding-left: 0.9rem;
+  transition: transform 0.4s var(--bl-ease);
+}
+
+.bl-colo-set > div::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  bottom: 0.2em;
+  width: 1px;
+  background: var(--bl-accent);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  transition: transform 0.4s var(--bl-ease);
+}
+
+.bl-colo-set > div:hover::before { transform: scaleY(1); }
+.bl-colo-set > div:hover { transform: translateX(2px); }
+
+.bl-colo-set dd { transition: color 0.3s var(--bl-ease); }
+.bl-colo-set > div:hover dd { color: var(--bl-ink); }
+
+.bl-footer-base a {
+  position: relative;
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-footer-base a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 0.35s var(--bl-ease);
+}
+
+.bl-footer-base a:hover::after {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+
+/*
+ * The name is a stamp, so it gets the thing a stamp does: a light passes
+ * over it, once, slowly, for ever. It is the last object on the page and
+ * the only one with nothing underneath it, which is exactly the place for
+ * something that moves on its own without asking to be looked at.
+ */
+.bl-signoff { overflow: hidden; }
+
+.bl-signoff::after {
+  content: "";
+  position: absolute;
+  left: -40%;
+  top: 0;
+  bottom: 0;
+  width: 34%;
+  z-index: 2;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in srgb, var(--bl-ink) 7%, transparent) 42%,
+    color-mix(in srgb, var(--bl-accent) 11%, transparent) 54%,
+    transparent
+  );
+  animation: bl-signoff-sweep 9s var(--bl-ease) infinite;
+  pointer-events: none;
+}
+
+@keyframes bl-signoff-sweep {
+  0%, 62% { transform: translateX(0); }
+  100% { transform: translateX(420%); }
+}
+
+/* and the rules either side of "End of log" draw out when it is reached */
+.bl-signoff-end i {
+  transform: scaleX(0.55);
+  transition: transform 1.1s var(--bl-ease);
+}
+
+.bl-signoff:hover .bl-signoff-end i { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-signoff::after,
+  .bl-colo-where i::after { animation: none; }
+  .bl-signoff-end i { transform: none; }
 }

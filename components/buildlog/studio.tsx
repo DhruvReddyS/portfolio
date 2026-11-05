@@ -1,127 +1,140 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { studio } from "@/lib/portfolio-data";
 import { servable } from "@/lib/image-sizes";
 import { Reveal } from "./reveal";
-import { Counter } from "./smooth";
-import { Roll, SectionHeader } from "./sections";
-import { MarkedLine } from "./marked";
+import { SectionHeader } from "./sections";
 import {
+  MarkAgent,
   MarkArrow,
   MarkChat,
   MarkLoop,
   MarkMail,
+  MarkPhone,
   MarkRise,
   MarkSeek,
+  MarkSpeaker,
   MarkWindow,
 } from "./marks";
 
 /**
- * The studio, as its own letterhead laid on the log.
+ * The studio, as a shelf of books.
  *
- * Two things were wrong with the last one. It read as another section of this
- * site rather than as another business, which is the whole claim the heading
- * makes; and it was selling a studio with three round numbers while seven
- * The work is counted, not named. Who a studio builds for is the client's
- * to announce, and a roster of other people's brands on his portfolio is a
- * claim they never agreed to make; seven builds, four delivered and two of
- * them for clients in the US says the same thing and is his to say.
+ * What a studio does is a list, and every way of drawing a list had already
+ * been used on this page by the time this act arrives: a grid of cards, a
+ * row of chips, a deck you push through, a ring of things going round a
+ * mark. A shelf is none of those. It is eight objects of different sizes
+ * standing up next to each other, which is what eight services actually are
+ * when one of them is most of the work and another is a Tuesday afternoon.
  *
- * The card used to take a green of its own so it would read as a letterhead
- * from somewhere else. It is not somewhere else. One site, one accent.
+ * Point at a spine and it comes out of the shelf, and the line under the
+ * plank says what is in it. Nothing is hidden behind the interaction: the
+ * titles are on the spines, the way titles are on spines.
  */
 
-
-/** The five service marks, by the name the data gives them. */
+/** The marks, by the name the data gives them. */
 const SERVICE_MARKS: Record<string, React.ReactNode> = {
   window: <MarkWindow size={15} />,
-  seek: <MarkSeek size={15} />,
+  phone: <MarkPhone size={15} />,
+  agent: <MarkAgent size={15} />,
   chat: <MarkChat size={15} />,
+  seek: <MarkSeek size={15} />,
   loop: <MarkLoop size={15} />,
+  speaker: <MarkSpeaker size={15} />,
   rise: <MarkRise size={15} />,
 };
 
 /**
- * The five services, as a deck.
+ * How each book is cut.
  *
- * A row of five cards that scrolls sideways and snaps, and turns as it
- * goes: the one in the middle faces you and the ones either side are
- * angled away, so the row reads as a deck being pushed through rather
- * than a list that happens to be horizontal. The turn is measured off
- * each card's distance from the middle of the window on every scroll
- * frame, which is also what decides which one is lit.
- *
- * Native scrolling underneath all of it. Dragging, a trackpad, a wheel,
- * a touch flick and the keyboard all work because none of them have
- * been reimplemented; the script only reads where the scroll got to and
- * writes an angle back.
+ * By hand rather than from a formula, because a shelf of books generated
+ * from an index reads as a bar chart: the eye finds the rule immediately
+ * and stops looking. These are uneven the way a shelf is, with the two
+ * fattest spines next to each other near the middle and a thin one leaning
+ * on the end.
  */
-function ServiceDeck() {
-  const rail = useRef<HTMLDivElement>(null);
+const CUT = [
+  { tall: 94, thick: 3.1, tone: 1, lean: 0 },
+  { tall: 86, thick: 2.2, tone: 3, lean: 0 },
+  { tall: 100, thick: 3.6, tone: 0, lean: 0 },
+  { tall: 90, thick: 2.6, tone: 2, lean: 0 },
+  { tall: 81, thick: 2.1, tone: 4, lean: 0 },
+  { tall: 96, thick: 3.2, tone: 1, lean: 0 },
+  { tall: 84, thick: 2.4, tone: 3, lean: 0 },
+  /* the last one is tipped against the bookend, because a shelf that is
+     not quite full is the only kind anybody has ever owned */
+  { tall: 88, thick: 2.8, tone: 2, lean: 9 },
+] as const;
 
-  useEffect(() => {
-    const track = rail.current;
-    if (!track) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let frame = 0;
-    const turn = () => {
-      frame = 0;
-      const box = track.getBoundingClientRect();
-      const middle = box.left + box.width / 2;
-      for (const card of track.children) {
-        if (!(card instanceof HTMLElement)) continue;
-        const rect = card.getBoundingClientRect();
-        /* how far this card's middle is from the rail's, as a share of
-           the rail: -1 at the left edge, 0 in the middle, 1 at the right */
-        const off = (rect.left + rect.width / 2 - middle) / (box.width / 2);
-        const away = Math.min(1, Math.abs(off));
-        card.style.setProperty("--turn", `${(-off * 26).toFixed(2)}deg`);
-        card.style.setProperty("--lift", `${(1 - away * 0.14).toFixed(3)}`);
-        card.style.setProperty("--fade", `${(1 - away * 0.55).toFixed(3)}`);
-        /* assigning undefined to a dataset property writes the string
-           "undefined", which is still an attribute and still matches */
-        if (away < 0.28) card.dataset.front = "true";
-        else delete card.dataset.front;
-      }
-    };
-
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(turn);
-    };
-
-    turn();
-    track.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      track.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) cancelAnimationFrame(frame);
-    };
-  }, []);
+function Bookshelf() {
+  /** Which spine is out. The first one is out on arrival, so the caption
+      under the plank has something to say before anybody touches it. */
+  const [out, setOut] = useState(0);
+  const open = studio.services[out];
 
   return (
-    <div className="bl-deck">
-      <div className="bl-deck-rail" ref={rail}>
-        {studio.services.map((service, index) => (
-          <article className="bl-deck-card" key={service.label}>
-            <span className="bl-deck-no">{String(index + 1).padStart(2, "0")}</span>
-            <span className="bl-deck-mark" aria-hidden="true">
-              {SERVICE_MARKS[service.mark]}
-            </span>
-            <h4>{service.label}</h4>
-            <p>{service.note}</p>
-          </article>
-        ))}
+    <div className="bl-shelf-unit">
+      {/*
+        The mark, mounted above the shelf at the size a mark is meant to
+        be read at. It spent a version stood on the plank like a framed
+        photograph, which made it one more object in a row of objects:
+        the thing the shelf belongs to cannot be the smallest thing on it.
+      */}
+      <p className="bl-shelf-mast">
+        <span className="bl-shelf-sign">
+          <Image src={studio.logo} alt={studio.name} {...servable(949, 297)} />
+        </span>
+        <i aria-hidden="true" />
+        <em>Studio shelf</em>
+      </p>
+
+      <div className="bl-shelf-rack">
+        <div className="bl-books">
+          {studio.services.map((service, index) => {
+            const cut = CUT[index] ?? CUT[0];
+            return (
+              <button
+                className="bl-book"
+                type="button"
+                key={service.label}
+                data-out={index === out ? "true" : undefined}
+                data-tone={cut.tone}
+                aria-pressed={index === out}
+                onMouseEnter={() => setOut(index)}
+                onFocus={() => setOut(index)}
+                onClick={() => setOut(index)}
+                style={
+                  {
+                    "--tall": `${cut.tall}%`,
+                    "--thick": `${cut.thick}rem`,
+                    "--lean": `${cut.lean}deg`,
+                  } as React.CSSProperties
+                }
+              >
+                <span className="bl-book-face">
+                  <span className="bl-book-band" aria-hidden="true" />
+                  <span className="bl-book-title">{service.label}</span>
+                  <span className="bl-book-mark" aria-hidden="true">
+                    {SERVICE_MARKS[service.mark]}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* something for the leaning one to lean on */}
+        <span className="bl-shelf-end" aria-hidden="true" />
       </div>
 
-      <p className="bl-deck-cue" aria-hidden="true">
-        <i />
-        Push it along
-        <i />
+      {/* the plank, with its front edge and the shadow it throws */}
+      <span className="bl-shelf-plank" aria-hidden="true" />
+
+      <p className="bl-shelf-say" aria-live="polite">
+        <b>{open.label}</b>
+        <span>{open.note}</span>
       </p>
     </div>
   );
@@ -134,124 +147,46 @@ export function StudioSection() {
         label="06 / Independent"
         title="And a studio he runs"
         lead="Clients, not coursework. He founded it, he scopes it, he builds it, and two of the people paying for it are in the United States."
-        note={`${studio.shipped} builds · ${studio.delivered} delivered`}
+        note="Founder, still shipping"
       />
 
       <Reveal>
-        <div className="bl-studio-card">
-          <header className="bl-studio-head">
-            {/*
-              The mark, at the size a mark is meant to be read at, with
-              the one claim on this card that is about him rather than
-              about it pinned under it.
+        <div className="bl-bfu">
+          <Bookshelf />
 
-              It spent a while in a small disc with the services going
-              round it on a ring, which was a diagram of a studio rather
-              than a studio: the logo came out two centimetres wide and
-              the five services were five words going past. The mark gets
-              the masthead now and the services get a deck of their own
-              below, where each one has room to say what it is.
-            */}
-            <div className="bl-studio-mast">
-              <span className="bl-studio-logo">
-                <Image
-                  src={studio.logo}
-                  alt={studio.name}
-                  {...servable(949, 297)}
-                />
-              </span>
-              <span className="bl-founder">
-                <i aria-hidden="true" />
-                Founder
-              </span>
-            </div>
-
-            <div className="bl-studio-id">
-              <h3 className="bl-studio-name">{studio.name}</h3>
-              <p className="bl-studio-tagline">{studio.tagline}</p>
-
-              <ul className="bl-studio-brief">
-                {studio.brief.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-
-              <p className="bl-studio-count">
-                <strong>
-                  <Counter value={String(studio.shipped).padStart(2, "0")} />
-                </strong>
-                <span>projects shipped</span>
-              </p>
-            </div>
-
-            <span className="bl-studio-role">{studio.role}</span>
-          </header>
-
-          {/* and the five things it takes on, as a deck you push through */}
-          <ServiceDeck />
-
-          <div className="bl-studio-body">
-            <div className="bl-studio-lead">
-              <p className="bl-studio-summary">
-                <MarkedLine text={studio.summary} mark="no templates" />
-              </p>
-
-              <div className="bl-studio-actions">
-                <a
-                  className="bl-btn bl-btn-solid bl-go"
-                  href={studio.site}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Roll>Visit the studio</Roll>
-                  <span className="bl-go-mark" aria-hidden="true">
-                    <MarkArrow size={13} />
-                    <MarkArrow size={13} />
-                  </span>
-                </a>
-                <a className="bl-btn bl-btn-lit bl-go" href={`mailto:${studio.email}`}>
-                  <span className="bl-go-mark bl-go-mark-lead" aria-hidden="true">
-                    <MarkMail size={14} />
-                    <MarkMail size={14} />
-                  </span>
-                  <Roll>{studio.email}</Roll>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* what the work is, counted rather than named */}
-          <div className="bl-roster">
-            <p className="bl-roster-head">
-              <span>The work</span>
+          <div className="bl-bfu-say">
+            <p className="bl-bfu-kicker">
               <i aria-hidden="true" />
-              <em>{studio.services.map((one) => one.label).join(" · ")}</em>
+              Founder
             </p>
 
-            <ul>
-              {studio.work.map((lot) => (
-                <li key={lot.kind}>
-                  <b>{lot.count}</b>
-                  <strong>{lot.kind}</strong>
-                  <span>{lot.note}</span>
-                  <em data-state={lot.state.includes("deliver") ? "done" : "building"}>
-                    {lot.state}
-                  </em>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <h3 className="bl-bfu-name">{studio.name}</h3>
+            <p className="bl-bfu-what">The creative design studio</p>
+            <p className="bl-bfu-job">{studio.tagline}</p>
 
-          <p className="bl-studio-run">
-            {studio.process.map((stage, index) => (
-              <Fragment key={stage.step}>
-                {index > 0 && <i aria-hidden="true" />}
-                <span>
-                  <em>{stage.step}</em> {stage.title}
-                </span>
-              </Fragment>
-            ))}
-          </p>
+            <p className="bl-bfu-story">{studio.story}</p>
+
+            <p className="bl-bfu-count">
+              <strong>5+</strong>
+              <span>projects shipped</span>
+            </p>
+
+            <div className="bl-bfu-ways">
+              <a
+                className="bl-bfu-site"
+                href={studio.site}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span>freelance.byus4u.in</span>
+                <MarkArrow size={14} />
+              </a>
+              <a className="bl-bfu-mail" href={`mailto:${studio.email}`}>
+                <MarkMail size={13} />
+                <span>{studio.email}</span>
+              </a>
+            </div>
+          </div>
         </div>
       </Reveal>
     </section>

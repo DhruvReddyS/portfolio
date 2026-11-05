@@ -365,30 +365,114 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
 
     const context = gsap.context(() => {
       /*
-       * The length is in the path's own units and does not change when the
-       * box is resized, because the stroke is taken out of the scaling. So
-       * it is measured once and the dash is stated in those units.
+       * The ribbon measured in the box's own pixels, which is the only
+       * unit either half of this works in.
+       *
+       * The path is written in a 1000 x 1900 box and stretched to fill
+       * whatever shape the real one is, and the stroke has the scaling
+       * taken out of it. That last part is what makes this necessary: a
+       * non-scaling stroke is drawn in screen space, so the dash pattern
+       * that reveals the ink is in screen pixels too, while
+       * `getPointAtLength` answers in the path's own units. The two
+       * disagree by a quarter of the route at a laptop width, which is
+       * why the light at the end of the ink used to be a long way from
+       * the end of the ink.
+       *
+       * So the path is walked once per layout and both the dash and the
+       * light are driven off the same table of screen distances.
        */
-      const length = line.getTotalLength();
-      gsap.set(line, { strokeDasharray: length, strokeDashoffset: length });
+      let table: Array<[number, number, number]> = [];
+      let span = 0;
+      let wide = 1;
+      let high = 1;
 
-      /*
-       * The nib. A small light at the end of the drawn stretch, put where
-       * the ink has got to rather than animated along a guess of it, so
-       * it is exactly on the line at every point. In percentages of the
-       * box, because the ribbon is stretched to fit and anything placed
-       * in its own units would drift as the box changed shape.
+      /** Where each room sits along the route, as a screen distance. */
+      let gates: Array<{ stop: HTMLElement; at: number }> = [];
+
+      const chart = () => {
+        const bounds = box.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return;
+        wide = bounds.width;
+        high = bounds.height;
+
+        const length = line.getTotalLength();
+        const STEPS = 900;
+        table = [];
+        let run = 0;
+        let lastX = 0;
+        let lastY = 0;
+
+        for (let i = 0; i <= STEPS; i += 1) {
+          const point = line.getPointAtLength((length * i) / STEPS);
+          const x = (point.x / 1000) * wide;
+          const y = (point.y / 1900) * high;
+          if (i) run += Math.hypot(x - lastX, y - lastY);
+          table.push([x, y, run]);
+          lastX = x;
+          lastY = y;
+        }
+
+        span = run;
+        gsap.set(line, { strokeDasharray: span });
+
+        /*
+         * And where each room is along it. A room is reached when the ink
+         * has got down to the height its mark is at: the route runs down
+         * the page, so height is the only ordering that holds whichever
+         * way the ribbon happens to be swinging at the time.
+         */
+        gates = [];
+        for (const stop of box.querySelectorAll<HTMLElement>(".bl-route-stop")) {
+          const chip = stop.querySelector<HTMLElement>(".bl-route-chip");
+          if (!chip) continue;
+          const rect = chip.getBoundingClientRect();
+          const middle = rect.top - bounds.top + rect.height / 2;
+          let at = span;
+          for (const [, y, d] of table) {
+            if (y >= middle) {
+              at = d;
+              break;
+            }
+          }
+          gates.push({ stop, at });
+        }
+      };
+
+      /**
+       * The nib: a light exactly where the ink stops, with the tail
+       * lined up along the direction of travel.
        */
       const nib = (progress: number) => {
         const node = tip.current;
-        if (!node) return;
-        const at = line.getPointAtLength(length * progress);
-        node.style.setProperty("--tx", `${((at.x / 1000) * 100).toFixed(3)}%`);
-        node.style.setProperty("--ty", `${((at.y / 1900) * 100).toFixed(3)}%`);
-        // nothing to point at before it starts or once it is finished
-        /* retired before the path runs off the foot of the box, which it
-           does in its last few percent on its way to the next act */
-        node.dataset.on = progress > 0.004 && progress < 0.96 ? "true" : "false";
+        if (!node || !table.length) return;
+
+        const want = span * progress;
+        let index = table.length - 1;
+        for (let i = 0; i < table.length; i += 1) {
+          if (table[i][2] >= want) {
+            index = i;
+            break;
+          }
+        }
+
+        const [x, y] = table[index];
+        const back = table[Math.max(0, index - 6)];
+        node.style.setProperty("--tx", `${((x / wide) * 100).toFixed(3)}%`);
+        node.style.setProperty("--ty", `${((y / high) * 100).toFixed(3)}%`);
+        node.style.setProperty(
+          "--ang",
+          `${(Math.atan2(y - back[1], x - back[0]) * 180) / Math.PI}deg`,
+        );
+
+        /* nothing to point at before it starts, or once the route has
+           run off the foot of the box on its way to the next act */
+        node.dataset.on = progress > 0.004 && progress < 0.965 ? "true" : "false";
+
+        /* and the rooms it has already been to, which is what makes the
+           five light up one after another rather than all at once */
+        for (const gate of gates) {
+          gate.stop.dataset.passed = want >= gate.at ? "true" : "false";
+        }
       };
 
       /*
@@ -398,16 +482,16 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
        */
       const held: { draw?: gsap.core.Tween } = {};
 
+      chart();
+      gsap.set(line, { strokeDashoffset: span });
+
       held.draw = gsap.to(line, {
         strokeDashoffset: 0,
         ease: "none",
         /*
          * Done by the time the last room settles, not a third of a screen
-         * later. The tail used to be left grey: the trigger ran on until
-         * the foot of the route had climbed most of the way up the
-         * window, which is long after OTBI has been read and gone.
-         * Starting and ending on the same line means the scrub lasts
-         * exactly as long as the route takes to pass it.
+         * later. Starting and ending on the same line means the scrub
+         * lasts exactly as long as the route takes to pass it.
          */
         scrollTrigger: {
           trigger: box,
@@ -415,6 +499,14 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
           end: "bottom 76%",
           scrub: 0.8,
           invalidateOnRefresh: true,
+          /* the box changes shape on a refresh, so the table and the dash
+             that is stated in its units both have to be redrawn */
+          onRefresh: () => {
+            const was = held.draw?.progress() ?? 0;
+            chart();
+            gsap.set(line, { strokeDashoffset: span * (1 - was) });
+            nib(was);
+          },
         },
         // the tween's own progress, not the scroll's: with a scrub between
         // them the two are a moment apart, and the nib has to be on the ink
@@ -422,6 +514,26 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
       });
 
       nib(0);
+
+      /*
+       * Watched as well as refreshed. The names change width as the face
+       * finishes loading and the rooms are sat down on the line after
+       * that, both of which move the gates without changing the scroll.
+       */
+      let frame = 0;
+      const again = () => {
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          const was = held.draw?.progress() ?? 0;
+          chart();
+          gsap.set(line, { strokeDashoffset: span * (1 - was) });
+          nib(was);
+        });
+      };
+
+      const watch = new ResizeObserver(again);
+      watch.observe(box);
 
       /*
        * One trigger per room rather than one staggered set, which is what
@@ -478,6 +590,11 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
           scrollTrigger: cue,
         });
       });
+
+      return () => {
+        watch.disconnect();
+        if (frame) cancelAnimationFrame(frame);
+      };
     }, box);
 
     return () => context.revert();
@@ -503,6 +620,18 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
           ref={ghost}
           vectorEffect="non-scaling-stroke"
         />
+        {/*
+          And the way ahead, with something running along it. It is drawn
+          over the faint copy and under the inked one, so it is only ever
+          visible on the stretch the reader has not got to: the route is
+          busy in front of you and settled behind you, which is the one
+          thing a line being drawn by a scroll cannot say on its own.
+        */}
+        <path
+          className="bl-route-dots"
+          d={route}
+          vectorEffect="non-scaling-stroke"
+        />
         {/* and how far you have come */}
         <path
           className="bl-route-ink"
@@ -512,8 +641,10 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
         />
       </svg>
 
-      {/* the light at the end of the drawn stretch */}
+      {/* the light at the end of the drawn stretch, with the glow it is
+          dragging behind it lined up along the way it is going */}
       <span className="bl-route-tip" ref={tip} data-on="false" aria-hidden="true">
+        <b />
         <i />
       </span>
 
@@ -603,22 +734,32 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
             </button>
 
             {/*
-              What the room was, in the order it is asked: the job, the
-              thing that came of it, and when and where. The middle line
-              is the one that earns the stop: a role and a date say a
-              post was held, and the page is meant to say what was done
-              in it.
+              What the room was, in the order it is asked: the job, when
+              it was held, and the thing that came of it.
+              
+              The three used to be set at three sizes of the same grey,
+              which made the card a paragraph with a coloured first line.
+              A role and a date are the two facts a recruiter is actually
+              scanning for, so they are given the top line together and
+              the date is set as a stamp rather than as more type: it is
+              the one thing on the card you are allowed to read without
+              reading the card.
             */}
-            <p className="bl-route-tag">
-              <b>{entry.role}</b>
+            <div className="bl-route-tag">
+              <p className="bl-route-job">
+                <b>{entry.role}</b>
+                <time className="bl-route-when">{entry.period}</time>
+              </p>
+
               <q>{entry.headline}</q>
-              <span>
-                {entry.period}
+
+              <p className="bl-route-at">
                 <i aria-hidden="true" />
                 {entry.location}
-              </span>
+              </p>
+
               {entry.status === "current" && <em className="bl-route-now">Now</em>}
-            </p>
+            </div>
           </article>
         );
       })}

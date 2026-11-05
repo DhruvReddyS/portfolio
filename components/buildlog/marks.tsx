@@ -254,6 +254,30 @@ export function MarkLoop(props: MarkProps) {
   );
 }
 
+/** A handset, for the work that has to live in a pocket. */
+export function MarkPhone(props: MarkProps) {
+  return (
+    <Mark mark="phone" {...props}>
+      <path d="M8.1 2.9c2.6-.2 5.2-.2 7.8 0 .9.1 1.5.7 1.5 1.6.2 5 .2 10 0 15-.1.9-.7 1.5-1.6 1.6-2.5.2-5.1.2-7.6 0-.9-.1-1.5-.7-1.6-1.6-.2-5-.2-10 0-15 0-.9.6-1.5 1.5-1.6z" />
+      <path d="M10.4 4.9c1.1-.1 2.2-.1 3.3 0" />
+      <path d="M12 18.1v.1" strokeWidth={2.4} />
+    </Mark>
+  );
+}
+
+/** A small head with two wires out of it, for the agents. */
+export function MarkAgent(props: MarkProps) {
+  return (
+    <Mark mark="agent" {...props}>
+      <path d="M6.8 8.1c3.5-.3 7-.3 10.5 0 1 .1 1.7.8 1.8 1.8.2 2.1.2 4.2 0 6.3-.1 1-.8 1.7-1.8 1.8-3.5.3-7 .3-10.5 0-1-.1-1.7-.8-1.8-1.8-.2-2.1-.2-4.2 0-6.3.1-1 .8-1.7 1.8-1.8z" />
+      <path d="M12 8V5.2" />
+      <path d="M11.9 2.6c.9 0 1.4.6 1.4 1.3s-.6 1.3-1.4 1.3-1.4-.6-1.4-1.3.6-1.3 1.4-1.3z" />
+      <path d="M9.4 12.3v.1M14.6 12.3v.1" strokeWidth={2.4} />
+      <path d="M2.9 11.3v3.4M21.1 11.3v3.4" />
+    </Mark>
+  );
+}
+
 /** Stacked discs, for the data pillar. */
 export function MarkDisks(props: MarkProps) {
   return (
