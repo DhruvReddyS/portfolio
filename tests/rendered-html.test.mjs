@@ -66,7 +66,7 @@ test("server-renders the build log", async () => {
     "Everything on the bench",
     "What it won",
     "And a studio he runs",
-    "How the next one starts",
+    "Nobody above hired a CV.",
   ]) {
     assert.match(html, new RegExp(head), `renders "${head}"`);
   }

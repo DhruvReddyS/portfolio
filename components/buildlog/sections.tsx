@@ -27,7 +27,6 @@ import {
   MarkArrow,
   MarkWindow,
   MarkClose,
-  MarkDownload,
   MarkGithub,
   MarkLinkedin,
   MarkMail,
@@ -758,16 +757,15 @@ export function WinsSection() {
 /* --------------------------------------------------------------- contact */
 
 export function ContactSection() {
-  const [copied, setCopied] = useState(false);
-
   return (
     <section className="bl-section bl-contact" id="contact">
       {/*
-        A crowd along the foot of the last act. The whole page argues that the
-        work was for people and with people, and this is the one place that
-        could say so without another paragraph. Set as ink at a whisper, with
-        the light falling off at the top and bottom, so they read as figures
-        going past behind the invitation rather than as an illustration of it.
+        A crowd along the foot of the last act. The whole page argues that
+        the work was for people and with people, and this is the one place
+        that could say so without another paragraph. Set as ink at a
+        whisper, with the light falling off at the top and bottom, so they
+        read as figures going past behind the invitation rather than as an
+        illustration of it.
       */}
       <div className="bl-crowd" aria-hidden="true">
         <CrowdCanvas
@@ -778,197 +776,80 @@ export function ContactSection() {
         />
       </div>
 
-      <SectionHeader
-        label="07 / Contact"
-        title="How the next one starts"
-        note="Open to work"
-      />
-
       {/*
-        Every other act on this page is an entry in the log: a room he worked
-        in, a thing he built, a degree, a win. This is the only line on the
-        site that could not be written for anybody else's portfolio, which is
-        the whole job of a closing line.
+        And the close: one line and two ways to answer it.
+
+        This has been a centred column of links, then a desk laid out like
+        a form, then a brief with the questions already filled in. Each of
+        those was a page's worth of furniture at the exact point the reader
+        has either decided or not, and none of it changed the decision. A
+        last act earns nothing by being busy.
+
+        So: who the page is for, the one claim on it that is still
+        untested, and the two addresses. The figures walking along the foot
+        are what it is about, and now there is nothing between the line and
+        them.
       */}
       <Reveal>
-        <p className="bl-contact-huge">
-          Next entry:
-          <br />
-          <em>yours.</em>
+        <p className="bl-close-kicker">
+          <span>07 / Contact</span>
+          <i aria-hidden="true" />
+          <em>Open to work</em>
         </p>
       </Reveal>
 
-      {/*
-        Written to the person who actually reads this page: someone with a
-        role open and twenty tabs of candidates. So it says what the page
-        is for, what to do with it, and what happens next, in that order,
-        and it does not ask them to like him.
-      */}
       <Reveal delay={120}>
-        <p className="bl-lede">
-          Seven acts of evidence, all of it dated and most of it still
-          running. The one thing this page cannot prove is what I would do
-          inside your team, on your deadline, with your constraints. If you
-          are hiring for{" "}
-          <Marked kind="circle" delay={320}>
-            full-stack or applied AI
-          </Marked>
-          , send me those three things and I will tell you straight whether
-          I am the right person for it.
-        </p>
+        <h2 className="bl-close-line">
+          Nobody above hired a CV.
+          <em>They hired the thing I showed them.</em>
+        </h2>
       </Reveal>
 
-      {/*
-        The close, as the brief itself.
-
-        It has been a centred column of links, and then a desk: a button
-        on the left, three facts on the right, laid out like a form. The
-        desk was the right instinct and the wrong object. A form is a
-        thing you fill in, and this one had nothing in it: it was a
-        button with facts beside it, which is what every portfolio ends
-        with.
-
-        So it is the brief, already half written. The three lines a
-        recruiter would have to put in an email are printed with his
-        answers against them, which does two things at once: it tells
-        them exactly what to send, and it says what he is asking for in
-        the only register this page has earned by now, which is a
-        challenge rather than a request. The second line is the whole
-        pitch and it fits in nine words.
-
-        Everything useful survives: the address can still be copied in
-        one press, the résumé is still one tap, and the three facts a
-        recruiter checks before any of that are along the foot.
-      */}
-      <Reveal delay={180}>
-        <div className="bl-brief">
-          <header className="bl-brief-head">
-            <span className="bl-brief-tag">Open brief</span>
-            <span className="bl-brief-live">
-              <i aria-hidden="true" />
-              Taking one now
-            </span>
-          </header>
-
-          <dl className="bl-brief-form">
-            <div>
-              <dt>The role</dt>
-              <dd>Yours to name</dd>
-            </div>
-            <div>
-              <dt>The hard part</dt>
-              <dd>The bit nobody on the team wants</dd>
-            </div>
-            <div>
-              <dt>The deadline</dt>
-              <dd>Whatever you already promised somebody</dd>
-            </div>
-          </dl>
-
-          <div className="bl-brief-do">
-            <Magnetic strength={0.22}>
-              <a className="bl-cta bl-cta-wide" href={`mailto:${profile.email}`}>
-                <span className="bl-cta-ring" aria-hidden="true" />
-                <span className="bl-cta-label">
-                  <span>Send me the brief</span>
-                  <span>Send me the brief</span>
-                </span>
-                <span className="bl-cta-mark" aria-hidden="true">
-                  <MarkArrow size={22} />
-                </span>
-              </a>
-            </Magnetic>
-
-            <div className="bl-desk-row">
-              {/*
-                Copying an address is what anyone actually does with one,
-                and it is two steps on a phone: select the text, miss,
-                select it again. One press, and it says so.
-              */}
-              <button
-                className="bl-desk-copy"
-                type="button"
-                data-done={copied ? "true" : undefined}
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(profile.email);
-                    setCopied(true);
-                    window.setTimeout(() => setCopied(false), 2200);
-                  } catch {
-                    // no clipboard: the address is still right there to read
-                  }
-                }}
-              >
-                <MarkPaper size={13} />
-                <span>{copied ? "Copied to clipboard" : profile.email}</span>
-              </button>
-
-              <a
-                className="bl-desk-alt"
-                href={profile.resume}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <MarkDownload size={12} />
-                Résumé, PDF
-              </a>
-            </div>
-          </div>
-
-          <dl className="bl-brief-facts">
-            <div>
-              <dt>Looking for</dt>
-              <dd>Full-stack and applied AI roles</dd>
-            </div>
-            <div>
-              <dt>Based in</dt>
-              <dd>{profile.location}, open to remote</dd>
-            </div>
-            <div>
-              <dt>Replies</dt>
-              <dd>Within a day, usually sooner</dd>
-            </div>
-          </dl>
-        </div>
-      </Reveal>
-
-      {/*
-        And the last thing said before the crowd.
-
-        The close above it is the useful half: an address, a résumé and
-        three facts, laid out like a form because that part is meant to
-        be used. This is the other half, and it is the only place on the
-        page that asks the reader for anything. It is set as a challenge
-        rather than a plea on purpose: everything above it is evidence,
-        and the honest end of an argument made entirely out of evidence
-        is to point out the one claim that is still untested and hand it
-        over.
-
-        It sits directly over the figures walking along the foot of the
-        page, which is what it is about.
-      */}
       <Reveal delay={240}>
-        <div className="bl-dare">
-          <p className="bl-dare-kicker">
-            <i aria-hidden="true" />
-            The part that is up to you
-          </p>
+        <div className="bl-close-ways">
+          {/*
+            The address is written out rather than hidden behind a word,
+            because half of the people who read this will want to paste it
+            somewhere and not open a mail client.
+          */}
+          <a className="bl-close-way" href={`mailto:${profile.email}`}>
+            <span className="bl-close-mark" aria-hidden="true">
+              <MarkMail size={16} />
+            </span>
+            <span className="bl-close-text">
+              <b>Email</b>
+              {/* broken at the at-sign rather than wherever the column
+                  runs out, which on a phone was mid-domain */}
+              <span>
+                {profile.email.split("@")[0]}
+                <wbr />
+                {`@${profile.email.split("@")[1]}`}
+              </span>
+            </span>
+            <span className="bl-close-go" aria-hidden="true">
+              <MarkArrow size={14} />
+            </span>
+          </a>
 
-          <p className="bl-dare-line">
-            Nobody above hired a CV.
-            <em>They hired the thing I showed them.</em>
-          </p>
-
-          <p className="bl-dare-note">
-            So bring the problem you have not solved yet. One week in, you
-            will know which of us was right.
-          </p>
+          <a
+            className="bl-close-way"
+            href={profile.linkedin}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className="bl-close-mark" aria-hidden="true">
+              <MarkLinkedin size={16} />
+            </span>
+            <span className="bl-close-text">
+              <b>LinkedIn</b>
+              <span>{profile.linkedinHandle}</span>
+            </span>
+            <span className="bl-close-go" aria-hidden="true">
+              <MarkArrow size={14} />
+            </span>
+          </a>
         </div>
       </Reveal>
-
-      {/* The same four links used to sit here and again in the footer, two
-          hundred pixels apart. They belong in the colophon, which is where a
-          reader goes looking for them. */}
     </section>
   );
 }
