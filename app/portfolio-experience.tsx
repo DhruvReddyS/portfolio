@@ -149,6 +149,21 @@ function BuildLog() {
         <EducationSection />
         <ToolkitSection />
         <WinsSection />
+
+        {/*
+          And the reprise, turned over, on the seam between the prizes and
+          the paid work. The first band makes the claim; this one answers
+          the statement at the top of the page in its own words, right where
+          the reader stops being shown contests and starts being shown
+          clients, which is where the claim has to be worth something.
+        */}
+        <Roller
+          text="The part where it keeps working"
+          bend="down"
+          way="right"
+          tone="negative"
+        />
+
         <StudioSection />
         <ContactSection />
       </main>

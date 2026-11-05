@@ -15,10 +15,11 @@ import {
 import { Reveal } from "./reveal";
 import { whenCurtainOpens } from "@/lib/curtain";
 import { Counter, Magnetic, useSmoothScroll } from "./smooth";
+import { HeroLoops } from "./loops";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
-import { Reel } from "./reel";
+import { Route } from "./route";
 import { AsciiArt } from "@/components/ui/ascii-art";
 import { CrowdCanvas } from "@/components/ui/skiper39";
 import { PolaroidLine } from "@/components/ui/polaroid-line";
@@ -263,6 +264,7 @@ export function Hero({ time }: { time: string }) {
   return (
     <section className="bl-hero" id="top" ref={stage}>
       <HeroField />
+      <HeroLoops />
 
       {/* the name, large, behind everything */}
       <h1 className="bl-hero-wordmark" aria-hidden="true">
@@ -520,7 +522,7 @@ export function LogSection() {
         lead="Five rooms, five different problems. Open any one for the whole account."
       />
 
-      <Reel onOpen={setOpen} />
+      <Route onOpen={setOpen} />
 
       {open && <LogModal entry={open} onClose={() => setOpen(null)} />}
     </section>

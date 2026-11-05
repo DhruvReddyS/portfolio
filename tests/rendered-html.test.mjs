@@ -87,11 +87,11 @@ test("renders all five log entries with what each one was", async () => {
     assert.match(html, new RegExp(company.replace(/\./g, "\\.")), `renders ${company}`);
   }
 
-  // the card carries when, who and the brief; the full account is behind it
+  // the stop carries when, who and what came of it; the account is behind it
   assert.match(html, /Oct 2026 to now/);
   assert.match(html, /Full Stack Developer Intern/);
-  assert.match(html, /AI-powered recruitment and candidate screening/);
-  assert.match(html, /Read the entry/);
+  assert.match(html, /Teaching a recruiter to read every r/);
+  assert.match(html, /open the file/);
 
   // every entry is on the grid, marked with its monogram
   for (const monogram of ["SH", "AX", "PF", "SE", "OT"]) {

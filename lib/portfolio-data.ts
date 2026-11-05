@@ -35,6 +35,7 @@ export const logEntries: LogEntry[] = [
   {
     id: "simplehire",
     tint: "#2f55c8",
+    image: "/assets/log/simplehire.png",
     monogram: "SH",
     company: "SimpleHire.ai",
     org: "Task Consulting",
@@ -70,6 +71,7 @@ export const logEntries: LogEntry[] = [
   {
     id: "axon",
     tint: "#8e9196",
+    image: "/assets/log/axon.png",
     monogram: "AX",
     company: "Axon Development",
     role: "Full Stack Developer Intern",
@@ -102,6 +104,7 @@ export const logEntries: LogEntry[] = [
   {
     id: "paper",
     tint: "#4cae6e",
+    image: "/assets/log/paper.png",
     monogram: "PF",
     company: "Paper Foundation India",
     role: "Full Stack Developer Intern · Team Lead",
@@ -135,6 +138,7 @@ export const logEntries: LogEntry[] = [
   {
     id: "sai",
     tint: "#e5177f",
+    image: "/assets/log/sai.png",
     monogram: "SE",
     company: "Sai Enterprises",
     role: "Full Stack & AI Developer Intern",
@@ -166,6 +170,7 @@ export const logEntries: LogEntry[] = [
   {
     id: "otbi",
     tint: "#2196c4",
+    image: "/assets/log/otbi.png",
     monogram: "OT",
     company: "Osmania Technology Business Incubator",
     org: "OTBI",

@@ -213,9 +213,6 @@ body {
   --my: 0;
 }
 
-@media (scripting: enabled) {
-}
-
 /* the portrait sits on top of the letters, which is what sells the depth */
 
 /* a warm bloom behind it, so it is lit rather than pasted on */
@@ -767,7 +764,6 @@ body {
 }
 
 
-
 /* ---------- education ----------------------------------------------------------- */
 
 .bl-edu {
@@ -1128,10 +1124,6 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-mask { display: block; }
 
-@media (scripting: enabled) {
-
-}
-
 /* ---------- a plate, filling whatever holds it ------------------------------ */
 
 .bl-plate-bare {
@@ -1258,9 +1250,6 @@ html.bl-locked body { overflow: hidden; }
 /* ---------- margin doodles ----------------------------------------------- */
 
 .bl-contact-huge-wrap { position: relative; display: inline-block; }
-
-@media (max-width: 900px) {
-}
 
 /* ---------- lean into the scroll ------------------------------------------ */
 
@@ -2400,9 +2389,6 @@ html.bl-locked body { overflow: hidden; }
     transform: none;
     text-align: left;
     justify-items: start;
-    /* out through the gutter, so the long line runs off the edge */
-    margin-inline: calc(var(--bl-gutter) * -1);
-    padding-inline: var(--bl-gutter) 0;
   }
 
   .bl-hero-wordmark [data-line="1"] {
@@ -2410,8 +2396,14 @@ html.bl-locked body { overflow: hidden; }
     letter-spacing: 0.085em;
   }
 
-  /* enough to run off the edge, not enough to cost a letter */
-  .bl-hero-wordmark [data-line="2"] { font-size: clamp(2.2rem, 12.2vw, 3.8rem); }
+  /*
+   * Sized to the width it actually has. It used to be set to run off the
+   * right edge on purpose, and on a 375 the last letter of the surname
+   * went with it: a name cut in half is not a bleed, it is a mistake the
+   * reader has to work out. Eleven characters at 10.7vw is the largest
+   * that still ends on the page at the narrowest phone.
+   */
+  .bl-hero-wordmark [data-line="2"] { font-size: clamp(2.2rem, 10.7vw, 3.8rem); }
 
   .bl-hero-grid {
     display: flex;
@@ -5177,350 +5169,9 @@ html.bl-locked body { overflow: hidden; }
   .bl-stop-arm { display: none; }
 }
 
-
-
-/* ---- the log, set as one long spread -----------------------------------
-   Off the reference: a bordered screen inset from the page with a bar
-   across the top, editorial columns running away to the right at three
-   different heights, and a finely ruled strip along the bottom carrying
-   thumbnails. The act pins and the spread travels left, so reading down
-   the page reads right across the spread.
-
-   Wide screens only; the stacked timeline keeps the phone.             */
-
-.bl-spread {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    /* The act pins, so the whole frame including its ruled strip has to sit
-       inside one screen alongside the heading above it. */
-    height: min(58vh, 34rem);
-    margin-top: clamp(1rem, 2.5vh, 1.75rem);
-    border: 1px solid var(--bl-rule);
-    background: var(--bl-bg-deep);
-    overflow: hidden;
-  }
-
-  /* ---- the bar across the top ---- */
-
-  .bl-spread-bar {
-    display: grid;
-    grid-template-columns: auto minmax(0, 20rem) auto auto auto;
-    align-items: center;
-    gap: clamp(1.25rem, 4vw, 4rem);
-    padding: 0.95rem clamp(1rem, 2.4vw, 1.9rem);
-    border-bottom: 1px solid var(--bl-rule);
-  }
-
-  .bl-spread-brand {
-    font-family: var(--bl-sans);
-    font-weight: 700;
-    font-size: 1.12rem;
-    letter-spacing: -0.035em;
-    color: var(--bl-ink);
-  }
-
-  .bl-spread-bar p {
-    margin: 0;
-    font-size: 0.72rem;
-    line-height: 1.45;
-    color: var(--bl-ink-soft);
-  }
-
-  /* the little level meter from the reference */
-  .bl-spread-meter {
-    display: flex;
-    align-items: flex-end;
-    gap: 2px;
-    height: 0.8rem;
-    margin-left: auto;
-  }
-
-  .bl-spread-meter i {
-    width: 2px;
-    background: var(--bl-ink-dim);
-    animation: bl-meter 1.1s var(--bl-ease) infinite alternate;
-  }
-
-  .bl-spread-meter i:nth-child(1) { height: 40%; animation-delay: 0s; }
-  .bl-spread-meter i:nth-child(2) { height: 80%; animation-delay: 0.12s; }
-  .bl-spread-meter i:nth-child(3) { height: 55%; animation-delay: 0.26s; }
-  .bl-spread-meter i:nth-child(4) { height: 95%; animation-delay: 0.08s; }
-  .bl-spread-meter i:nth-child(5) { height: 35%; animation-delay: 0.3s; }
-
   @keyframes bl-meter {
     to { transform: scaleY(0.35); }
   }
-
-  .bl-spread-count {
-    font-family: var(--bl-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
-    color: var(--bl-ink-soft);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* the corner markers */
-  .bl-spread-flags { display: flex; gap: 3px; }
-
-  .bl-spread-flags i {
-    width: 11px;
-    height: 11px;
-    background: var(--bl-accent);
-    clip-path: polygon(0 0, 100% 0, 0 100%);
-  }
-
-  .bl-spread-flags i:nth-child(2) { background: var(--bl-ink); }
-  .bl-spread-flags i:nth-child(3) {
-    background: var(--bl-amber);
-    clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  }
-
-  /* ---- the spread itself ---- */
-
-  .bl-spread-viewport {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .bl-spread-track {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: clamp(2rem, 4.5vw, 4rem);
-    width: max-content;
-    height: 100%;
-    padding: 1.2rem clamp(1rem, 2.4vw, 1.9rem);
-    will-change: transform;
-  }
-
-  /* a rule running down the spread, as in the reference */
-  .bl-spread-divider {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 16rem;
-    width: 1px;
-    background: var(--bl-rule);
-  }
-
-  /* ---- one column ---- */
-
-  .bl-spread-col {
-    flex: 0 0 auto;
-    width: 19.5rem;
-    display: grid;
-    align-content: start;
-    gap: 0.5rem;
-    opacity: 0.4;
-    transition: opacity 0.5s var(--bl-ease);
-  }
-
-  .bl-spread-col[data-on="true"] { opacity: 1; }
-
-  /* three drops, so nothing sits on a shared baseline */
-  .bl-spread-col[data-drop="0"] { margin-top: 0; }
-  .bl-spread-col[data-drop="1"] { margin-top: 3.4rem; }
-  .bl-spread-col[data-drop="2"] { margin-top: 1.7rem; }
-
-  .bl-spread-kicker {
-    margin: 0;
-    font-family: var(--bl-mono);
-    font-size: 0.54rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--bl-ink-dim);
-  }
-
-  .bl-spread-head {
-    margin: 0;
-    font-family: var(--bl-sans);
-    font-weight: 600;
-    font-size: clamp(1.1rem, 1.5vw, 1.35rem);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: var(--bl-ink);
-  }
-
-  .bl-spread-role {
-    margin: 0;
-    font-family: var(--bl-mono);
-    font-size: 0.54rem;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--bl-ink-soft);
-  }
-
-  .bl-spread-body {
-    margin: 0.3rem 0 0;
-    font-size: 0.8rem;
-    line-height: 1.58;
-    color: var(--bl-ink-soft);
-  }
-
-  /* the mark, set as a block the way a photograph is */
-  .bl-spread-shot {
-    position: relative;
-    margin: 0.75rem 0 0;
-    aspect-ratio: 4 / 3;
-    background: #f3f1ea;
-    overflow: hidden;
-    filter: saturate(0.25);
-    transition: filter 0.5s var(--bl-ease);
-  }
-
-  .bl-spread-col[data-on="true"] .bl-spread-shot {
-    filter: none;
-    box-shadow: 0 0 2.5rem -0.6rem color-mix(in srgb, var(--tint) 65%, transparent);
-  }
-
-  .bl-spread-shot .bl-plate-bare {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-  }
-
-  .bl-spread-shot .bl-plate-bare img {
-    position: absolute;
-    inset: 1.1rem;
-    width: auto;
-    height: auto;
-    max-width: calc(100% - 2.2rem);
-    max-height: calc(100% - 2.2rem);
-    margin: auto;
-    object-fit: contain;
-  }
-
-  .bl-spread-shot .bl-plate-bare > span {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    font-family: var(--bl-mono);
-    font-size: 1.1rem;
-    letter-spacing: 0.08em;
-    color: #2a2721;
-    -webkit-text-stroke: 0;
-    -webkit-text-fill-color: currentColor;
-  }
-
-  .bl-spread-more {
-    justify-self: start;
-    margin: 0.7rem 0 0;
-    padding: 0;
-    border: 0;
-    border-bottom: 1px solid var(--bl-rule);
-    background: none;
-    font-family: var(--bl-mono);
-    font-size: 0.54rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--bl-ink-soft);
-    cursor: pointer;
-    transition: color 0.3s var(--bl-ease), border-color 0.3s var(--bl-ease);
-  }
-
-  .bl-spread-more:hover {
-    color: var(--bl-accent);
-    border-color: var(--bl-accent);
-  }
-
-  /* ---- the ruled strip ---- */
-
-  .bl-spread-strip {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 0.55rem clamp(1rem, 2.4vw, 1.9rem);
-    border-top: 1px solid var(--bl-rule);
-  }
-
-  /* the fine ruler, the way a film edge is marked */
-  .bl-spread-ticks {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 9px;
-    background-image: repeating-linear-gradient(
-      90deg,
-      var(--bl-rule) 0,
-      var(--bl-rule) 1px,
-      transparent 1px,
-      transparent 9px
-    );
-  }
-
-  .bl-spread-fill {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 2px;
-    background: var(--bl-accent);
-    transform-origin: left;
-    transition: transform 0.2s linear;
-  }
-
-  .bl-spread-strip ol {
-    display: flex;
-    gap: 1.1rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .bl-spread-strip li {
-    position: relative;
-    width: 3.1rem;
-    height: 2.1rem;
-    background: #f3f1ea;
-    overflow: hidden;
-    opacity: 0.32;
-    transition: opacity 0.4s var(--bl-ease);
-  }
-
-  .bl-spread-strip li[data-on="true"] { opacity: 1; }
-
-  .bl-spread-strip li .bl-plate-bare img {
-    position: absolute;
-    inset: 0.26rem;
-    width: auto;
-    height: auto;
-    max-width: calc(100% - 0.52rem);
-    max-height: calc(100% - 0.52rem);
-    margin: auto;
-    object-fit: contain;
-  }
-
-  .bl-spread-strip li .bl-plate-bare > span {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    font-family: var(--bl-mono);
-    font-size: 0.52rem;
-    color: #2a2721;
-    -webkit-text-stroke: 0;
-    -webkit-text-fill-color: currentColor;
-  }
-
-  .bl-spread-now {
-    margin-left: auto;
-    font-family: var(--bl-mono);
-    font-size: 0.56rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--bl-ink-soft);
-  }
-
-
-@media (min-width: 1040px) and (prefers-reduced-motion: reduce) {
-  .bl-spread-meter i { animation: none; }
-}
 
 /* The act pins at the top of the screen, so everything in it has to fit one
    screen: heading, frame and ruled strip. The section's usual padding is
@@ -5535,298 +5186,8 @@ html.bl-locked body { overflow: hidden; }
   .bl-log .bl-head { margin-bottom: 0; }
 }
 
-/* ---- the spread, zigzagged and scrubbable -------------------------------
-   Blocks alternate against the top and the bottom of the frame, so the eye
-   moves up and down as it moves right. The strip is a real control: drag
-   it or click along it and the window seeks inside the pinned stretch.
-   One layout at every width; the columns and the type shrink rather than
-   the section being swapped for a different one.                        */
-
-.bl-spread {
-  height: min(66vh, 36rem);
-  container-type: inline-size;
-}
-
-.bl-spread-viewport { overflow: hidden; }
-
-.bl-spread-track {
-  align-items: stretch;
-  gap: clamp(1.1rem, 3.5vw, 3.25rem);
-  padding: 0 clamp(0.75rem, 2.4vw, 1.9rem);
-}
-
-/* up, down, up, down */
-.bl-spread-col {
-  width: clamp(13rem, 46cqw, 19rem);
-  justify-content: start;
-  padding: 1rem 0;
-}
-
-.bl-spread-col[data-drop="up"] { align-self: start; }
-.bl-spread-col[data-drop="down"] { align-self: end; }
-
-/* ---- the strip is a control, not a readout ---- */
-
-.bl-spread-strip {
-  cursor: ew-resize;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-  padding-bottom: 0.75rem;
-}
-
-.bl-spread-strip:focus-visible {
-  outline: 2px solid var(--bl-accent);
-  outline-offset: -2px;
-}
-
-/* the playhead, so the strip reads as something you can take hold of */
-.bl-spread-head-pos {
-  position: absolute;
-  bottom: 0;
-  width: 2px;
-  height: 100%;
-  margin-left: -1px;
-  background: var(--bl-accent);
-  box-shadow: 0 0 0.8rem 0.1rem color-mix(in srgb, var(--bl-accent) 60%, transparent);
-  pointer-events: none;
-}
-
-.bl-spread-strip ol {
-  flex: 1;
-  justify-content: space-between;
-  gap: 0.4rem;
-}
-
-.bl-spread-strip li {
-  display: grid;
-  justify-items: center;
-  gap: 0.18rem;
-  width: auto;
-  height: auto;
-  background: none;
-  overflow: visible;
-}
-
-.bl-spread-thumb {
-  position: relative;
-  display: block;
-  width: clamp(2rem, 6cqw, 2.9rem);
-  height: clamp(1.4rem, 4cqw, 2rem);
-  background: #f3f1ea;
-  overflow: hidden;
-}
-
-/* the years and months the strip is ruled in */
-.bl-spread-strip em,
-.bl-spread-strip i {
-  font-family: var(--bl-mono);
-  font-style: normal;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
-
-.bl-spread-strip em {
-  font-size: 0.5rem;
-  color: var(--bl-ink-soft);
-}
-
-.bl-spread-strip i {
-  font-size: 0.44rem;
-  color: var(--bl-ink-dim);
-}
-
-.bl-spread-strip li[data-on="true"] em { color: var(--bl-accent); }
-
-/* ---- narrow ---- */
-
-@container (max-width: 640px) {
-  .bl-spread-bar {
-    grid-template-columns: auto 1fr auto;
-    gap: 0.75rem;
-    padding: 0.7rem 0.85rem;
-  }
-
-  .bl-spread-bar p,
-  .bl-spread-meter { display: none; }
-
-  .bl-spread-head { font-size: 1.02rem; }
-  .bl-spread-body { font-size: 0.74rem; }
-  .bl-spread-strip i { display: none; }
-}
-
 @media (max-width: 1039px) {
-  .bl-spread { height: min(72vh, 34rem); }
   .bl-log { padding-top: clamp(3rem, 8vh, 5rem); }
-}
-
-/* A column can only sit high or low if it is shorter than the frame. These
-   were filling the whole viewport, so align-self start and end landed in
-   exactly the same place and the zigzag did nothing. */
-.bl-spread-col {
-  align-self: start;
-  height: auto;
-  max-height: 100%;
-  padding: 0;
-}
-
-.bl-spread-shot {
-  aspect-ratio: auto;
-  height: clamp(5.5rem, 22cqh, 8.5rem);
-  margin-top: 0.6rem;
-}
-
-.bl-spread-col[data-drop="down"] {
-  align-self: end;
-  padding-bottom: 0.4rem;
-}
-
-.bl-spread-col[data-drop="up"] { padding-top: 0.4rem; }
-
-.bl-spread-track { align-items: stretch; padding-block: 1rem; }
-
-
-/* ---- the spread, tightened ----------------------------------------------
-   The columns were sparse: a line of copy and a small mark left a lot of
-   dead frame. The mark is bigger, the type sits closer, and a hairline
-   runs between columns the way the reference rules its spread.          */
-
-.bl-spread-shot {
-  height: clamp(7rem, 30cqh, 11rem);
-  margin-top: 0.75rem;
-}
-
-.bl-spread-head { font-size: clamp(1.15rem, 3.2cqw, 1.5rem); }
-
-.bl-spread-body {
-  font-size: clamp(0.74rem, 2cqw, 0.84rem);
-  line-height: 1.6;
-  margin-top: 0.4rem;
-}
-
-/* the rule between columns */
-.bl-spread-col + .bl-spread-col { position: relative; }
-
-.bl-spread-col + .bl-spread-col::before {
-  content: "";
-  position: absolute;
-  top: -1rem;
-  bottom: -1rem;
-  left: calc(clamp(1.1rem, 3.5vw, 3.25rem) / -2);
-  width: 1px;
-  background: var(--bl-rule-soft);
-}
-
-/* the mark of the room being read carries its colour into the frame */
-.bl-spread-col[data-on="true"] .bl-spread-kicker { color: var(--tint); }
-
-@container (max-width: 640px) {
-  .bl-spread-shot { height: clamp(5rem, 22cqh, 7rem); }
-}
-
-/* A taller mark leaves less slack in the frame, and the zigzag is only as
-   big as the slack. 11rem took it down to 21px of travel, which is not a
-   zigzag. The mark gives some back, and the frame is a little taller. */
-.bl-spread { height: min(70vh, 38rem); }
-
-.bl-spread-shot { height: clamp(6rem, 24cqh, 9.25rem); }
-
-@container (max-width: 640px) {
-  .bl-spread-shot { height: clamp(4.5rem, 20cqh, 6.5rem); }
-}
-
-/* ---- refinements ---------------------------------------------------------
-   The spread is something you read across, so holding four of its five
-   columns at 40% was working against the layout: it made a wide frame
-   where only one narrow strip of it was legible. They sit at 78% now, and
-   the room being read is marked by its colour and its lit mark rather than
-   by everything else being too faint to read.                           */
-
-.bl-spread-col { opacity: 0.78; }
-.bl-spread-col[data-on="true"] { opacity: 1; }
-
-/* the figure each column carries */
-.bl-spread-figure {
-  display: flex;
-  align-items: baseline;
-  gap: 0.45rem;
-  margin: 0.55rem 0 0;
-}
-
-.bl-spread-figure strong {
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-size: clamp(1.15rem, 3cqw, 1.5rem);
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: var(--bl-ink);
-}
-
-.bl-spread-col[data-on="true"] .bl-spread-figure strong { color: var(--tint); }
-
-.bl-spread-figure span {
-  font-family: var(--bl-mono);
-  font-size: 0.46rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--bl-ink-dim);
-  line-height: 1.3;
-}
-
-/* the mark of the room being read is what marks it, so the shot needs less
-   drain on the rest */
-.bl-spread-shot { filter: saturate(0.5); }
-
-
-/* ---- the log, out of its box --------------------------------------------
-   The spread sat inside a ruled frame with a bar of chrome across the top:
-   a brand mark, a meter, a counter, three flags. None of it was the work.
-   It read as a device the rooms had been put inside, and the device was
-   the loudest thing in the act. The rooms sit on the page now, with the
-   strip underneath them as the only furniture, because that one is a
-   control and earns its keep.                                           */
-
-.bl-spread {
-  grid-template-rows: minmax(0, 1fr) auto;
-  border: 0;
-  background: transparent;
-  overflow: visible;
-  height: min(62vh, 34rem);
-  margin-top: clamp(1.5rem, 4vh, 3rem);
-}
-
-/* without the frame there is no inside edge to hold the columns off, so
-   they take the page's own gutter instead, which also lines the first room
-   up with the heading above it */
-.bl-spread-track { padding-inline: var(--bl-gutter); }
-
-.bl-spread-viewport {
-  overflow: hidden;
-  /* the columns run to the edge of the act and fade out there rather than
-     stopping against a border that is no longer drawn */
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent 0,
-    #000 clamp(0.6rem, 1.6vw, 1.2rem),
-    #000 calc(100% - clamp(0.6rem, 1.6vw, 1.2rem)),
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    90deg,
-    transparent 0,
-    #000 clamp(0.6rem, 1.6vw, 1.2rem),
-    #000 calc(100% - clamp(0.6rem, 1.6vw, 1.2rem)),
-    transparent 100%
-  );
-}
-
-/* the strip was reading as the bottom edge of the box; on the page it needs
-   a rule of its own above it to sit under something */
-.bl-spread-strip {
-  border-top: 1px solid var(--bl-rule-soft);
-  padding-top: 0.6rem;
-  margin-top: clamp(0.5rem, 1.5vh, 1rem);
 }
 
 /* ---- the note pinned up among the cards ---------------------------------
@@ -5892,12 +5253,6 @@ html.bl-locked body { overflow: hidden; }
 
 /* the circled word is drawn in the amber the note is written in */
 .bl-note .bl-marked-ink { color: var(--bl-amber); }
-
-
-/* Wider rooms, now that the spread steps one at a time. At the old width
-   four of the five were in the frame at once, which left the stepping with
-   almost nothing to move and the columns with more air than words. */
-.bl-spread-col { width: clamp(15rem, 38cqw, 28rem); }
 
 /* ---------- the work, as a wall of cards ------------------------------------
    This section went looking for a shape twice: tiles at four sizes, then a
@@ -7160,7 +6515,8 @@ html.bl-locked body { overflow: hidden; }
 
   .bl-root[data-held="true"] .bl-preboot { opacity: 1; }
 
-  .bl-root[data-held="true"] .bl-hero-wordmark span {
+  .bl-root[data-held="true"] .bl-hero-wordmark span,
+  .bl-root[data-held="true"] .bl-loop path {
     animation-play-state: paused;
   }
 
@@ -7541,7 +6897,6 @@ body,
 .bl-bento { margin-top: 0; }
 
 
-
 /* ==========================================================================
    MOTION
    The reveals only started working this week, so this is the first time any
@@ -7798,52 +7153,6 @@ body,
   --bl-rule-soft: rgba(242, 239, 230, 0.06);
   --bl-accent: #e05a2b;
   color-scheme: dark;
-}
-
-/* ---------- the log, in the page's own voice --------------------------- */
-
-/*
- * The company names were the last entry names on the page still set in the
- * serif. Work cards, wins and degrees all answer to the same rule now, and
- * one exception does not read as variety, it reads as an oversight.
- */
-.bl-spread-head {
-  font-family: var(--bl-sans);
-  font-weight: 700;
-  font-variation-settings: normal;
-  letter-spacing: -0.025em;
-  text-transform: uppercase;
-  line-height: 1.1;
-}
-
-/*
- * The logo plates were bare white rectangles punched into a dark page. A
- * logo does need a light ground to be legible, so the ground stays and is
- * given an edge and a corner, which is the difference between a plate and
- * a hole.
- */
-.bl-spread-shot .bl-plate-bare {
-  border-radius: 8px;
-  overflow: hidden;
-  background: #f4f1e9;
-  border: 1px solid rgba(242, 239, 230, 0.16);
-  transition: border-color 0.35s var(--bl-ease), transform 0.5s var(--bl-ease);
-}
-
-.bl-spread-col[data-on="true"] .bl-spread-shot .bl-plate-bare {
-  border-color: color-mix(in srgb, var(--bl-accent) 40%, transparent);
-}
-
-.bl-spread-col .bl-spread-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: color 0.25s var(--bl-ease), gap 0.25s var(--bl-ease);
-}
-
-.bl-spread-col .bl-spread-more:hover {
-  color: var(--bl-accent);
-  gap: 0.65rem;
 }
 
 /* ---------- the studio panel on paper ---------------------------------- */
@@ -9618,7 +8927,6 @@ body,
 }
 
 
-
 /* ==========================================================================
    THE BACK COVER
    A page has to end like one, not simply stop.
@@ -10390,6 +9698,413 @@ body,
 }
 
 /* ==========================================================================
+   THE COVER'S LOOPS
+   Two curls of line in the margins either side of the cover, drawn on
+   arrival. The same gesture as the ribbon through the five rooms, at a
+   tenth of the weight: the heavy one carries the work, this one only has
+   to rhyme with it.
+   ========================================================================== */
+
+.bl-loops {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bl-loop {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: clamp(130px, 21vw, 340px);
+}
+
+.bl-loop[data-side="left"] { left: 0; }
+.bl-loop[data-side="right"] { right: 0; }
+
+.bl-loop path {
+  fill: none;
+  stroke: var(--bl-accent);
+  /* taken out of the scaling, since the box is stretched to the margin */
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  opacity: 0.32;
+}
+
+/*
+ * Drawn, not faded. The length is declared as 1 on the path itself, so the
+ * dash is a plain fraction and nothing has to be measured first. Only
+ * where there is script to raise the curtain: without it the page never
+ * gets the cue and the lines would sit at nought for good.
+ */
+@media (scripting: enabled) {
+  .bl-loop path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: bl-loop-draw 2s var(--bl-ease) forwards;
+    animation-delay: var(--d, 0.8s);
+  }
+}
+
+@keyframes bl-loop-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-loop path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}
+
+/* On a phone the cover stacks and there are no margins left to draw in;
+   the lines would run behind the name and the portrait instead of beside
+   them. */
+@media (max-width: 640px) {
+  .bl-loops { display: none; }
+}
+
+/* ==========================================================================
+   THE ROUTE
+   The five rooms, strung along one ribbon that draws itself as you read.
+   The names sit on the line rather than beside it, haloed in the page's
+   own ground so a word can cross the ribbon without either one of them
+   having to get out of the way.
+   ========================================================================== */
+
+.bl-route {
+  position: relative;
+  width: 100%;
+  /*
+   * The box the route is drawn in. Tall enough that five rooms are five
+   * arrivals rather than one screenful of them, and taller in proportion
+   * on a narrow screen, where every name takes more lines.
+   */
+  height: clamp(1820px, 132vw, 1960px);
+  margin-top: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.bl-route-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.bl-route-ghost,
+.bl-route-ink {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /*
+   * In screen pixels, not path units: the path is stretched to the box, so
+   * a scaling stroke would come out thinner across than it is down.
+   */
+  stroke-width: clamp(13px, 1.9vw, 26px);
+}
+
+.bl-route-ghost {
+  stroke: var(--bl-rule-soft);
+}
+
+.bl-route-ink {
+  stroke: var(--bl-accent);
+}
+
+.bl-route-stop {
+  position: absolute;
+  z-index: 2;
+  /*
+   * Held off its own edge, so a room that is indented has that much less
+   * room to run into the far one. The indent is the same share of the box
+   * at every width on purpose: it is what keeps the name over the part of
+   * the ribbon it was placed on, and a narrow screen that pulled all five
+   * to the same margin would leave them floating beside the line.
+   */
+  max-width: calc(97% - var(--edge));
+  /* the last of the way onto the line, measured in the page. See route.tsx */
+  translate: 0 var(--sit, 0px);
+}
+
+.bl-route-stop[data-side="left"] { left: var(--edge); }
+.bl-route-stop[data-side="right"] { right: var(--edge); }
+
+.bl-route-head {
+  display: flex;
+  align-items: center;
+  /* the halo around the name reaches past its own box, so the gap has to
+     clear that as well as the letterform */
+  gap: clamp(0.5rem, 1.1vw, 1.05rem);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bl-ink);
+  text-align: left;
+  cursor: pointer;
+  /* the one size the name, the mark and the arrow are all taken from */
+  font-size: clamp(1.75rem, 5vw, 4rem);
+}
+
+/* on the right-hand stops the whole thing mirrors, so the mark stays
+   outboard and the line of names reads as two edges rather than one */
+.bl-route-stop[data-side="right"] .bl-route-head {
+  flex-direction: row-reverse;
+}
+
+/* ---- the company's own mark, on a chip ---- */
+
+.bl-route-chip {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  height: 0.82em;
+  /*
+   * The shape of the mark it holds, not a square. Two of these logos are
+   * three times as wide as they are tall, and in a square tile they come
+   * out a third of the height of the others and read as smudges.
+   */
+  aspect-ratio: var(--ar, 1);
+  border-radius: 0.16em;
+  /* every one of these marks was drawn for white paper, so it gets some */
+  background: var(--bl-ink);
+  padding: 0.11em 0.15em;
+  box-shadow: 0 0.05em 0.2em rgba(0, 0, 0, 0.55);
+  transform: rotate(-7deg);
+  transition:
+    transform 0.45s var(--bl-ease),
+    box-shadow 0.45s var(--bl-ease);
+}
+
+/* the mark and the initials share the one cell, mark on top */
+.bl-route-chip > * {
+  grid-area: 1 / 1;
+}
+
+.bl-route-chip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bl-route-initials {
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: 0.3em;
+  letter-spacing: 0.03em;
+  color: var(--bl-bg);
+  text-align: center;
+}
+
+/* and the fallback, where a room has no mark on file */
+.bl-route-chip[data-mark="letters"] {
+  aspect-ratio: 1;
+  background: var(--bl-bg);
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 50%, transparent);
+  border-radius: 26%;
+  box-shadow: none;
+  color: var(--bl-accent);
+}
+
+.bl-route-chip[data-mark="letters"] .bl-route-initials {
+  font-size: 0.34em;
+  color: var(--bl-accent);
+}
+
+/* ---- the name ---- */
+
+/*
+ * The slot the name rises out of. Its padding is the halo's: the clipping
+ * that makes the rise read as a rise would otherwise shave the ground
+ * colour off the letterforms, and the name would arrive with the ribbon
+ * cutting through it.
+ */
+.bl-route-slot {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.16em 0.12em;
+  margin: -0.16em -0.12em;
+}
+
+.bl-route-name {
+  display: block;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 104%;
+  font-size: 1em;
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.3s var(--bl-ease);
+  /*
+   * The halo. Eight copies of the word in the page's ground colour, laid
+   * behind it, which is what keeps the ribbon off the letterforms without
+   * a box around the name or a gap in the line.
+   */
+  text-shadow:
+    0.07em 0 0 var(--bl-bg), -0.07em 0 0 var(--bl-bg),
+    0 0.07em 0 var(--bl-bg), 0 -0.07em 0 var(--bl-bg),
+    0.07em 0.07em 0 var(--bl-bg), -0.07em 0.07em 0 var(--bl-bg),
+    0.07em -0.07em 0 var(--bl-bg), -0.07em -0.07em 0 var(--bl-bg);
+}
+
+.bl-route-go {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 0.42em;
+  height: 0.42em;
+  border-radius: 50%;
+  border: 1px solid var(--bl-rule);
+  background: var(--bl-bg);
+  color: var(--bl-accent);
+  opacity: 0.55;
+  transition:
+    opacity 0.3s var(--bl-ease),
+    border-color 0.3s var(--bl-ease),
+    transform 0.4s var(--bl-ease);
+}
+
+.bl-route-go svg { width: 45%; height: 45%; }
+
+/* ---- the tag ---- */
+
+.bl-route-tag {
+  position: relative;
+  width: fit-content;
+  max-width: min(27em, 94%);
+  margin: 0.9em 0 0 18%;
+  padding: 0.75em 1.25em;
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 42%, transparent);
+  border-radius: 1.35rem;
+  background: var(--bl-surface);
+  /* tilted off the horizontal, and the other way on the other side, so the
+     column reads as a route with things pinned to it rather than a list */
+  transform: rotate(-3.2deg);
+  transition:
+    transform 0.45s var(--bl-ease),
+    border-color 0.45s var(--bl-ease),
+    background-color 0.45s var(--bl-ease);
+}
+
+.bl-route-stop[data-side="right"] .bl-route-tag {
+  margin-left: auto;
+  margin-right: 18%;
+  transform: rotate(3.2deg);
+}
+
+.bl-route-tag b {
+  display: block;
+  font-family: var(--bl-sans);
+  font-weight: 600;
+  font-size: clamp(0.8rem, 1.2vw, 1.02rem);
+  line-height: 1.25;
+  color: var(--bl-accent);
+}
+
+.bl-route-tag q {
+  display: block;
+  margin-top: 0.45em;
+  max-width: 24em;
+  font-family: var(--bl-sans);
+  font-size: clamp(0.76rem, 1.05vw, 0.92rem);
+  line-height: 1.4;
+  color: var(--bl-ink-soft);
+  quotes: none;
+}
+
+.bl-route-tag span {
+  display: block;
+  margin-top: 0.55em;
+  font-family: var(--bl-mono);
+  font-size: clamp(0.6rem, 0.82vw, 0.72rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+}
+
+.bl-route-tag span i::before {
+  content: "·";
+  margin: 0 0.6em;
+  opacity: 0.6;
+}
+
+.bl-route-now {
+  position: absolute;
+  top: -0.7em;
+  right: 1.1em;
+  padding: 0.25em 0.7em;
+  border-radius: 999px;
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  font-style: normal;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---- pointing at a room ----------------------------------------------
+   The whole stop answers, not just the thing under the cursor: the mark
+   squares up and lifts off the chip's shadow, the name takes the accent,
+   the arrow turns, and the tag levels out and comes forward. A room is
+   one object on this page, so it should behave like one.                */
+
+@media (hover: hover) and (pointer: fine) {
+  .bl-route-stop:hover .bl-route-chip,
+  .bl-route-head:focus-visible .bl-route-chip {
+    transform: rotate(0deg) scale(1.07);
+    box-shadow: 0 0.14em 0.5em rgba(0, 0, 0, 0.6);
+  }
+
+  .bl-route-stop:hover .bl-route-name,
+  .bl-route-head:focus-visible .bl-route-name {
+    color: var(--bl-accent);
+  }
+
+  .bl-route-stop:hover .bl-route-go,
+  .bl-route-head:focus-visible .bl-route-go {
+    opacity: 1;
+    border-color: var(--bl-accent);
+    transform: rotate(45deg);
+  }
+
+  .bl-route-stop:hover .bl-route-tag {
+    transform: rotate(0deg) translateY(-2px);
+    border-color: var(--bl-accent);
+    background: var(--bl-surface-2);
+  }
+}
+
+@media (max-width: 760px) {
+  /* a long name is two lines rather than a smaller name */
+  .bl-route-name { white-space: normal; }
+
+  /*
+   * And the mark goes above it rather than beside it. A phone leaves the
+   * head about two hundred and sixty pixels, the mark and the arrow take
+   * a hundred of them, and "SimpleHire.ai" is a single word that cannot
+   * be broken and does not fit in what is left: the name ran out past the
+   * edge of the page and took the arrow with it. On its own line it has
+   * the whole width, and the mark reads as a sticker above the title.
+   */
+  .bl-route-head { flex-wrap: wrap; }
+  .bl-route-chip { order: 0; }
+  .bl-route-go { order: 1; }
+  .bl-route-slot { order: 2; flex: 1 0 100%; }
+
+  .bl-route-tag { margin-left: 7%; }
+  .bl-route-stop[data-side="right"] .bl-route-tag { margin-right: 7%; }
+
+  /* nothing here is hovered, so the arrow has to be legible as it stands */
+  .bl-route-go { opacity: 0.8; }
+}
+
+/* ==========================================================================
    THE ROLLER
    One sentence bent over an arc, dropped into the seam between two acts.
    A strip rotated a few degrees is the cheap version of this and it reads
@@ -10428,6 +10143,24 @@ body,
   letter-spacing: -0.015em;
   text-transform: uppercase;
   dominant-baseline: middle;
+}
+
+/*
+ * The reprise. Same band, turned over: it bows the other way, so it leans
+ * into the seam from above rather than below, and the colour is the
+ * negative of the first — bone slab, words knocked out of it. Said twice in
+ * the same orange it would be a tic; said once each way it is a pair.
+ */
+.bl-roller[data-tone="negative"] {
+  margin-block: clamp(1rem, 4vh, 3rem) clamp(-2rem, -4vh, -1rem);
+}
+
+.bl-roller[data-tone="negative"] .bl-roller-band {
+  stroke: var(--bl-ink);
+}
+
+.bl-roller[data-tone="negative"] .bl-roller-text {
+  fill: var(--bl-bg);
 }
 
 @media (max-width: 760px) {
@@ -10740,37 +10473,4 @@ body,
 /* the wipe is a hover, and a touch screen has none to give */
 @media (pointer: coarse) {
   .bl-wk-wipe, .bl-wk-go { display: none; }
-}
-
-/* ==========================================================================
-   THE THREAD
-   One stroke joining the five rooms, drawn as the spread travels. The
-   columns already zigzag, so the line only has to join them to read as the
-   route the eye is taking anyway.
-   ========================================================================== */
-
-.bl-spread-thread {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.bl-spread-thread path {
-  fill: none;
-  stroke: var(--bl-accent);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  opacity: 0.85;
-}
-
-/* the rooms sit on it, not under it */
-.bl-spread-col { position: relative; z-index: 1; }
-
-@media (max-width: 760px) {
-  .bl-spread-thread path { stroke-width: 1.5; }
 }
