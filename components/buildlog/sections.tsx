@@ -13,7 +13,6 @@ import {
   type LogEntry,
 } from "@/lib/portfolio-data";
 import { Reveal } from "./reveal";
-import { Handshake } from "./handshake";
 import { whenCurtainOpens } from "@/lib/curtain";
 import { Counter, Magnetic, useSmoothScroll } from "./smooth";
 import { HeroInk } from "./ink";
@@ -800,21 +799,19 @@ export function ContactSection() {
       </Reveal>
 
       {/*
-        Two hands meeting, and then the line.
-
-        Three drafts of this said something about hiring him: don't take
-        a chance, five teams already did, nobody above hired a CV. All
-        three put him on one side of a table asking to be let over, and
-        the page has spent seven acts earning the right not to stand
+        Three drafts of this line said something about hiring him: don't
+        take a chance, five teams already did, nobody above hired a CV.
+        All three put him on one side of a table asking to be let over,
+        and the page has spent seven acts earning the right not to stand
         there. The work above is finished, dated and someone else's
         problem now. The only interesting thing left is the one nobody
         has built, and that is a sentence with two people in it.
 
-        Which is what the drawing is for. It is the only picture on this
-        page that is about what happens after it.
+        It had a drawing of two hands over it for a while. The line does
+        not need illustrating, and the figures walking along the foot of
+        the act are already a picture of the same idea with nothing
+        drawn on purpose.
       */}
-      <Handshake />
-
       <Reveal delay={120}>
         <h2 className="bl-close-line">
           Everything above already exists.
