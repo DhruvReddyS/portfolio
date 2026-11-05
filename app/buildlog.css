@@ -10388,3 +10388,116 @@ body,
   border-color: color-mix(in srgb, var(--bl-accent) 45%, transparent);
   color: var(--bl-accent);
 }
+
+/* ==========================================================================
+   THE ROLLER
+   One sentence bent over an arc, dropped into the seam between two acts.
+   A strip rotated a few degrees is the cheap version of this and it reads
+   as exactly that; on a real curve every letter stands up off its own
+   piece of the arc, the way it would on a painted sign.
+   ========================================================================== */
+
+.bl-roller {
+  position: relative;
+  width: 100%;
+  /* it is the gap between two acts, so it owns the gap */
+  margin-block: clamp(-2rem, -4vh, -1rem) clamp(1rem, 4vh, 3rem);
+  overflow: hidden;
+  line-height: 0;
+}
+
+.bl-roller svg {
+  display: block;
+  width: 100%;
+  height: clamp(7rem, 17vw, 13rem);
+}
+
+.bl-roller-band {
+  fill: none;
+  stroke: var(--bl-accent);
+  stroke-width: 104;
+  stroke-linecap: butt;
+}
+
+.bl-roller-text {
+  fill: var(--bl-accent-ink);
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 106%;
+  font-size: 54px;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  dominant-baseline: middle;
+}
+
+@media (max-width: 760px) {
+  .bl-roller svg { height: clamp(5.5rem, 24vw, 8rem); }
+  .bl-roller-band { stroke-width: 118; }
+  .bl-roller-text { font-size: 62px; }
+}
+
+/* ==========================================================================
+   THE STATEMENT
+   One sentence between the cover and the log, taken a word at a time at
+   whatever speed the reader is already moving.
+   ========================================================================== */
+
+.bl-say {
+  display: grid;
+  gap: clamp(1.2rem, 3vh, 2.2rem);
+  padding: clamp(5rem, 16vh, 11rem) var(--bl-gutter);
+}
+
+.bl-say-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label, 0.58rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+/* the rule that carries the eye in from the gutter */
+.bl-say-kicker::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--bl-rule-soft);
+}
+
+.bl-statement {
+  max-width: 20ch;
+  margin: 0;
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-variation-settings: "SOFT" 28, "WONK" 1, "opsz" 64;
+  font-size: clamp(2rem, 6.2vw, 5.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  color: var(--bl-ink);
+}
+
+.bl-statement-word { display: inline; }
+
+/*
+ * Only the inner span is faded, so the space between two words belongs to
+ * neither and the line never breaks in a different place mid-animation.
+ */
+.bl-statement-word > span {
+  display: inline-block;
+  opacity: 0.16;
+}
+
+/* the clause that is the actual claim */
+.bl-statement-word:nth-last-child(-n + 5) > span { color: var(--bl-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-statement-word > span { opacity: 1; }
+}
+
+@media (max-width: 760px) {
+  .bl-statement { max-width: none; }
+}

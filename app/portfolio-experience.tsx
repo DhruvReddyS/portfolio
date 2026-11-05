@@ -10,6 +10,8 @@ import { WorkIndex } from "@/components/buildlog/work-index";
 import { SmoothScroll } from "@/components/buildlog/smooth";
 import { Cover } from "@/components/buildlog/cover";
 import { Cursor } from "@/components/buildlog/cursor";
+import { Roller } from "@/components/buildlog/roller";
+import { Statement } from "@/components/buildlog/statement";
 import { useCurtainHeld } from "@/lib/curtain";
 import {
   BuildLogFooter,
@@ -124,8 +126,25 @@ function BuildLog() {
 
       <main className="bl-main">
         <Hero time={time} />
+
+        {/*
+          Eight acts of evidence and nowhere he says what he thinks, which
+          is the thing a reader actually decides on. Here, once, before any
+          of it.
+        */}
+        <section className="bl-say" aria-label="What he is for">
+          <p className="bl-say-kicker">A word before the log</p>
+          <Statement>
+            Anyone can make a thing work once. I am interested in the part where it keeps
+            working.
+          </Statement>
+        </section>
+
         <LogSection />
         <WorkIndex onOpen={setOpenCase} />
+
+        {/* the seam between what got built and where he learned to */}
+        <Roller text="Shipped, not demoed" />
 
         <EducationSection />
         <ToolkitSection />
