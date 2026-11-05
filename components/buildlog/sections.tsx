@@ -771,7 +771,7 @@ export function ContactSection() {
 
       <SectionHeader
         label="07 / Contact"
-        title="How to start one"
+        title="How the next one starts"
         note="Open to work"
       />
 
@@ -789,15 +789,42 @@ export function ContactSection() {
         </p>
       </Reveal>
 
+      {/*
+        Written to the person who actually reads this page: someone with a
+        role open and twenty tabs of candidates. So it says what the page
+        is for, what to do with it, and what happens next, in that order,
+        and it does not ask them to like him.
+      */}
       <Reveal delay={120}>
         <p className="bl-lede">
-          Bring the{" "}
+          Every room above started the same way: somebody with a hard
+          problem took a chance on someone who wanted it. If you are hiring
+          for{" "}
           <Marked kind="circle" delay={320}>
-            hard one
+            full-stack or applied AI
           </Marked>
-          . I will bring the architecture, the awkward questions nobody asked
-          in the kickoff, and an unreasonable number of open tabs.
+          , the case files are the interview. Read one, then send me the
+          brief and I will tell you straight whether I am the right person
+          for it.
         </p>
+      </Reveal>
+
+      {/* The three things a recruiter checks before they write back. */}
+      <Reveal delay={170}>
+        <ul className="bl-hire">
+          <li>
+            <b>Looking for</b>
+            <span>Full-stack and applied AI roles</span>
+          </li>
+          <li>
+            <b>Based in</b>
+            <span>{profile.location}, open to remote</span>
+          </li>
+          <li>
+            <b>Already shipped</b>
+            <span>Five internships, eight builds</span>
+          </li>
+        </ul>
       </Reveal>
 
       <Reveal delay={200}>
@@ -805,8 +832,8 @@ export function ContactSection() {
           <a className="bl-cta" href={`mailto:${profile.email}`}>
             <span className="bl-cta-ring" aria-hidden="true" />
             <span className="bl-cta-label">
-              <span>Put me on it</span>
-              <span>Put me on it</span>
+              <span>Send me the brief</span>
+              <span>Send me the brief</span>
             </span>
             <span className="bl-cta-mark" aria-hidden="true">
               <MarkArrow size={22} />
@@ -818,7 +845,7 @@ export function ContactSection() {
       <Reveal delay={260}>
         <p className="bl-cta-sub">
           <a href={`mailto:${profile.email}`}>{profile.email}</a>
-          <span>Replies within a day. Usually sooner.</span>
+          <span>Replies within a day. Résumé on request or in the bar above.</span>
         </p>
       </Reveal>
 

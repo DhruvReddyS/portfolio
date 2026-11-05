@@ -118,6 +118,7 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
   const wrap = useRef<HTMLDivElement>(null);
   const fill = useRef<SVGPathElement>(null);
   const ghost = useRef<SVGPathElement>(null);
+  const tip = useRef<HTMLSpanElement>(null);
 
   /*
    * Sit every name down on the ribbon.
@@ -290,19 +291,56 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
       const length = line.getTotalLength();
       gsap.set(line, { strokeDasharray: length, strokeDashoffset: length });
 
-      gsap.to(line, {
+      /*
+       * The nib. A small light at the end of the drawn stretch, put where
+       * the ink has got to rather than animated along a guess of it, so
+       * it is exactly on the line at every point. In percentages of the
+       * box, because the ribbon is stretched to fit and anything placed
+       * in its own units would drift as the box changed shape.
+       */
+      const nib = (progress: number) => {
+        const node = tip.current;
+        if (!node) return;
+        const at = line.getPointAtLength(length * progress);
+        node.style.setProperty("--tx", `${((at.x / 1000) * 100).toFixed(3)}%`);
+        node.style.setProperty("--ty", `${((at.y / 1900) * 100).toFixed(3)}%`);
+        // nothing to point at before it starts or once it is finished
+        /* retired before the path runs off the foot of the box, which it
+           does in its last few percent on its way to the next act */
+        node.dataset.on = progress > 0.004 && progress < 0.96 ? "true" : "false";
+      };
+
+      /*
+       * Held in a box rather than named directly, because ScrollTrigger
+       * runs the update once while it is still building the tween, and
+       * the name would not exist yet when it did.
+       */
+      const held: { draw?: gsap.core.Tween } = {};
+
+      held.draw = gsap.to(line, {
         strokeDashoffset: 0,
         ease: "none",
+        /*
+         * Done by the time the last room settles, not a third of a screen
+         * later. The tail used to be left grey: the trigger ran on until
+         * the foot of the route had climbed most of the way up the
+         * window, which is long after OTBI has been read and gone.
+         * Starting and ending on the same line means the scrub lasts
+         * exactly as long as the route takes to pass it.
+         */
         scrollTrigger: {
           trigger: box,
-          // from the head of the route reaching the lower third to the
-          // tail of it leaving the upper
           start: "top 74%",
-          end: "bottom 62%",
-          scrub: 0.6,
+          end: "bottom 76%",
+          scrub: 0.8,
           invalidateOnRefresh: true,
         },
+        // the tween's own progress, not the scroll's: with a scrub between
+        // them the two are a moment apart, and the nib has to be on the ink
+        onUpdate: () => nib(held.draw?.progress() ?? 0),
       });
+
+      nib(0);
 
       /*
        * One trigger per room rather than one staggered set, which is what
@@ -389,6 +427,11 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
+
+      {/* the light at the end of the drawn stretch */}
+      <span className="bl-route-tip" ref={tip} data-on="false" aria-hidden="true">
+        <i />
+      </span>
 
       {logEntries.map((entry, index) => {
         const place = PLACES[index] ?? PLACES[PLACES.length - 1];

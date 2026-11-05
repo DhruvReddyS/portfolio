@@ -1501,6 +1501,57 @@ html.bl-locked body { overflow: hidden; }
   transform: rotate(45deg);
 }
 
+/* ---- the three facts -------------------------------------------------
+   What a recruiter checks before they decide whether to write back. Set
+   as a row of plain pairs rather than cards: this is a reference, not a
+   thing to be sold.                                                    */
+
+.bl-hire {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2.6vw, 2.4rem);
+  width: min(100%, 46rem);
+  margin: clamp(1.4rem, 3vw, 2.2rem) 0 0;
+  padding: clamp(1rem, 2vw, 1.4rem) 0 0;
+  border-top: 1px solid var(--bl-rule);
+  list-style: none;
+}
+
+.bl-hire li {
+  display: grid;
+  gap: 0.4em;
+  align-content: start;
+}
+
+.bl-hire b {
+  font-family: var(--bl-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-hire span {
+  font-family: var(--bl-sans);
+  font-size: clamp(0.85rem, 1.15vw, 1rem);
+  line-height: 1.35;
+  color: var(--bl-ink);
+}
+
+@media (max-width: 680px) {
+  .bl-hire {
+    grid-template-columns: 1fr;
+    gap: 0.95rem;
+  }
+
+  .bl-hire li {
+    grid-template-columns: 8.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+}
+
 .bl-cta-sub {
   display: flex;
   flex-wrap: wrap;
@@ -2255,14 +2306,10 @@ html.bl-locked body { overflow: hidden; }
    below. Change one and change the comment.                            */
 
 /* ---- the ink -----------------------------------------------------------
-   Four strokes down the margins, laid in once everything else has
-   arrived. They are filled shapes rather than stroked lines, because a
-   stroke is the same width all the way along and a pen is not: these
-   start at nothing, swell past the middle and run out again.
-
-   Drawn by wiping a mask along the centreline, so the only thing that
-   changes is how much of the shape is uncovered. The shape itself is
-   never redrawn.                                                       */
+   Four hairlines down the margins, drawn once everything else is in.
+   They complement the cover; they do not compete with it. A heavier set
+   was tried here, with a real pen's taper, and at this size weight only
+   reads as clutter.                                                    */
 
 .bl-inks {
   position: absolute;
@@ -2282,30 +2329,25 @@ html.bl-locked body { overflow: hidden; }
 .bl-ink[data-side="left"] { left: 0; }
 .bl-ink[data-side="right"] { right: 0; }
 
-.bl-ink-body {
-  fill: var(--bl-accent);
-  opacity: 0.34;
-}
-
-.bl-ink-wipe {
+.bl-ink path {
   fill: none;
-  stroke: #fff;
-  /* wider than the widest part of the stroke it uncovers */
-  stroke-width: 18;
+  stroke: var(--bl-accent);
+  /* taken out of the scaling, so the line is the same hair at any size */
+  stroke-width: 1.6;
   stroke-linecap: round;
-  stroke-linejoin: round;
+  opacity: 0.26;
 }
 
 /*
- * Only where there is script to raise the curtain: without it nothing
- * ever gives the cue, and four strokes would sit at nought for good.
+ * Drawn, not faded. Only where there is script to raise the curtain:
+ * without it nothing gives the cue and four lines would sit at nought.
  */
 @media (scripting: enabled) {
-  .bl-ink-wipe {
+  .bl-ink path {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    animation: bl-ink-draw 2.1s cubic-bezier(0.33, 0.9, 0.36, 1) forwards;
-    /* last of everything, and one after another */
+    animation: bl-ink-draw 2.3s cubic-bezier(0.33, 0.9, 0.36, 1) forwards;
+    /* last of everything on the cover, and one after another */
     animation-delay: calc(1.95s + var(--at, 0s));
   }
 }
@@ -2314,19 +2356,19 @@ html.bl-locked body { overflow: hidden; }
   to { stroke-dashoffset: 0; }
 }
 
-.bl-root[data-held="true"] .bl-ink-wipe {
+.bl-root[data-held="true"] .bl-ink path {
   animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bl-ink-wipe {
+  .bl-ink path {
     stroke-dashoffset: 0;
     animation: none;
   }
 }
 
 /* On a phone the cover stacks and there is no margin left to draw in;
-   the strokes would run behind the name and the portrait instead of
+   the lines would run behind the name and the portrait instead of
    beside them. */
 @media (max-width: 640px) {
   .bl-inks { display: none; }
@@ -7619,6 +7661,17 @@ body,
 .bl-wall-act {
   position: relative;
   overflow: hidden;
+  /*
+   * Tighter than the rest. Every other act is a column of type that
+   * wants air around it; this one is a line of photographs hung across
+   * a room, and the room was reading as two empty bands with a washing
+   * line between them.
+   */
+  padding-block: calc(var(--bl-s-act) * 0.62);
+}
+
+.bl-wall-act .bl-head {
+  margin-bottom: calc(var(--bl-s-head) * 0.55);
 }
 
 .bl-wall-act::before {
@@ -7628,17 +7681,52 @@ body,
   z-index: 0;
   pointer-events: none;
   background:
+    /*
+     * One lamp, above and to the left, the way a wall of framed things
+     * is always lit. Then the plaster, then the fall-off into the
+     * corners, so the line of prints sits in the brightest part of a
+     * room rather than on a flat black field.
+     */
     radial-gradient(
-      120% 80% at 18% -10%,
-      rgba(255, 238, 214, 0.09),
-      transparent 62%
+      90% 70% at 22% -6%,
+      rgba(255, 236, 210, 0.14),
+      transparent 64%
+    ),
+    radial-gradient(
+      120% 90% at 50% 46%,
+      rgba(255, 240, 220, 0.05),
+      transparent 70%
     ),
     repeating-linear-gradient(
       91deg,
-      rgba(255, 255, 255, 0.013) 0 2px,
+      rgba(255, 255, 255, 0.016) 0 2px,
       transparent 2px 7px
     ),
-    linear-gradient(180deg, #121110 0%, #0a0908 58%, #070606 100%);
+    repeating-linear-gradient(
+      3deg,
+      rgba(0, 0, 0, 0.14) 0 1px,
+      transparent 1px 9px
+    ),
+    linear-gradient(180deg, #141210 0%, #0b0a09 56%, #060606 100%);
+}
+
+/* the shadow the hung line throws onto the wall under it */
+.bl-wall-act .bl-wall::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 2.5rem;
+  height: 5.5rem;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(0, 0, 0, 0.55),
+    transparent 76%
+  );
+  filter: blur(6px);
 }
 
 /* the rail the line is tied off to */
@@ -9952,6 +10040,53 @@ body,
 
 .bl-route-ink {
   stroke: var(--bl-accent);
+}
+
+/* ---- the nib ----------------------------------------------------------
+   A small light where the ink has got to. It is the one thing on this
+   page that says how far through the five you are, and it says it by
+   being somewhere rather than by filling up.                          */
+
+.bl-route-tip {
+  position: absolute;
+  left: var(--tx, 0%);
+  top: var(--ty, 0%);
+  z-index: 3;
+  width: clamp(13px, 1.9vw, 26px);
+  height: clamp(13px, 1.9vw, 26px);
+  margin: calc(clamp(13px, 1.9vw, 26px) / -2) 0 0 calc(clamp(13px, 1.9vw, 26px) / -2);
+  border-radius: 50%;
+  background: var(--bl-ink);
+  box-shadow: 0 0 0 2px var(--bl-accent), 0 0 1.6rem color-mix(in srgb, var(--bl-accent) 60%, transparent);
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.45s var(--bl-ease),
+    transform 0.45s var(--bl-ease);
+  pointer-events: none;
+}
+
+.bl-route-tip[data-on="true"] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* and a ring going off it, so it reads as live rather than parked */
+.bl-route-tip i {
+  position: absolute;
+  inset: -0.35rem;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 70%, transparent);
+  animation: bl-nib-ping 2.4s ease-out infinite;
+}
+
+@keyframes bl-nib-ping {
+  0% { transform: scale(0.72); opacity: 0.8; }
+  70%, 100% { transform: scale(1.75); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-route-tip i { animation: none; opacity: 0.5; }
 }
 
 .bl-route-stop {
