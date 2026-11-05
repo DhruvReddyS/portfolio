@@ -13082,3 +13082,384 @@ body,
   .bl-ticker-one { letter-spacing: 0.22em; }
   .bl-footer > .bl-footer-giant { top: 9%; font-size: clamp(3.5rem, 26vw, 9rem); }
 }
+
+/* ==========================================================================
+   THE TWO PASSES
+   The one thing on this page you can pick up, in the act about the two
+   things he is carrying at once.
+   ========================================================================== */
+
+.bl-passes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 3vw, 3rem);
+  margin-top: clamp(1rem, 3vh, 2rem);
+}
+
+/* ---- the strap -------------------------------------------------------- */
+
+.bl-hang {
+  position: relative;
+  height: clamp(27rem, 50vw, 37rem);
+}
+
+.bl-hang-strap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  pointer-events: none;
+}
+
+.bl-hang-tape {
+  stroke: color-mix(in srgb, var(--bl-accent) 72%, #2a1007);
+  stroke-width: 13;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* the line of stitching down the middle of the webbing */
+.bl-hang-stitch {
+  stroke: color-mix(in srgb, var(--bl-bg) 55%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* the ring it is threaded through, at the top of the box */
+.bl-hang-pin {
+  position: absolute;
+  top: -7px;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  margin-left: -11px;
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--bl-ink) 45%, transparent);
+  background: var(--bl-bg);
+  pointer-events: none;
+}
+
+/* ---- the card ---------------------------------------------------------- */
+
+.bl-hang-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: clamp(12rem, 21vw, 16.5rem);
+  /* hung from the point the rope ends at, and turned with it */
+  translate: calc(var(--x, 0px) - 50%) var(--y, 0px);
+  rotate: var(--lean, 0deg);
+  transform-origin: 50% -0.4rem;
+  cursor: grab;
+  /*
+   * Sideways is ours, down the page is theirs.
+   *
+   * A pass on a phone is most of the width of the screen, so taking
+   * every touch on it would mean a reader who put their thumb on the
+   * card could not scroll the page. Swinging one is a sideways gesture
+   * anyway, so the vertical axis is handed back to the page and only
+   * the horizontal one is captured.
+   */
+  touch-action: pan-y;
+  will-change: translate, rotate;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.bl-hang-card[data-held="true"] { cursor: grabbing; }
+
+/* the clip the strap is threaded into */
+.bl-hang-clip {
+  position: absolute;
+  left: 50%;
+  top: -0.65rem;
+  width: 2.6rem;
+  height: 1.3rem;
+  margin-left: -1.3rem;
+  border-radius: 0.35rem;
+  border: 2px solid color-mix(in srgb, var(--bl-ink) 40%, transparent);
+  background: linear-gradient(180deg, #4c4740, #22201c);
+  box-shadow: 0 3px 8px -4px rgba(0, 0, 0, 0.9);
+}
+
+.bl-hang-clip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1.5rem;
+  height: 0.3rem;
+  margin: -0.15rem 0 0 -0.75rem;
+  border-radius: 0.15rem;
+  background: var(--bl-bg);
+}
+
+/* ---- what is printed on it -------------------------------------------- */
+
+.bl-id {
+  position: relative;
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.5rem 1rem 1rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 14px;
+  background:
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--bl-ink) 7%, transparent),
+      transparent 48%
+    ),
+    var(--bl-surface);
+  box-shadow:
+    0 26px 50px -26px rgba(0, 0, 0, 1),
+    inset 0 1px 0 color-mix(in srgb, var(--bl-ink) 10%, transparent);
+  overflow: hidden;
+}
+
+/* a band of the school's own weather across the head of the card */
+.bl-id::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0.35rem;
+  background: var(--bl-accent);
+}
+
+.bl-id[data-school="iitm"]::before {
+  background: color-mix(in srgb, var(--bl-accent) 45%, var(--bl-ink));
+}
+
+.bl-id-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.bl-id-org {
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--bl-ink);
+}
+
+.bl-id-kind {
+  margin-top: -0.25rem;
+  font-family: var(--bl-mono);
+  font-size: 0.46rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-id-shot {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  border: 1px solid var(--bl-rule-soft);
+  background: color-mix(in srgb, var(--bl-ink) 4%, transparent);
+}
+
+.bl-id-shot > * { width: 100%; height: 100%; }
+
+.bl-id-name {
+  margin: 0.15rem 0 0;
+  font-family: var(--bl-sans);
+  font-weight: 650;
+  font-size: clamp(0.92rem, 1.3vw, 1.05rem);
+  letter-spacing: -0.012em;
+  color: var(--bl-ink);
+}
+
+.bl-id-course {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0;
+}
+
+.bl-id-course strong {
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-id-course span {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--bl-ink-dim);
+}
+
+.bl-id-figure {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--bl-rule-soft);
+}
+
+.bl-id-figure strong {
+  font-family: var(--bl-display);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  line-height: 1;
+  color: var(--bl-ink);
+}
+
+.bl-id-figure span {
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+/* stamped across the corner, the way a pass is overprinted */
+.bl-id-stamp {
+  position: absolute;
+  right: -2.4rem;
+  top: 2.1rem;
+  margin: 0;
+  padding: 0.22rem 2.6rem;
+  background: color-mix(in srgb, var(--bl-accent) 88%, transparent);
+  color: var(--bl-accent-ink);
+  font-family: var(--bl-mono);
+  font-size: 0.48rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: rotate(38deg);
+  pointer-events: none;
+}
+
+/* and the barcode, which means nothing, as they all do */
+.bl-id-code {
+  display: block;
+  height: 1.6rem;
+  margin-top: 0.2rem;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bl-ink) 0 1px,
+    transparent 1px 3px,
+    var(--bl-ink) 3px 5px,
+    transparent 5px 6px,
+    var(--bl-ink) 6px 7px,
+    transparent 7px 11px
+  );
+  opacity: 0.55;
+}
+
+/* ---- the cue, and what will not fit on a pass -------------------------- */
+
+.bl-pass-cue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.8rem, 2vw, 1.4rem);
+  margin: clamp(1.25rem, 3vh, 2rem) 0 0;
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label, 0.58rem);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-pass-cue i {
+  flex: 1;
+  max-width: 7rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--bl-rule), transparent);
+}
+
+.bl-study-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.25rem, 3vw, 3rem);
+  margin: clamp(2rem, 5vh, 3.25rem) 0 0;
+  padding-top: clamp(1.25rem, 3vh, 2rem);
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-study-notes > div { display: grid; gap: 0.6rem; align-content: start; }
+
+.bl-study-notes dt {
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-study-notes dd { margin: 0; display: grid; gap: 0.7rem; }
+
+.bl-study-notes ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bl-study-notes li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--bl-ink-dim);
+}
+
+.bl-study-notes li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.45rem;
+  height: 1px;
+  background: var(--bl-accent);
+}
+
+.bl-study-certs { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; }
+
+.bl-study-certs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-study-certs a:hover { color: var(--bl-accent); }
+
+@media (max-width: 760px) {
+  .bl-passes { grid-template-columns: minmax(0, 1fr); gap: 0; }
+
+  /* the box has to hold the strap and the whole card, and the card is
+     as tall as what is printed on it, so both are trimmed together */
+  .bl-hang { height: clamp(34rem, 140vw, 39rem); }
+  .bl-hang-card { width: min(16rem, 74vw); }
+
+  .bl-id { gap: 0.45rem; padding: 1.3rem 0.9rem 0.85rem; }
+  .bl-id-shot { aspect-ratio: 16 / 10; }
+  .bl-id-code { height: 1.2rem; }
+
+  .bl-study-notes { grid-template-columns: minmax(0, 1fr); }
+}
