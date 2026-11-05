@@ -36,6 +36,10 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
   const settled = useRef(0);
   const [progress, setProgress] = useState(0);
   const [at, setAt] = useState(0);
+  /** True once the spread is actually being scrubbed by the scroll. */
+  const [running, setRunning] = useState(false);
+  /** The route the thread takes, measured off the rooms themselves. */
+  const [thread, setThread] = useState("");
 
   useEffect(() => {
     const panelNode = panel.current;
@@ -48,6 +52,8 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
     // over the top while the spread is still running.
     const act = panelNode.closest("section");
     if (!act) return;
+
+    setRunning(true);
 
     const context = gsap.context(() => {
       const distance = () =>
@@ -165,12 +171,105 @@ export function Reel({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
     seekFromPointer(event.clientX);
   };
 
+  /*
+   * The thread's route, measured rather than guessed.
+   *
+   * A hard-coded path is wrong at every width but one: the columns are laid
+   * out by flex, they are a different size on a phone, and the zigzag makes
+   * the free band a different shape beside each of them. So each room is
+   * asked where it is, and the line is drawn through the gap next to it:
+   * under the ones sitting high, over the ones sitting low. That is also
+   * what keeps it visible, since the rooms themselves are opaque.
+   */
+  useEffect(() => {
+    const trackNode = track.current;
+    if (!trackNode) return;
+
+    const measure = () => {
+      const cols = [...trackNode.querySelectorAll<HTMLElement>(".bl-spread-col")];
+      if (!cols.length) return;
+      const box = trackNode.getBoundingClientRect();
+      if (!box.width || !box.height) return;
+
+      const points = cols.map((col) => {
+        const r = col.getBoundingClientRect();
+        const x = ((r.left - box.left + r.width / 2) / box.width) * 1000;
+        const high = col.dataset.drop === "up";
+        /*
+         * The rooms overlap through the middle of the track, so the free
+         * band is not between them: it is under the ones sitting high and
+         * over the ones sitting low. Held a stroke's width off the edge of
+         * the track either way, so the line never runs along the rim.
+         */
+        const RIM = 22;
+        const raw = high ? r.bottom - box.top + 18 : r.top - box.top - 18;
+        const edge = Math.min(box.height - RIM, Math.max(RIM, raw));
+        return { x, y: (edge / box.height) * 300 };
+      });
+
+      // run off both ends, so the line arrives from somewhere and leaves
+      const first = points[0];
+      const last = points[points.length - 1];
+      const all = [{ x: -40, y: first.y }, ...points, { x: 1040, y: last.y }];
+
+      // a smooth curve through the lot: each segment eased half way across
+      let d = `M${all[0].x.toFixed(1)} ${all[0].y.toFixed(1)}`;
+      for (let i = 1; i < all.length; i++) {
+        const a = all[i - 1];
+        const b = all[i];
+        const mid = (a.x + b.x) / 2;
+        d += ` C${mid.toFixed(1)} ${a.y.toFixed(1)} ${mid.toFixed(1)} ${b.y.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
+      }
+      setThread((was) => (was === d ? was : d));
+    };
+
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(trackNode);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   const current = logEntries[at];
 
   return (
     <div className="bl-spread" ref={panel}>
       <div className="bl-spread-viewport">
         <div className="bl-spread-track" ref={track}>
+          {/*
+            One stroke threading the five rooms, drawn as the spread travels.
+            The columns already sit up, down, up, down, so the line only has
+            to join them to read as the route the eye is taking anyway.
+
+            Its route is measured off the rooms, not written down here: see
+            the effect above. pathLength="1" then lets the dash be stated in
+            the same 0 to 1 the scroll reports, so the drawing needs no
+            measuring of its own and none again at another width.
+
+            Fully drawn where the spread is not being scrubbed at all, which
+            is the reduced-motion case: a line permanently a tenth of itself
+            is worse than no line.
+          */}
+          <svg
+            className="bl-spread-thread"
+            viewBox="0 0 1000 300"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            {thread && (
+              <path
+                pathLength={1}
+                vectorEffect="non-scaling-stroke"
+                d={thread}
+                style={{ strokeDashoffset: running ? 1 - progress : 0 }}
+              />
+            )}
+          </svg>
+
           {logEntries.map((entry, index) => {
             const story = logStories[entry.id];
             return (

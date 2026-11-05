@@ -1,32 +1,28 @@
 "use client";
 
-import { useState } from "react";
 import { caseFiles, sideQuests, type CaseFile } from "@/lib/portfolio-data";
-import { Coverflow } from "@/components/ui/coverflow";
 import { MarkArrow, MarkGithub, MarkRosette, MarkWindow } from "./marks";
 import { Plate } from "./plate";
 import { ProjectBanner, type BannerLogo } from "./banner";
 import { SectionHeader } from "./sections";
-import { MarkedLine } from "./marked";
 
 /**
- * The work, as a rack you turn through.
+ * The work, as a wall you read across.
  *
- * It has been tiles at four sizes, a typed index, and a wall of cards. The
- * wall was the best of those and this is not an argument that it was wrong:
- * it is a different claim about what eight builds are. A wall says here are
- * eight things, compare them. A rack says here is one thing, and there are
- * seven more behind it.
+ * It has been tiles, a typed index, a wall and then a rack you turned
+ * through. The rack is a good way to look at one thing and a poor way to
+ * judge eight: seven of them were always facing away, and the caption under
+ * it belonged to whichever had been turned to the front. A wall says here
+ * are eight, compare them, and every card carries its own caption so none
+ * has to be turned to be read.
  *
- * The thing that has never gone away is that three of the eight have a
- * screenshot and five do not, so a rack of faces is a rack of five empty
- * frames unless the five are given something true to carry. They carry what
- * the build is made of, set out on ruled ground, which is what this section
- * has been doing since the cards and is the one part worth keeping.
+ * Each picture is the control. Point at one and the accent comes up over it
+ * and says what pressing it does, which is the only hover on this page that
+ * has something to tell you rather than something to show you.
  *
- * Every entry's copy is in the page, not only the one facing you. The rack
- * shows one at a time; a crawler, a reader with no JavaScript and the test
- * suite all see all eight.
+ * Three of the eight have a screenshot and five do not, so five carry a
+ * banner of their own instead: see banner.tsx. A wall of five empty frames
+ * is the failure this section has been avoiding since the tiles.
  */
 
 /*
@@ -102,114 +98,104 @@ const rows: Row[] = [
 ];
 
 export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
-  const [at, setAt] = useState(0);
-
   return (
     <section className="bl-section bl-work" id="work">
       <SectionHeader
         label="02 / Selected work"
         title="What got built"
-        lead="Six builds and two side quests. Turn the rack, and press the one facing you for the full case file."
-        note={`${rows.length} on the rack`}
+        lead="Six builds and two side quests. Press any one of them for the full case file."
+        note={`${rows.length} on the wall`}
       />
 
-      <Coverflow
-        className="bl-work-rack"
-        cardWidth={520}
-        ariaLabel="Six builds and two side quests"
-        slides={rows.map((row) => ({
-          key: row.id,
-          label: `${row.name}, ${row.kind}`,
-          cover: (
-            <div className="bl-card-shot" data-plate={row.image ? "shot" : "set"}>
-              {row.image ? (
-                <Plate
-                  bare
-                  dir="work"
-                  name={row.id}
-                  src={row.image}
-                  monogram={row.name}
-                  alt={`${row.name}, ${row.kind}`}
-                />
-              ) : (
-                <ProjectBanner
-                  id={row.id}
-                  name={row.name}
-                  kind={row.kind}
-                  stack={row.stack}
-                  logo={LOGOS[row.id]}
-                  monogram={initials(row.name)}
-                />
-              )}
+      {/*
+        A wall rather than a rack.
+        The rack showed one card at a time and kept the other seven turned
+        away, which is a good way to look at one thing and a bad way to
+        judge eight. Here they are all out at once and each carries its own
+        caption, so nothing has to be turned to be read.
+      */}
+      <div className="bl-wk-wall">
+        {rows.map((row) => {
+          const open = row.file ? () => onOpen(row.file as CaseFile) : undefined;
 
-              <span className="bl-card-num">{row.index}</span>
+          return (
+            <article className="bl-wk" key={row.id} data-open={open ? "true" : undefined}>
+              {/* the picture is the control, where there is a file behind it */}
+              <button
+                type="button"
+                className="bl-wk-media"
+                data-plate={row.image ? "shot" : "set"}
+                onClick={open}
+                disabled={!open}
+                aria-label={open ? `Open the case file for ${row.name}` : undefined}
+              >
+                {row.image ? (
+                  <Plate
+                    bare
+                    dir="work"
+                    name={row.id}
+                    src={row.image}
+                    monogram={row.name}
+                    alt={`${row.name}, ${row.kind}`}
+                  />
+                ) : (
+                  <ProjectBanner
+                    id={row.id}
+                    name={row.name}
+                    kind={row.kind}
+                    stack={row.stack}
+                    logo={LOGOS[row.id]}
+                    monogram={initials(row.name)}
+                  />
+                )}
 
-              {row.decorated ? (
-                <span className="bl-card-tag" data-win="true">
-                  <MarkRosette size={11} /> Winner, twice
+                {row.decorated ? (
+                  <span className="bl-wk-tag" data-win="true">
+                    <MarkRosette size={11} /> Winner, twice
+                  </span>
+                ) : (
+                  <span className="bl-wk-tag">{row.kind}</span>
+                )}
+
+                {/* the accent comes up over the picture, and says what to do */}
+                <span className="bl-wk-wipe" aria-hidden="true" />
+                <span className="bl-wk-go" aria-hidden="true">
+                  {open ? "Open the file" : "No file, just the build"}
                 </span>
-              ) : (
-                <span className="bl-card-tag">{row.kind}</span>
-              )}
-            </div>
-          ),
-        }))}
-        onActivate={setAt}
-        onOpen={(index) => {
-          const row = rows[index];
-          if (row?.file) onOpen(row.file);
-        }}
-      />
+              </button>
 
-      {/* All eight, stacked in one cell. Only the one on the rack is shown,
-          and the rest are inert rather than merely invisible. */}
-      <div className="bl-flow-caption">
-        {rows.map((row, index) => (
-          <article
-            key={row.id}
-            className="bl-flow-info"
-            data-on={index === at ? "true" : undefined}
-            inert={index === at ? undefined : true}
-          >
-            <p className="bl-flow-kicker">
-              <span>{row.index}</span>
-              <i aria-hidden="true" />
-              {row.field}
-            </p>
+              <div className="bl-wk-meta">
+                <span className="bl-wk-no" aria-hidden="true">
+                  {row.index}
+                </span>
 
-            <h3 className="bl-flow-name">{row.name}</h3>
+                <div className="bl-wk-say">
+                  <b>{row.name}</b>
+                  <small>{row.filed}</small>
+                </div>
 
-            <p className="bl-flow-line">
-              <MarkedLine text={row.line} mark={row.mark} />
-            </p>
-
-            <div className="bl-flow-foot">
-              <p className="bl-flow-filed">{row.filed}</p>
-
-              <div className="bl-flow-acts">
-                {row.link && (
-                  <a className="bl-card-side" href={row.link.href} target="_blank" rel="noreferrer">
-                    <MarkWindow size={12} /> Live
-                  </a>
-                )}
-                {row.repo && (
-                  <a className="bl-card-side" href={row.repo} target="_blank" rel="noreferrer">
-                    <MarkGithub size={12} /> Source
-                  </a>
-                )}
-                {row.file && (
-                  <button
-                    type="button"
-                    className="bl-card-open"
-                    onClick={() => onOpen(row.file as CaseFile)}
-                  >
-                    Case file <MarkArrow size={13} />
-                  </button>
-                )}
+                <span className="bl-wk-arr" aria-hidden="true">
+                  <MarkArrow size={15} />
+                </span>
               </div>
-            </div>
-          </article>
-        ))}
+
+              {(row.link || row.repo) && (
+                <p className="bl-wk-side">
+                  {row.link && (
+                    <a href={row.link.href} target="_blank" rel="noreferrer">
+                      <MarkWindow size={12} /> Live
+                    </a>
+                  )}
+                  {row.repo && (
+                    <a href={row.repo} target="_blank" rel="noreferrer">
+                      <MarkGithub size={12} /> Source
+                    </a>
+                  )}
+                </p>
+              )}
+            </article>
+          );
+        })}
       </div>
 
     </section>

@@ -10501,3 +10501,276 @@ body,
 @media (max-width: 760px) {
   .bl-statement { max-width: none; }
 }
+
+/* ==========================================================================
+   THE WALL
+   Eight builds, out at once, each carrying its own caption. The picture is
+   the control: point at one and the accent comes up over it and says what
+   pressing it does.
+   ========================================================================== */
+
+.bl-wk-wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.1rem, 2.4vw, 2.2rem) clamp(0.9rem, 2vw, 2rem);
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+}
+
+.bl-wk {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+/* ---- the picture ---- */
+
+.bl-wk-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  appearance: none;
+  border: 1px solid var(--bl-rule-soft);
+  border-radius: 16px;
+  background: var(--bl-surface);
+  overflow: hidden;
+  isolation: isolate;
+  cursor: pointer;
+  transition: border-color 0.35s var(--bl-ease);
+}
+
+.bl-wk-media:disabled { cursor: default; }
+.bl-wk[data-open="true"]:hover .bl-wk-media { border-color: var(--bl-accent); }
+
+.bl-wk-media > .bl-plate-bare,
+.bl-wk-media > .bl-banner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.bl-wk-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--bl-ease);
+}
+
+.bl-wk:hover .bl-wk-media img { transform: scale(1.055); }
+
+/* the kind, pinned to the corner of the picture */
+.bl-wk-tag {
+  position: absolute;
+  z-index: 4;
+  top: 0.7rem;
+  left: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bl-bg-deep) 78%, transparent);
+  backdrop-filter: blur(6px);
+  font-family: var(--bl-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+  transition: opacity 0.3s var(--bl-ease);
+}
+
+.bl-wk-tag[data-win="true"] {
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+}
+
+.bl-wk:hover .bl-wk-tag { opacity: 0; }
+
+/*
+ * The accent, coming up over the picture. A circle rather than a curtain:
+ * a rectangle sliding in is a panel arriving, while a disc opening out of
+ * the middle is the card itself turning over.
+ *
+ * 170% of the width clears the diagonal of a 4:5 box, which is what it has
+ * to cover before the corners show through.
+ */
+.bl-wk-wipe {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  width: 170%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--bl-accent);
+  scale: 0;
+  transition: scale 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.bl-wk[data-open="true"]:hover .bl-wk-wipe { scale: 1; }
+
+.bl-wk-go {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 106%;
+  font-size: clamp(1.1rem, 2.2vw, 1.7rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--bl-accent-ink);
+  opacity: 0;
+  transition: opacity 0.28s var(--bl-ease) 0.12s;
+  pointer-events: none;
+}
+
+.bl-wk[data-open="true"]:hover .bl-wk-go { opacity: 1; }
+
+/* ---- the caption, which belongs to this card and no other ---- */
+
+.bl-wk-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.bl-wk-no {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  background: var(--bl-accent);
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: 0.78rem;
+  letter-spacing: -0.02em;
+  color: var(--bl-accent-ink);
+}
+
+.bl-wk-say { min-width: 0; }
+
+.bl-wk-say b {
+  display: block;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 104%;
+  font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: var(--bl-ink);
+}
+
+.bl-wk-say small {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-wk-arr {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 50%;
+  color: var(--bl-ink-soft);
+  transition:
+    transform 0.4s var(--bl-ease),
+    border-color 0.3s var(--bl-ease),
+    color 0.3s var(--bl-ease);
+}
+
+.bl-wk[data-open="true"]:hover .bl-wk-arr {
+  transform: rotate(45deg);
+  border-color: var(--bl-accent);
+  color: var(--bl-accent);
+}
+
+.bl-wk:not([data-open="true"]) .bl-wk-arr { opacity: 0.25; }
+
+.bl-wk-side {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.1rem;
+  margin: 0;
+  padding-left: 3rem;
+}
+
+.bl-wk-side a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--bl-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  transition: color 0.25s var(--bl-ease);
+}
+
+.bl-wk-side a:hover { color: var(--bl-accent); }
+
+@media (max-width: 1024px) {
+  .bl-wk-wall { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .bl-wk-wall { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .bl-wk-media { aspect-ratio: 5 / 4; }
+}
+
+/* the wipe is a hover, and a touch screen has none to give */
+@media (pointer: coarse) {
+  .bl-wk-wipe, .bl-wk-go { display: none; }
+}
+
+/* ==========================================================================
+   THE THREAD
+   One stroke joining the five rooms, drawn as the spread travels. The
+   columns already zigzag, so the line only has to join them to read as the
+   route the eye is taking anyway.
+   ========================================================================== */
+
+.bl-spread-thread {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.bl-spread-thread path {
+  fill: none;
+  stroke: var(--bl-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  opacity: 0.85;
+}
+
+/* the rooms sit on it, not under it */
+.bl-spread-col { position: relative; z-index: 1; }
+
+@media (max-width: 760px) {
+  .bl-spread-thread path { stroke-width: 1.5; }
+}
