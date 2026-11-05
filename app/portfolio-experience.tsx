@@ -12,7 +12,6 @@ import { Cover } from "@/components/buildlog/cover";
 import { Cursor } from "@/components/buildlog/cursor";
 import { Roller } from "@/components/buildlog/roller";
 import { Statement } from "@/components/buildlog/statement";
-import { Seam } from "@/components/buildlog/seam";
 import { useCurtainHeld } from "@/lib/curtain";
 import {
   BuildLogFooter,
@@ -128,9 +127,6 @@ function BuildLog() {
       <main className="bl-main">
         <Hero time={time} />
 
-        {/* carrying on, not changing: the only seam read downwards */}
-        <Seam kind="thread" />
-
         {/*
           Eight acts of evidence and nowhere he says what he thinks, which
           is the thing a reader actually decides on. Here, once, before any
@@ -174,29 +170,14 @@ function BuildLog() {
           </Statement>
         </section>
 
-        {/* a measure, because everything after it is dated */}
-        <Seam kind="measure" />
-
         <LogSection />
-
-        {/* and a perforation, because this is where a page comes out */}
-        <Seam kind="tear" />
-
         <WorkIndex onOpen={setOpenCase} />
 
         {/* the seam between what got built and where he learned to */}
         <Roller text="Built first, graded later" />
 
         <EducationSection />
-
-        {/* a stitch, for the act about what things are put together with */}
-        <Seam kind="stitch" />
-
         <ToolkitSection />
-
-        {/* and a strip of film, for the act that is photographs */}
-        <Seam kind="film" />
-
         <WinsSection />
 
         {/*
@@ -214,10 +195,6 @@ function BuildLog() {
         />
 
         <StudioSection />
-
-        {/* and a flourish, which is what goes before a signature */}
-        <Seam kind="flourish" />
-
         <ContactSection />
       </main>
 
