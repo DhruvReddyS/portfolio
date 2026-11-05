@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -55,6 +55,57 @@ const ROUTE =
   "C321.7 1601.7 186.7 1650.8 170 1700 C153.3 1749.2 225.0 1818.3 330 1860 " +
   "C435.0 1901.7 663.3 1925.0 800 1950 C936.7 1975.0 1091.7 2000.0 1150 2010";
 
+
+/**
+ * And the same route for a tall, narrow box.
+ *
+ * The ribbon is stretched to whatever shape the box is, which means the
+ * stretches where it runs level move as that shape changes. On a laptop
+ * the five land where the five rooms do; squeezed into a phone they do
+ * not, and the seating pass then has to drag each name a different
+ * distance to put it back on the line, which is what pulled the rooms
+ * unevenly apart down the column.
+ *
+ * So a phone gets its own drawing: a switchback, five long level runs
+ * at five evenly spaced heights with a turn at alternating ends.
+ *
+ * Long on purpose. A first version put a short flat stretch at the one
+ * x each name's middle happened to land on, which was exact at the
+ * width it was measured at and wrong forty pixels either side of it,
+ * because a name as wide as the page wraps differently as the page
+ * changes and its middle moves with it. These runs are level across
+ * two thirds of the width, so wherever a name's middle falls the line
+ * is at the same height under it and there is nothing left to correct.
+ */
+const ROUTE_NARROW =
+  "M1120 -60 L1001.8 -5 L930 30 L904.9 44.3 L843.7 85.1 L812.8 103 L787.9 " +
+  "113.7 L760.7 121 L731.5 124.7 L701 125.6 L571 119.1 L319.2 118.9 " +
+  "L189.6 113 L152.9 114.6 L130 119 L111.4 126.3 L96.4 135.8 L80.8 151.4 " +
+  "L69 169.5 L55 200 L49.4 217.1 L43.9 249.8 L41.9 284.6 L43.2 369.7 " +
+  "L46.2 396 L50.8 415.1 L58 432 L74 456.6 L85.8 468 L101.7 477.4 L117.4 " +
+  "483 L137.1 487.2 L179.6 490 L319.2 486.1 L571.1 485.9 L703.6 480.2 " +
+  "L743.3 481.7 L770 486 L802.1 495.8 L817.1 502.1 L837.9 513.1 L862.4 " +
+  "530.1 L873.1 539.5 L887.1 554.5 L898.4 570.5 L904.1 582.3 L908.4 595.1 " +
+  "L913.5 622.7 L915.5 658.7 L914.6 732.5 L913.1 758.5 L909.1 783.4 " +
+  "L901.2 806.4 L888.2 826.9 L865.4 850.1 L842.7 866.6 L816.2 880.8 L794 " +
+  "889.4 L770 896 L743.5 900 L714.1 901.4 L571.1 896.1 L319.2 895.9 " +
+  "L189.8 889.9 L161.7 890.8 L137.2 894.1 L117 900.6 L95.6 912.7 L79.2 " +
+  "928.2 L66.7 946.6 L52 978 L46.3 996.1 L41.7 1023.9 L39.5 1061.4 L40 " +
+  "1118 L41.9 1160.6 L45.5 1188.8 L52.1 1214.3 L66.9 1244.6 L79.6 1263.1 " +
+  "L89.4 1272.6 L97.3 1278.2 L117.4 1287.5 L144.7 1293.6 L189.3 1295.7 " +
+  "L319.2 1291.1 L571.1 1290.9 L682.4 1285.5 L723.9 1285.3 L752.5 1287.7 " +
+  "L778.3 1293.2 L802.1 1301.3 L831.2 1315.4 L856.6 1332.5 L882.8 1356.6 " +
+  "L898.4 1377.3 L904.1 1388.9 L908.5 1401.4 L912.8 1421.4 L915.4 1448.8 " +
+  "L914.1 1517.2 L912 1534.2 L909 1545.8 L904.3 1556.8 L897.4 1567.4 L888 " +
+  "1578 L871.7 1592.5 L851.8 1607.1 L834.4 1617.3 L815 1626.5 L793.6 " +
+  "1634.2 L770 1640 L752.8 1642.5 L704.1 1644.6 L571.1 1640.1 L319.5 " +
+  "1639.9 L196.9 1633.9 L162.3 1635.6 L140 1640 L115.4 1650.4 L105 1657.2 " +
+  "L91.3 1668.9 L73.4 1691.6 L60.2 1716.8 L48.2 1751.4 L42.3 1784.9 L42 " +
+  "1805.3 L43.5 1818.4 L46.7 1831 L51.7 1842.6 L66.3 1863.2 L84.7 1881.7 " +
+  "L102.3 1894.5 L124.5 1906.5 L152.3 1917.8 L186.8 1928.5 L214.2 1935.4 " +
+  "L262.4 1944.9 L318 1953.7 L400.4 1964.3 L622.8 1988.4 L781.2 2002.6 " +
+  "L1080 2026";
+
 /**
  * Where each room sits against the ribbon, as a share of the box.
  *
@@ -64,11 +115,11 @@ const ROUTE =
  * alternates so the five read as two columns rather than one.
  */
 const PLACES = [
-  { side: "left", edge: "20%", top: "5.5%" },
-  { side: "right", edge: "3%", top: "23%" },
-  { side: "left", edge: "2%", top: "41.5%" },
-  { side: "right", edge: "4%", top: "61%" },
-  { side: "left", edge: "18%", top: "80%" },
+  { side: "left", edge: "20%", top: "5.5%", tall: "3.85%" },
+  { side: "right", edge: "3%", top: "23%", tall: "23.17%" },
+  { side: "left", edge: "2%", top: "41.5%", tall: "44.75%" },
+  { side: "right", edge: "4%", top: "61%", tall: "65.51%" },
+  { side: "left", edge: "18%", top: "80%", tall: "83.9%" },
 ] as const;
 
 /**
@@ -89,8 +140,16 @@ const MARKS: Record<string, { width: number; height: number }> = {
   otbi: { width: 238, height: 209 },
 };
 
-/** How far a room may be shifted to meet the line, before it is left alone. */
-const NUDGE = 84;
+/**
+ * How far a room may be shifted to meet the line, before it is left alone.
+ *
+ * Generous, because the clearance below is what actually stops two rooms
+ * landing on each other and this only has to stop a wild answer. Each
+ * drawing is laid out so the shift is a pixel or two at the widths it was
+ * drawn for; it is the widths in between, where a name wraps differently
+ * than either drawing expects, that need the room.
+ */
+const NUDGE = 170;
 
 /** And the air kept between one room and the next, whatever that costs. */
 const CLEAR = 40;
@@ -119,6 +178,8 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
   const fill = useRef<SVGPathElement>(null);
   const ghost = useRef<SVGPathElement>(null);
   const tip = useRef<HTMLSpanElement>(null);
+  /** True once the box is narrow enough to want the other drawing. */
+  const [narrow, setNarrow] = useState(false);
 
   /*
    * Sit every name down on the ribbon.
@@ -231,6 +292,25 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
     }
   }, []);
 
+  /*
+   * Which of the two drawings. Before paint, so a phone never shows the
+   * wide one for a frame.
+   *
+   * Narrower than the breakpoint the rooms stack their marks at, and on
+   * purpose: the narrow drawing is laid out around where a phone's
+   * column puts the middle of each name, and by five hundred and sixty
+   * the names have stopped wrapping and stopped being there. Above this
+   * the wide drawing and the seating pass between them do a better job
+   * than a drawing tuned for a width nobody is at.
+   */
+  useIsomorphicLayoutEffect(() => {
+    const mq = window.matchMedia("(max-width: 560px)");
+    const on = () => setNarrow(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+
   useIsomorphicLayoutEffect(() => {
     const box = wrap.current;
     if (!box) return;
@@ -264,7 +344,8 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
       window.removeEventListener("resize", again);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [sit]);
+    // a different drawing is a different set of places to sit
+  }, [sit, narrow]);
 
   useEffect(() => {
     const box = wrap.current;
@@ -400,7 +481,10 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
     }, box);
 
     return () => context.revert();
-  }, []);
+    // the other drawing is a different length, so the dash is too
+  }, [narrow]);
+
+  const route = narrow ? ROUTE_NARROW : ROUTE;
 
   return (
     <div className="bl-route" ref={wrap}>
@@ -415,14 +499,14 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
         {/* the whole way, faint: you can see where this is going */}
         <path
           className="bl-route-ghost"
-          d={ROUTE}
+          d={route}
           ref={ghost}
           vectorEffect="non-scaling-stroke"
         />
         {/* and how far you have come */}
         <path
           className="bl-route-ink"
-          d={ROUTE}
+          d={route}
           ref={fill}
           vectorEffect="non-scaling-stroke"
         />
@@ -459,7 +543,9 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
                 "--ar": mark
                   ? Math.min(3.1, Math.max(0.92, mark.width / mark.height))
                   : 1,
-                top: place.top,
+                /* the two drawings put their level stretches at
+                   different heights, so each has its own set */
+                top: narrow ? place.tall : place.top,
               } as React.CSSProperties
             }
           >
