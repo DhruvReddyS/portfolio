@@ -143,42 +143,43 @@ const Web = () => (
   </svg>
 );
 
-const Spider = () => (
-  <svg viewBox="-15 -11 30 26" fill="none" aria-hidden="true">
-    <path d="M-3 -2 -8 -8 -12 -6M-3 0 -9 -1 -13 2M-3 2 -8 6 -11 10M3 -2 8 -8 12 -6M3 0 9 -1 13 2M3 2 8 6 11 10" />
-    <ellipse className="bl-fill" cx="0" cy="4" rx="4.6" ry="5.6" />
-    <circle className="bl-fill" cx="0" cy="-3.4" r="3" />
-    <circle className="bl-dot" cx="-1.2" cy="-4.2" r="0.7" />
-    <circle className="bl-dot" cx="1.2" cy="-4.2" r="0.7" />
-  </svg>
-);
-
-const Beetle = () => (
-  <svg viewBox="-13 -15 26 30" fill="none" aria-hidden="true">
+/**
+ * The one that walks. A spider rather than a beetle, and bigger than the
+ * ones sitting on the webs, because it is the thing you are meant to spot
+ * crossing three headings and go after.
+ */
+const Crawler = () => (
+  <svg viewBox="-16 -14 32 29" fill="none" aria-hidden="true">
     {/* two sets of legs, swapped a few times a second, which is a scuttle */}
     <g className="bl-bug-legs bl-bug-legs-a">
-      <path d="M-5 -5 -10 -11M-5 0 -12 -1M-5 5 -10 11M5 -5 11 -9M5 0 12 2M5 5 10 12" />
+      <path d="M-4 -4 -10 -10 -14 -8M-4 -1 -11 -2 -15 1M-4 2 -10 5 -13 10M4 -4 10 -10 14 -8M4 -1 11 -2 15 1M4 2 10 5 13 10" />
     </g>
     <g className="bl-bug-legs bl-bug-legs-b">
-      <path d="M-5 -5 -11 -9M-5 0 -12 2M-5 5 -10 12M5 -5 10 -11M5 0 12 -1M5 5 10 11" />
+      <path d="M-4 -4 -11 -8 -15 -4M-4 -1 -11 1 -14 5M-4 2 -9 8 -12 12M4 -4 11 -8 15 -4M4 -1 11 1 14 5M4 2 9 8 12 12" />
     </g>
-    <path className="bl-bug-feeler" d="M-2 -9 -5 -14M2 -9 5 -14" />
-    <ellipse className="bl-fill" cx="0" cy="1.5" rx="5.8" ry="8.6" />
-    <circle className="bl-fill" cx="0" cy="-8" r="3" />
-    <path className="bl-split" d="M0 -4.5V9" />
-    <path className="bl-split" d="M-4.6 -1h9M-4.2 3h8.4" />
+    <ellipse className="bl-fill" cx="0" cy="4" rx="5.6" ry="6.8" />
+    <circle className="bl-fill" cx="0" cy="-4" r="3.6" />
+    <circle className="bl-dot" cx="-1.4" cy="-5" r="0.85" />
+    <circle className="bl-dot" cx="1.4" cy="-5" r="0.85" />
   </svg>
 );
 
 /* ------------------------------------------------------------------ the lot */
 
 export interface BugHuntProps {
-  /** A selector, inside this section, for the element the web hangs on. */
-  anchor?: string;
+  /**
+   * Selectors, inside this section, for the things a web hangs off. Each
+   * may match more than one element and every match gets its own web; the
+   * first in the list is treated as the main one and is hung larger and
+   * higher than the rest.
+   */
+  anchors?: string[];
   className?: string;
 }
 
-export function BugHunt({ anchor = ".bl-head-title", className }: BugHuntProps) {
+const MAIN_ANCHORS = [".bl-head-title", ".bl-degree"];
+
+export function BugHunt({ anchors = MAIN_ANCHORS, className }: BugHuntProps) {
   const host = React.useRef<HTMLDivElement>(null);
   const body = React.useRef<HTMLButtonElement>(null);
   const bug = React.useRef<Bug>({ x: 0, y: 0, a: 0, turn: 0, speed: 24 });
@@ -186,7 +187,7 @@ export function BugHunt({ anchor = ".bl-head-title", className }: BugHuntProps) 
   const alive = React.useRef(true);
   const placed = React.useRef(false);
 
-  const [zone, setZone] = React.useState<Zone | null>(null);
+  const [zones, setZones] = React.useState<Zone[]>([]);
   const [fixed, setFixed] = React.useState(0);
   const [showFix, setShowFix] = React.useState(false);
   const [squashed, setSquashed] = React.useState(false);
@@ -207,35 +208,70 @@ export function BugHunt({ anchor = ".bl-head-title", className }: BugHuntProps) 
    */
   React.useEffect(() => {
     const node = host.current;
-    const mark = node?.parentElement?.querySelector(anchor);
-    if (!node || !(mark instanceof HTMLElement)) return;
+    const parent = node?.parentElement;
+    if (!node || !parent) return;
+
+    const marks: HTMLElement[] = [];
+    for (const selector of anchors) {
+      for (const found of parent.querySelectorAll(selector)) {
+        if (found instanceof HTMLElement) marks.push(found);
+      }
+    }
+    if (!marks.length) return;
 
     const measure = () => {
       const h = node.getBoundingClientRect();
-      const m = mark.getBoundingClientRect();
-      const next = {
-        x: m.left - h.left,
-        y: m.top - h.top,
-        w: m.width,
-        h: m.height,
-        hw: h.width,
-        hh: h.height,
-      };
-      walk.current = next;
-      setZone((prev) =>
-        prev &&
-        prev.x === next.x &&
-        prev.y === next.y &&
-        prev.w === next.w &&
-        prev.h === next.h &&
-        prev.hw === next.hw
-          ? prev
-          : next,
-      );
-      if (!placed.current && next.w) {
+      const next = marks.map((mark) => {
+        const m = mark.getBoundingClientRect();
+        return {
+          x: m.left - h.left,
+          y: m.top - h.top,
+          w: m.width,
+          h: m.height,
+          hw: h.width,
+          hh: h.height,
+        };
+      });
+
+      /*
+       * One walk across the lot rather than one per web. There is a single
+       * spider and it is supposed to cross the heading and both cards, so
+       * what it is allowed to roam is the box that holds all of them.
+       */
+      const box = next.reduce<Zone | null>((all, one) => {
+        if (!all) return { ...one };
+        const left = Math.min(all.x, one.x);
+        const top = Math.min(all.y, one.y);
+        return {
+          x: left,
+          y: top,
+          w: Math.max(all.x + all.w, one.x + one.w) - left,
+          h: Math.max(all.y + all.h, one.y + one.h) - top,
+          hw: one.hw,
+          hh: one.hh,
+        };
+      }, null);
+      walk.current = box;
+
+      setZones((prev) => {
+        if (prev.length === next.length) {
+          const same = prev.every(
+            (p, i) =>
+              p.x === next[i].x &&
+              p.y === next[i].y &&
+              p.w === next[i].w &&
+              p.h === next[i].h &&
+              p.hw === next[i].hw,
+          );
+          if (same) return prev;
+        }
+        return next;
+      });
+
+      if (!placed.current && box && box.w) {
         placed.current = true;
-        bug.current.x = next.x + next.w * 0.22;
-        bug.current.y = next.y + next.h * 0.7;
+        bug.current.x = box.x + box.w * 0.22;
+        bug.current.y = box.y + box.h * 0.2;
       }
     };
 
@@ -243,13 +279,15 @@ export function BugHunt({ anchor = ".bl-head-title", className }: BugHuntProps) 
     if (typeof ResizeObserver === "undefined") return;
     const ro = new ResizeObserver(measure);
     ro.observe(node);
-    ro.observe(mark);
+    for (const mark of marks) ro.observe(mark);
     window.addEventListener("resize", measure);
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [anchor]);
+    // the list is a literal at every call site, so its identity is stable
+    // enough to key on its contents rather than the array
+  }, [anchors.join("|")]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The walk. Written straight to the element each frame; it never re-renders.
   React.useEffect(() => {
@@ -352,24 +390,29 @@ export function BugHunt({ anchor = ".bl-head-title", className }: BugHuntProps) 
     }, 3400);
   };
 
-  const web = zone
-    ? { left: zone.x + zone.w - 86, top: zone.y - 74 }
-    : { left: 0, top: 0, visibility: "hidden" as const };
-
   return (
     <>
       <div
         ref={host}
         className={["bl-hunt", className].filter(Boolean).join(" ")}
-        data-ready={zone ? "true" : "false"}
+        data-ready={zones.length ? "true" : "false"}
       >
-        <span className="bl-web-rig" style={web} aria-hidden="true">
-          <Web />
-          <span className="bl-spider">
-            <i className="bl-spider-thread" />
-            <Spider />
+        {zones.map((zone, index) => (
+          <span
+            key={index}
+            className="bl-web-rig"
+            /* the first is the heading's and hangs above it; the rest tuck
+               into the top corner of the card they belong to */
+            data-main={index === 0 ? "true" : undefined}
+            style={{
+              left: zone.x + zone.w - (index === 0 ? 86 : 64),
+              top: zone.y - (index === 0 ? 74 : 26),
+            }}
+            aria-hidden="true"
+          >
+            <Web />
           </span>
-        </span>
+        ))}
 
         <button
           ref={body}
@@ -377,9 +420,9 @@ export function BugHunt({ anchor = ".bl-head-title", className }: BugHuntProps) 
           className="bl-bug"
           data-gone={squashed ? "true" : undefined}
           onClick={squash}
-          aria-label="There is a bug on this heading. Fix it."
+          aria-label="There is a spider loose in this section. Squash it."
         >
-          <Beetle />
+          <Crawler />
         </button>
       </div>
 

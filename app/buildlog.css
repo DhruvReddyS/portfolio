@@ -2504,7 +2504,17 @@ html.bl-locked body { overflow: hidden; }
 }
 
 .bl-hero-wordmark [data-line="2"] {
-  font-size: clamp(2.6rem, 12.1vw, 12.6rem);
+  /*
+   * Sized to the width it has, which is the sheet less its two gutters.
+   * At 12.1vw the surname was wider than that at every width from a
+   * small laptop to a large one, so the D and the Y were both losing
+   * their outer edge off the side of the screen. Eleven characters at
+   * this face measure 8.48 times the type size across, and the gutters
+   * take a tenth of the sheet, so 10.4vw is the largest that still ends
+   * on the page. Nothing above 1900 is near it: the clamp has capped it
+   * long before.
+   */
+  font-size: clamp(2.6rem, 10.4vw, 12.6rem);
   background: linear-gradient(
     180deg,
     var(--bl-accent) 0%,
@@ -2656,7 +2666,7 @@ html.bl-locked body { overflow: hidden; }
    * reader has to work out. Eleven characters at 10.7vw is the largest
    * that still ends on the page at the narrowest phone.
    */
-  .bl-hero-wordmark [data-line="2"] { font-size: clamp(2.2rem, 10.7vw, 3.8rem); }
+  .bl-hero-wordmark [data-line="2"] { font-size: clamp(2.05rem, 10.7vw, 3.8rem); }
 
   .bl-hero-grid {
     display: flex;
@@ -9341,6 +9351,19 @@ body,
   color: var(--bl-ink);
 }
 
+/*
+ * The heading's web is the one you are meant to notice; the two in the
+ * cards' corners are the same web, smaller and fainter, so the section
+ * reads as somewhere a spider has been living rather than as three
+ * copies of a decoration.
+ */
+.bl-web-rig:not([data-main]) {
+  width: clamp(6rem, 9.5vw, 8.6rem);
+  opacity: 0.62;
+}
+
+.bl-web-rig:nth-of-type(2) { transform: scaleX(-1); }
+
 .bl-web {
   width: 100%;
   height: 100%;
@@ -9435,9 +9458,11 @@ body,
   position: absolute;
   top: 0;
   left: 0;
-  width: 2.1rem;
-  height: 2.1rem;
-  margin: -1.05rem 0 0 -1.05rem;
+  /* one of these, and it has three headings to cross, so it is big
+     enough to be spotted from the other side of the section */
+  width: 3rem;
+  height: 3rem;
+  margin: -1.5rem 0 0 -1.5rem;
   padding: 0;
   appearance: none;
   border: 0;

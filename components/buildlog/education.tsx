@@ -33,7 +33,7 @@ export function EducationSection() {
       <SectionHeader
         label="03 / Study"
         title="A dual degree, run in parallel"
-        lead="One on campus at MVSR, one online with IIT Madras. Not one after the other."
+        lead="One on campus at MVSR, one online with IIT Madras. Both at once."
         note={`${education.length} degrees · both running`}
       />
 
@@ -62,8 +62,14 @@ export function EducationSection() {
                 {school.field}
               </p>
 
+              {/*
+                Two, not all of them. This act is the shortest thing the
+                page has to say: two degrees, run at the same time, with
+                the marks to show for it. A third bullet on each card was
+                turning the shortest answer into the longest card.
+              */}
               <ul className="bl-degree-points">
-                {school.highlights.map((point) => (
+                {school.highlights.slice(0, 2).map((point) => (
                   <li key={point}>{point}</li>
                 ))}
               </ul>
