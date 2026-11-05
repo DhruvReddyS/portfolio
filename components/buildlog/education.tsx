@@ -8,6 +8,7 @@ import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
 import { SectionHeader } from "./sections";
 import { MarkPaper } from "./marks";
+import { Plate } from "./plate";
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
@@ -138,7 +139,24 @@ export function EducationSection() {
           {education.map((school) => (
             <div className="bl-plan-lane" key={school.id} data-school={school.id}>
               <div className="bl-plan-who">
-                <h3>{school.school}</h3>
+                {/*
+                  The campus, in a slot that keeps its shape whether or
+                  not a file is behind it. It is the one place on the
+                  page a photograph of either school can live, and the
+                  short name holds the space until one turns up.
+                */}
+                <span className="bl-plan-shot">
+                  <Plate
+                    dir="edu"
+                    name={school.id}
+                    monogram={school.short}
+                    alt={`${school.school} campus`}
+                    bare
+                  />
+                </span>
+
+                <div className="bl-plan-said">
+                  <h3>{school.school}</h3>
                 <p className="bl-plan-what">
                   <strong>{school.degree}</strong>
                   <span>{school.field}</span>
@@ -147,12 +165,13 @@ export function EducationSection() {
                 {/* the figure belongs with the name, not at the far end
                     of the lane: the line that marks today runs down the
                     right-hand edge of every lane and would cross it */}
-                <p className="bl-plan-figure">
-                  <strong>
-                    <Counter value={school.mark.value} />
-                  </strong>
-                  <span>{school.mark.label}</span>
-                </p>
+                  <p className="bl-plan-figure">
+                    <strong>
+                      <Counter value={school.mark.value} />
+                    </strong>
+                    <span>{school.mark.label}</span>
+                  </p>
+                </div>
               </div>
 
               <div className="bl-plan-run">

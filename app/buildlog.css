@@ -13119,36 +13119,6 @@ body,
   overflow: hidden;
 }
 
-/*
- * A light going across the whole panel, once every few seconds. It is
- * the thing that makes this read as a board being watched rather than
- * a diagram that was printed and left, and at this contrast it is felt
- * before it is seen.
- */
-.bl-plan::after {
-  content: "";
-  position: absolute;
-  left: -30%;
-  top: 0;
-  bottom: 0;
-  width: 26%;
-  z-index: 3;
-  background: linear-gradient(
-    100deg,
-    transparent,
-    color-mix(in srgb, var(--bl-ink) 5%, transparent) 45%,
-    color-mix(in srgb, var(--bl-accent) 9%, transparent) 55%,
-    transparent
-  );
-  animation: bl-plan-scan 7.5s var(--bl-ease) infinite;
-  pointer-events: none;
-}
-
-@keyframes bl-plan-scan {
-  0%, 55% { transform: translateX(0); }
-  100% { transform: translateX(520%); }
-}
-
 /* ---- the rule the lanes are measured against -------------------------- */
 
 .bl-plan-scale {
@@ -13188,6 +13158,48 @@ body,
 }
 
 .bl-plan-lane:first-of-type { border-top: 0; }
+
+.bl-plan-who {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.7rem, 1.6vw, 1.1rem);
+  min-width: 0;
+}
+
+/* the campus, square, small, and the same shape with or without a file */
+.bl-plan-shot {
+  /*
+   * Positioned, and not optionally.
+   *
+   * The slot inside is laid out absolutely against whatever ancestor
+   * is positioned, and without this that was the panel: both schools'
+   * stand-in monograms left their squares and drew themselves across
+   * the middle of the board at fifty-eight pixels, on top of the
+   * lanes, as one word.
+   */
+  position: relative;
+  flex: none;
+  display: block;
+  overflow: hidden;
+  width: clamp(2.9rem, 4.6vw, 3.9rem);
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 1px solid var(--bl-rule-soft);
+  background: color-mix(in srgb, var(--bl-ink) 5%, transparent);
+}
+
+/* and the stand-in cut to the size of the hole it is standing in */
+.bl-plan-shot .bl-plate-bare > span {
+  padding: 0 0.3rem;
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  -webkit-text-stroke: 0;
+}
+
+.bl-plan-said { min-width: 0; }
 
 .bl-plan-who h3 {
   margin: 0;
@@ -13269,58 +13281,52 @@ body,
     box-shadow 0.35s var(--bl-ease);
 }
 
-/* glass, so a lane of them has depth rather than being four flat fills */
-.bl-plan-stage::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--bl-ink) 7%, transparent),
-    transparent 46%
-  );
-  pointer-events: none;
-}
-
-/*
- * And a light passing along each one as it lands, once. The lanes are
- * drawn from the left by the scroll and this follows a beat behind,
- * which is what turns four boxes appearing into a line being read.
- */
-.bl-plan-stage::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: inherit;
-  background: linear-gradient(
-    100deg,
-    transparent 35%,
-    color-mix(in srgb, var(--bl-ink) 26%, transparent) 50%,
-    transparent 65%
-  );
-  background-size: 260% 100%;
-  background-position: 180% 0;
-  animation: bl-plan-pass 1.5s var(--bl-ease) 0.5s 1;
-  pointer-events: none;
-}
-
-@keyframes bl-plan-pass {
-  from { background-position: 180% 0; }
-  to { background-position: -80% 0; }
-}
+/* ---- picking one out ---------------------------------------------------
+   The bars are flat fills and nothing moves on them, which is the
+   point: a timetable is read, not watched. All the life in the act is
+   in what happens when the reader puts a pointer on one. It comes
+   forward, takes the accent on its edge and its label, and everything
+   else on the board goes quiet behind it, so one stage at a time is
+   the thing being looked at.                                        */
 
 .bl-plan-stage:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 26px -16px rgba(0, 0, 0, 0.95);
+  border-color: var(--bl-accent);
+  box-shadow:
+    0 0 0 1px var(--bl-accent),
+    0 16px 28px -18px rgba(0, 0, 0, 1),
+    0 0 2rem -0.6rem color-mix(in srgb, var(--bl-accent) 55%, transparent);
   z-index: 2;
 }
 
+.bl-plan-stage:hover b { color: var(--bl-ink); }
+.bl-plan-stage:hover span { color: var(--bl-accent); }
+
+/* a mark in the corner, so a picked stage is picked and not just lit */
+.bl-plan-stage::after {
+  content: "";
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bl-accent);
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.25s var(--bl-ease),
+    transform 0.25s var(--bl-ease);
+}
+
+.bl-plan-stage:hover::after { opacity: 1; transform: scale(1); }
+
 /* and the rest of the board steps back while one is being read */
 .bl-plan:has(.bl-plan-stage:hover) .bl-plan-stage:not(:hover) {
-  opacity: 0.55;
+  opacity: 0.42;
 }
+
+.bl-plan:has(.bl-plan-stage:hover) .bl-plan-who { opacity: 0.6; }
 
 .bl-plan-stage b,
 .bl-plan-stage span { position: relative; z-index: 1; }
@@ -13356,52 +13362,18 @@ body,
 .bl-plan-stage[data-state="done"] span { color: var(--bl-ink-dim); }
 
 /*
- * And what is still running is hatched and lit, because it is the
- * stretch of the lane that is being worked in this week. The hatching
- * crawls, slowly, so the two open stages are the only moving things in
- * the act and the eye goes to them.
+ * And what is still running takes the accent, flat. It was hatched and
+ * crawling, which made the two open stages the loudest thing in an act
+ * whose job is to be read in one look; a solid fill says the same
+ * thing in one tone and leaves the movement to the reader.
  */
 .bl-plan-stage[data-state="now"] {
-  position: relative;
-  border: 1px solid color-mix(in srgb, var(--bl-accent) 55%, transparent);
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      color-mix(in srgb, var(--bl-accent) 26%, transparent) 0 7px,
-      transparent 7px 16px
-    ),
-    color-mix(in srgb, var(--bl-accent) 13%, transparent);
-  background-size: 22.6px 22.6px, auto;
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 60%, transparent);
+  background: color-mix(in srgb, var(--bl-accent) 20%, transparent);
   color: var(--bl-ink);
-  animation: bl-plan-crawl 2.6s linear infinite;
 }
 
 .bl-plan-stage[data-state="now"] span { color: var(--bl-accent); }
-
-/* the open end of an open stage, which is where the work is */
-.bl-plan-stage[data-state="now"]::before {
-  background:
-    linear-gradient(
-      270deg,
-      color-mix(in srgb, var(--bl-accent) 30%, transparent),
-      transparent 34%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--bl-ink) 7%, transparent),
-      transparent 46%
-    );
-  animation: bl-plan-breathe 3.4s ease-in-out infinite alternate;
-}
-
-@keyframes bl-plan-breathe {
-  from { opacity: 0.6; }
-  to { opacity: 1; }
-}
-
-@keyframes bl-plan-crawl {
-  to { background-position: 22.6px 0, 0 0; }
-}
 
 /* ---- the figure at the end of the lane --------------------------------- */
 
@@ -13487,11 +13459,10 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bl-plan::after,
-  .bl-plan-stage::after,
-  .bl-plan-stage[data-state="now"],
-  .bl-plan-stage[data-state="now"]::before,
   .bl-plan-now i { animation: none; }
+  .bl-plan-stage,
+  .bl-plan-stage::after { transition: none; }
+  .bl-plan-stage:hover { transform: none; }
 }
 
 @media (max-width: 860px) {
