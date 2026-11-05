@@ -82,8 +82,11 @@ const MARKS: Record<string, { width: number; height: number }> = {
   simplehire: { width: 518, height: 160 },
   axon: { width: 200, height: 200 },
   paper: { width: 1552, height: 1566 },
-  sai: { width: 1920, height: 1358 },
-  otbi: { width: 442, height: 214 },
+  /* both of these were the whole lock-up, wordmark and tagline included,
+     which at chip size came out as a mark with a smudge under it; they
+     are cropped to the mark itself */
+  sai: { width: 640, height: 333 },
+  otbi: { width: 238, height: 209 },
 };
 
 /** How far a room may be shifted to meet the line, before it is left alone. */

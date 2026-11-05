@@ -2233,8 +2233,75 @@ html.bl-locked body { overflow: hidden; }
   transform: translate3d(calc(var(--mx) * -12px), calc(var(--my) * -7px), 0);
 }
 
+/* ---- the light ---------------------------------------------------------
+   A cover is a printed sheet, and this one is read in the dark. So there
+   is a light on it, and the reader is holding it: a pool of warmth that
+   follows the pointer, with the name brightening as it passes over.
+
+   It is a fixed circle that gets moved, not a gradient restated at a new
+   position every frame. The second repaints the whole cover sixty times a
+   second; the first is a transform and never leaves the compositor.     */
+
+.bl-keylight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  width: 54rem;
+  height: 46rem;
+  margin: -23rem 0 0 -27rem;
+  pointer-events: none;
+  /* until the first frame of the loop there is nowhere to put it */
+  opacity: 0;
+  transition: opacity 1.4s var(--bl-ease);
+  transform: translate3d(var(--lpx, 50vw), var(--lpy, 40vh), 0);
+  will-change: transform;
+}
+
+.bl-hero[data-lit="true"] .bl-keylight { opacity: 1; }
+
+.bl-keylight i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--bl-accent) 26%, transparent) 0%,
+    color-mix(in srgb, var(--bl-accent) 10%, transparent) 40%,
+    transparent 74%
+  );
+  /* and it breathes, so the cover is never quite still even when the
+     hand on it is */
+  animation: bl-keylight-breathe 11s ease-in-out infinite;
+}
+
+@keyframes bl-keylight-breathe {
+  0%, 100% { transform: scale(1) translate3d(0, 0, 0); }
+  50% { transform: scale(1.09) translate3d(1.5%, -2%, 0); }
+}
+
+/* There is no pointer to carry it with, and a loop running to move a
+   glow nobody can aim is the kind of thing that made this page stutter
+   on a phone in the first place. */
+@media not all and (any-hover: hover) {
+  .bl-keylight { display: none; }
+}
+
+/* No loop runs to carry it, so it stands where it was left: the cover is
+   still lit, it is just a lamp on a stand rather than one in a hand. */
+@media (prefers-reduced-motion: reduce) {
+  .bl-keylight {
+    opacity: 1;
+    will-change: auto;
+  }
+
+  .bl-keylight i { animation: none; }
+}
+
 .bl-hero-wordmark span {
   display: block;
+  position: relative;
   white-space: nowrap;
   background: linear-gradient(
     180deg,
@@ -2244,6 +2311,50 @@ html.bl-locked body { overflow: hidden; }
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/*
+ * The word, a second time, on the layer the light falls on.
+ *
+ * The sheet's own gradient underneath is the name unlit; this is the
+ * same name in the light's colour, transparent everywhere the light is
+ * not. Laid over the first and clipped to the same letterforms, the pool
+ * reads as brightness running across the type rather than a glow sitting
+ * on top of it. Written as a second layer rather than into the gradient
+ * itself because that gradient is restated four times across the themes,
+ * and the light has nothing to say about any of them.
+ */
+.bl-hero-wordmark span::after {
+  content: attr(data-word);
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    30vw 74% at var(--lx, 50%) 50%,
+    var(--bl-ink) 0%,
+    color-mix(in srgb, var(--bl-ink) 52%, transparent) 44%,
+    transparent 78%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  pointer-events: none;
+}
+
+/* the surname is already the accent, so its light runs hotter than bone
+   would and reads as the glaze coming up rather than a wash over it */
+.bl-hero-wordmark [data-line="2"]::after {
+  background: radial-gradient(
+    30vw 74% at var(--lx, 50%) 50%,
+    color-mix(in srgb, var(--bl-ink) 80%, var(--bl-accent)) 0%,
+    color-mix(in srgb, var(--bl-accent) 72%, transparent) 44%,
+    transparent 78%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@media not all and (any-hover: hover) {
+  .bl-hero-wordmark span::after { display: none; }
 }
 
 .bl-hero-wordmark [data-line="1"] {
@@ -6515,8 +6626,7 @@ html.bl-locked body { overflow: hidden; }
 
   .bl-root[data-held="true"] .bl-preboot { opacity: 1; }
 
-  .bl-root[data-held="true"] .bl-hero-wordmark span,
-  .bl-root[data-held="true"] .bl-loop path {
+  .bl-root[data-held="true"] .bl-hero-wordmark span {
     animation-play-state: paused;
   }
 
@@ -9695,74 +9805,6 @@ body,
 .bl-banner-stack em {
   border-color: color-mix(in srgb, var(--bl-accent) 45%, transparent);
   color: var(--bl-accent);
-}
-
-/* ==========================================================================
-   THE COVER'S LOOPS
-   Two curls of line in the margins either side of the cover, drawn on
-   arrival. The same gesture as the ribbon through the five rooms, at a
-   tenth of the weight: the heavy one carries the work, this one only has
-   to rhyme with it.
-   ========================================================================== */
-
-.bl-loops {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.bl-loop {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: clamp(130px, 21vw, 340px);
-}
-
-.bl-loop[data-side="left"] { left: 0; }
-.bl-loop[data-side="right"] { right: 0; }
-
-.bl-loop path {
-  fill: none;
-  stroke: var(--bl-accent);
-  /* taken out of the scaling, since the box is stretched to the margin */
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  opacity: 0.32;
-}
-
-/*
- * Drawn, not faded. The length is declared as 1 on the path itself, so the
- * dash is a plain fraction and nothing has to be measured first. Only
- * where there is script to raise the curtain: without it the page never
- * gets the cue and the lines would sit at nought for good.
- */
-@media (scripting: enabled) {
-  .bl-loop path {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: bl-loop-draw 2s var(--bl-ease) forwards;
-    animation-delay: var(--d, 0.8s);
-  }
-}
-
-@keyframes bl-loop-draw {
-  to { stroke-dashoffset: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bl-loop path {
-    stroke-dashoffset: 0;
-    animation: none;
-  }
-}
-
-/* On a phone the cover stacks and there are no margins left to draw in;
-   the lines would run behind the name and the portrait instead of beside
-   them. */
-@media (max-width: 640px) {
-  .bl-loops { display: none; }
 }
 
 /* ==========================================================================

@@ -15,7 +15,6 @@ import {
 import { Reveal } from "./reveal";
 import { whenCurtainOpens } from "@/lib/curtain";
 import { Counter, Magnetic, useSmoothScroll } from "./smooth";
-import { HeroLoops } from "./loops";
 import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
@@ -148,24 +147,71 @@ export function Hero({ time }: { time: string }) {
 
     const to = { x: 0, y: 0 };
     const at = { x: 0, y: 0 };
+    /* where the light is, and where it is heading, in the cover's own
+       pixels rather than the -1..1 the parallax works in */
+    const lit = { x: 0, y: 0 };
+    const goes = { x: 0, y: 0 };
+    let placed = false;
     let raf = 0;
+
+    /*
+     * The cover's own box. Read on the way in and on resize rather than
+     * on every move: it is the first thing on the page, so it only
+     * changes when the window does.
+     */
+    let box = { top: 0, height: 0 };
+    const remeasure = () => {
+      box = { top: node.offsetTop, height: node.offsetHeight || 1 };
+      goes.x = window.innerWidth / 2;
+      goes.y = box.height * 0.42;
+    };
+    remeasure();
+    lit.x = goes.x;
+    lit.y = goes.y;
 
     const onMove = (event: PointerEvent) => {
       to.x = (event.clientX / window.innerWidth) * 2 - 1;
       to.y = (event.clientY / window.innerHeight) * 2 - 1;
+      goes.x = event.clientX;
+      goes.y = event.clientY + window.scrollY - box.top;
     };
+
     const loop = () => {
       at.x += (to.x - at.x) * 0.05;
       at.y += (to.y - at.y) * 0.05;
       node.style.setProperty("--mx", at.x.toFixed(4));
       node.style.setProperty("--my", at.y.toFixed(4));
+
+      /* the light is carried rather than dragged: a shade quicker than
+         the parallax, so it arrives first and the sheet follows */
+      lit.x += (goes.x - lit.x) * 0.08;
+      lit.y += (goes.y - lit.y) * 0.08;
+
+      /* the pool itself is moved, not redrawn: a gradient restated every
+         frame repaints the whole cover, and a transform does not */
+      node.style.setProperty("--lpx", `${lit.x.toFixed(1)}px`);
+      node.style.setProperty("--lpy", `${lit.y.toFixed(1)}px`);
+      /* and this is the one thing the light has to tell the type, which
+         is only where it is across the sheet */
+      node.style.setProperty(
+        "--lx",
+        `${((lit.x / window.innerWidth) * 100).toFixed(2)}%`,
+      );
+
+      if (!placed) {
+        placed = true;
+        node.dataset.lit = "true";
+      }
+
       raf = requestAnimationFrame(loop);
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("resize", remeasure);
     raf = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("resize", remeasure);
       cancelAnimationFrame(raf);
     };
   }, []);
@@ -264,12 +310,26 @@ export function Hero({ time }: { time: string }) {
   return (
     <section className="bl-hero" id="top" ref={stage}>
       <HeroField />
-      <HeroLoops />
+
+      {/*
+        The light. It is drawn where the pointer is and nothing else in
+        the cover moves with it, so the sheet reads as a flat thing in a
+        room rather than a screen with a glow on it.
+      */}
+      <div className="bl-keylight" aria-hidden="true">
+        <i />
+      </div>
 
       {/* the name, large, behind everything */}
       <h1 className="bl-hero-wordmark" aria-hidden="true">
-        <span data-line="1">SRIPATHI</span>
-        <span data-line="2">DHRUV REDDY</span>
+        {/* the word is given twice: once as the sheet, and once more on
+            the layer the light falls on. See bl-hero-wordmark in the css */}
+        <span data-line="1" data-word="SRIPATHI">
+          SRIPATHI
+        </span>
+        <span data-line="2" data-word="DHRUV REDDY">
+          DHRUV REDDY
+        </span>
       </h1>
       <span className="bl-sr">S. Dhruv Reddy</span>
 
