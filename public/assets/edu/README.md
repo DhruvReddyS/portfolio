@@ -10,10 +10,11 @@ a lane with no photo is a state the layout already knows how to be in.
 | `mvsr.png`  | MVSR Engineering College, Hyderabad   |
 | `iitm.png`  | IIT Madras                            |
 
-`.jpg` works too; `.png` is tried first. The slot is square and cropped to
-fill, so anything from about 600x600 up works; a shot of the building or
-the gate reads better than a crowd, and it wants to survive being shown at
-sixty pixels across, so one clear shape beats a wide view.
+`.jpg` works too; `.png` is tried first. The slot is a round tile of paper
+and whatever is in it is fitted whole rather than cropped, because what is
+in it now is each college's seal: both were drawn round, on white, to be
+pressed into a page. A square photograph works in it too, but it will be
+shown at about sixty pixels across, so one clear shape beats a wide view.
 
 One note on where the file comes from. A campus photograph is somebody's
 copyright: your own photo is the clean answer, and so is one the college

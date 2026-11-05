@@ -6479,8 +6479,8 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-signoff {
   position: relative;
-  margin-top: clamp(2.5rem, 7vh, 5rem);
-  padding-top: clamp(1.5rem, 4vh, 2.5rem);
+  margin-top: clamp(1.75rem, 4.5vh, 3.25rem);
+  padding-top: clamp(1.1rem, 3vh, 2rem);
 }
 
 .bl-signoff-end {
@@ -6565,8 +6565,18 @@ html.bl-locked body { overflow: hidden; }
 }
 
 /* the colophon carries its own gutter now that the link columns are gone */
+/*
+ * Tighter at the head than the other acts, on purpose.
+ *
+ * The last page is pinned to the foot of the window and the log slides
+ * off it, and that only happens while the whole thing fits in the
+ * window. It was thirteen pixels over on a nine-hundred-pixel screen,
+ * which is most laptops, so the reveal never fired on the machines it
+ * was built for. The ticker gives this end its own separation now and
+ * the padding that used to do that job is not needed twice.
+ */
 .bl-footer {
-  padding: clamp(2.75rem, 7vh, 4.5rem) var(--bl-gutter) clamp(1.25rem, 3vh, 2rem);
+  padding: clamp(2rem, 5vh, 3.5rem) var(--bl-gutter) clamp(1.25rem, 3vh, 2rem);
   background: #070606;
 }
 
@@ -12183,38 +12193,6 @@ body,
   transform-origin: 0 50%;
 }
 
-/*
- * The name is a stamp, so it gets the thing a stamp does: a light passes
- * over it, once, slowly, for ever. It is the last object on the page and
- * the only one with nothing underneath it, which is exactly the place for
- * something that moves on its own without asking to be looked at.
- */
-.bl-signoff { overflow: hidden; }
-
-.bl-signoff::after {
-  content: "";
-  position: absolute;
-  left: -40%;
-  top: 0;
-  bottom: 0;
-  width: 34%;
-  z-index: 2;
-  background: linear-gradient(
-    100deg,
-    transparent,
-    color-mix(in srgb, var(--bl-ink) 7%, transparent) 42%,
-    color-mix(in srgb, var(--bl-accent) 11%, transparent) 54%,
-    transparent
-  );
-  animation: bl-signoff-sweep 9s var(--bl-ease) infinite;
-  pointer-events: none;
-}
-
-@keyframes bl-signoff-sweep {
-  0%, 62% { transform: translateX(0); }
-  100% { transform: translateX(420%); }
-}
-
 /* and the rules either side of "End of log" draw out when it is reached */
 .bl-signoff-end i {
   transform: scaleX(0.55);
@@ -12224,9 +12202,10 @@ body,
 .bl-signoff:hover .bl-signoff-end i { transform: scaleX(1); }
 
 @media (prefers-reduced-motion: reduce) {
-  .bl-signoff::after,
   .bl-colo-where i::after { animation: none; }
   .bl-signoff-end i { transform: none; }
+  .bl-stamp-letter { transition: none; }
+  .bl-stamp-letter:hover { transform: none; }
 }
 
 /* ==========================================================================
@@ -12792,21 +12771,45 @@ body,
   flex: none;
   display: block;
   overflow: hidden;
-  width: clamp(2.9rem, 4.6vw, 3.9rem);
+  width: clamp(3.1rem, 5vw, 4.3rem);
   aspect-ratio: 1;
-  border-radius: 10px;
-  border: 1px solid var(--bl-rule-soft);
-  background: color-mix(in srgb, var(--bl-ink) 5%, transparent);
+  /*
+   * A disc, not a window. What goes in here is a college seal, and
+   * both of them were drawn round, on white, to be pressed into
+   * paper: cropped square to fill a tile they lose their own edge and
+   * gain somebody else's. So the tile is the paper, round, and the
+   * seal sits inside it whole.
+   */
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--bl-ink) 22%, transparent);
+  background: #f4f1ea;
+  box-shadow: 0 6px 16px -10px rgba(0, 0, 0, 0.9);
 }
 
-/* and the stand-in cut to the size of the hole it is standing in */
+/* contained and inset, so the ring of type round the edge of a seal is
+   still there; the slot's own rule scales a photograph up to bleed */
+.bl-plan-shot .bl-plate-bare img {
+  width: 86%;
+  height: 86%;
+  inset: 7%;
+  object-fit: contain;
+  margin-left: 0;
+}
+
+.bl-plan-shot .bl-plate-bare img[data-loaded="true"] {
+  width: 86%;
+  margin-left: 0;
+}
+
+/* and the stand-in cut to the size of the hole it is standing in, in
+   ink that reads on the paper behind it rather than on the page */
 .bl-plan-shot .bl-plate-bare > span {
   padding: 0 0.3rem;
   font-family: var(--bl-mono);
-  font-size: 0.5rem;
-  letter-spacing: 0.12em;
+  font-size: 0.48rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--bl-ink-dim);
+  color: #6b6358;
   -webkit-text-stroke: 0;
 }
 
@@ -13178,4 +13181,278 @@ body,
   .bl-id-code { height: 1.2rem; }
 
   .bl-study-notes { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   THE TICKER AND THE WATERMARK
+   Two things the last page was missing: the standing facts, moving, and
+   the name of the act it is, set at the size of the act.
+   ========================================================================== */
+
+/*
+ * Full bleed and tipped off the horizontal, which keeps it from reading
+ * as a third rule across a page that already has several. It is pushed
+ * past both gutters so the rotated ends are cut off by the footer
+ * rather than floating in from nowhere.
+ */
+.bl-ticker {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin:
+    calc(clamp(0.75rem, 2vh, 1.5rem) * -1)
+    calc((var(--bl-gutter) + 6vw) * -1)
+    clamp(1.75rem, 4.2vh, 3rem);
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--bl-rule);
+  border-bottom: 1px solid var(--bl-rule);
+  background: color-mix(in srgb, var(--bl-bg) 72%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 22px 44px -28px rgba(0, 0, 0, 1);
+  transform: rotate(-1.4deg);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.bl-ticker-run {
+  display: flex;
+  width: max-content;
+  animation: bl-ticker-go 38s linear infinite;
+}
+
+/* two copies, so the second is where the first was when it wraps */
+@keyframes bl-ticker-go {
+  to { transform: translateX(-50%); }
+}
+
+.bl-ticker:hover .bl-ticker-run { animation-play-state: paused; }
+
+.bl-ticker-set { display: flex; flex: none; }
+
+.bl-ticker-one {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(1.6rem, 4vw, 3rem);
+  padding-right: clamp(1.6rem, 4vw, 3rem);
+  font-family: var(--bl-mono);
+  font-size: clamp(0.56rem, 0.9vw, 0.7rem);
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--bl-ink-dim);
+  transition: color 0.3s var(--bl-ease);
+}
+
+.bl-ticker:hover .bl-ticker-one { color: var(--bl-ink); }
+
+/* a lozenge between one fact and the next, drawn rather than typed, so
+   it does not depend on the mono face having a mark for it */
+.bl-ticker-one i {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  background: var(--bl-accent);
+  transform: rotate(45deg);
+}
+
+/* ---- the watermark ----------------------------------------------------- */
+
+/*
+ * The name of the act, behind the act. Outlined rather than filled, and
+ * the outline fades out before it gets to the foot, so it is a thing
+ * the small print is printed over rather than a thing competing with
+ * it. A book puts its title on the colophon page; this one puts the
+ * word itself.
+ */
+.bl-footer > .bl-footer-giant {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  z-index: 0;
+  margin: 0;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: clamp(4rem, 19vw, 17rem);
+  line-height: 0.76;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--bl-ink) 7%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-ink) 9%, transparent),
+    transparent 62%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-ticker-run { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .bl-ticker { margin-inline: calc((var(--bl-gutter) + 10vw) * -1); }
+  .bl-ticker-one { letter-spacing: 0.22em; }
+  .bl-footer > .bl-footer-giant { top: 9%; font-size: clamp(3.5rem, 26vw, 9rem); }
+}
+
+/* ==========================================================================
+   HIS NAME, UNDER THE POINTER
+   The light that used to pass over the stamp on a loop is gone. The
+   name does something when it is touched instead, which is the better
+   trade: nothing moves until somebody goes looking, and then every
+   letter answers on its own.
+   ========================================================================== */
+
+.bl-stamp-letter {
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.9, 0.25, 1),
+    opacity 0.4s var(--bl-ease);
+  cursor: default;
+}
+
+/* lifted, and tipped back the way it was pressed in */
+.bl-signoff .bl-stamp-letter:hover {
+  transform: translateY(-9px) rotate(calc(var(--r, 0deg) * -0.6));
+}
+
+/* and the rest of the name settles while one of them is up */
+.bl-signoff:has(.bl-stamp-letter:hover) .bl-stamp-letter:not(:hover) {
+  opacity: 0.62;
+}
+
+/* the sign-off rule answers the same pointer */
+.bl-signoff:hover .bl-signoff-end { color: var(--bl-ink-soft); }
+
+/* ==========================================================================
+   THE LAST PAGE, REVEALED
+   The footer stops being the next thing down the page and becomes the
+   thing the page slides off. It is pinned to the foot of the window and
+   the log passes over the top of it, so the colophon is uncovered
+   rather than scrolled to.
+
+   Only where the whole last page fits in the window, which is measured
+   in the component rather than guessed at in a media query, because it
+   depends on how tall this footer happens to be at that width.
+   ========================================================================== */
+
+.bl-footer[data-reveal="true"] {
+  position: sticky;
+  bottom: 0;
+  z-index: 0;
+}
+
+/* the curtain: opaque, and over the top of it */
+.bl-root:has(.bl-footer[data-reveal="true"]) .bl-main {
+  position: relative;
+  z-index: 2;
+  background: var(--bl-bg);
+}
+
+/* ---- the light it is uncovered into ----------------------------------- */
+
+/*
+ * An aurora and a grid, which is the one piece of scenery the last page
+ * never had. The grid is the same ruled paper the toolkit's bench is
+ * drawn on, so the first act and the last are made of the same stock;
+ * the glow is the only soft light on the site and it is here because
+ * this is the only part of the page nobody has to read.
+ */
+.bl-footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      58% 46% at 50% 38%,
+      color-mix(in srgb, var(--bl-accent) 13%, transparent),
+      transparent 72%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(242, 239, 230, 0.028) 0 1px,
+      transparent 1px 58px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(242, 239, 230, 0.028) 0 1px,
+      transparent 1px 58px
+    );
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 26%, #000 74%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 26%, #000 74%, transparent);
+  animation: bl-footer-breathe 11s ease-in-out infinite alternate;
+}
+
+@keyframes bl-footer-breathe {
+  from { opacity: 0.72; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.04); }
+}
+
+.bl-footer > * { position: relative; z-index: 1; }
+
+/* ---- the links, as pills you can pick up ------------------------------- */
+
+.bl-colo-links a,
+.bl-totop {
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--bl-ink) 9%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--bl-ink) 5%, transparent),
+    color-mix(in srgb, var(--bl-ink) 1%, transparent)
+  );
+  box-shadow:
+    0 10px 24px -14px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 color-mix(in srgb, var(--bl-ink) 9%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s var(--bl-ease);
+}
+
+.bl-colo-links a:hover,
+.bl-totop:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--bl-accent) 14%, transparent),
+    color-mix(in srgb, var(--bl-ink) 2%, transparent)
+  );
+  box-shadow:
+    0 18px 34px -14px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 color-mix(in srgb, var(--bl-ink) 18%, transparent);
+}
+
+/* the drawn underline belonged to a plain link; a pill has its own edge */
+.bl-colo-links a::after { content: none; }
+
+.bl-colo-links { gap: 0.55rem; }
+
+/* and the way back, which is the one control on the page that moves to
+   meet the pointer */
+.bl-totop {
+  margin-left: auto;
+  padding: 0.6rem 1.15rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-footer::after { animation: none; }
+  .bl-colo-links a:hover,
+  .bl-totop:hover { transform: none; }
 }
