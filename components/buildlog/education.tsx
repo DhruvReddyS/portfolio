@@ -5,6 +5,7 @@ import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
 import { SectionHeader } from "./sections";
 import { MarkPaper } from "./marks";
+import { Plate } from "./plate";
 import { BugHunt } from "@/components/ui/bug-hunt";
 
 /**
@@ -32,8 +33,8 @@ export function EducationSection() {
 
       <SectionHeader
         label="03 / Study"
-        title="A dual degree, run in parallel"
-        lead="One on campus at MVSR, one online with IIT Madras. Both at once."
+        title="Two degrees, one timetable"
+        lead="A B.E. on campus at MVSR and a BS from IIT Madras, carried together rather than one after the other. Same weeks, two sets of deadlines."
         note={`${education.length} degrees · both running`}
       />
 
@@ -41,6 +42,24 @@ export function EducationSection() {
         {education.map((school, index) => (
           <Reveal key={school.id} delay={index * 110}>
             <article className="bl-degree">
+              {/*
+                The place itself. A transcript is a list of claims about
+                somewhere, and until now the somewhere was a name set in
+                type; this is the campus the claims were earned on. The
+                slot keeps its shape whether or not a file is behind it,
+                so one school having a photograph and the other not is a
+                state the card already knows how to be in.
+              */}
+              <span className="bl-degree-shot">
+                <Plate
+                  dir="edu"
+                  name={school.id}
+                  monogram={school.short}
+                  alt={`${school.school} campus`}
+                  bare
+                />
+              </span>
+
               <p className="bl-degree-where">
                 <span>{school.period}</span>
                 <i aria-hidden="true" />

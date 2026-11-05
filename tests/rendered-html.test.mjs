@@ -62,7 +62,7 @@ test("server-renders the build log", async () => {
   for (const head of [
     "Where it happened",
     "What got built",
-    "A dual degree, run in parallel",
+    "Two degrees, one timetable",
     "Thirty-one things I build with",
     "What it won",
     "And a studio he runs",

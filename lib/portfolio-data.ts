@@ -760,13 +760,39 @@ export const studio = {
     "We build the site, then we keep it working.",
     "Scoped, built, handed over, supported for a year.",
   ],
-  /** What the studio actually takes on, in its own words. */
+  /**
+   * What the studio takes on, with a line on what each one covers.
+   *
+   * Descriptions of the service, not claims about particular jobs: who
+   * the clients were and what was delivered for them is counted under
+   * `work` and is theirs to announce, not this page's.
+   */
   services: [
-    { label: "Websites", mark: "window" },
-    { label: "SEO", mark: "seek" },
-    { label: "Chatbots", mark: "chat" },
-    { label: "Automations", mark: "loop" },
-    { label: "Marketing", mark: "rise" },
+    {
+      label: "Websites",
+      mark: "window",
+      note: "Designed and built from the brief up, not dropped into a template.",
+    },
+    {
+      label: "SEO",
+      mark: "seek",
+      note: "Structure, speed and markup, so the thing can be found once it is live.",
+    },
+    {
+      label: "Chatbots",
+      mark: "chat",
+      note: "Assistants that answer out of what the business already has written down.",
+    },
+    {
+      label: "Automations",
+      mark: "loop",
+      note: "The work that repeats every week, handed to something that does not forget.",
+    },
+    {
+      label: "Marketing",
+      mark: "rise",
+      note: "The launch, and the part afterwards where somebody has to keep showing up.",
+    },
   ],
   process: [
     { step: "01", title: "Understand the brand", note: "Vision, audience and goals, clarified early." },

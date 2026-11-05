@@ -179,6 +179,29 @@ export interface BugHuntProps {
 
 const MAIN_ANCHORS = [".bl-head-title", ".bl-degree"];
 
+/*
+ * And the rest of them, strewn round the act rather than hung off
+ * anything in it.
+ *
+ * Three webs in three corners reads as three decorations. A room that has
+ * been left alone long enough for this to happen has them everywhere: in
+ * the corners, along the edges, behind things, at sizes that have nothing
+ * to do with each other. These are placed by hand rather than at random
+ * so the clusters fall where there is nothing to read, and they are only
+ * scenery: the spider's walk is still measured off the headings and the
+ * cards, because those are the things it is meant to be found crossing.
+ */
+const STREWN = [
+  { x: "1%", y: "4%", scale: 0.5, flip: true },
+  { x: "86%", y: "1%", scale: 0.72, flip: false },
+  { x: "-4%", y: "40%", scale: 0.95, flip: false },
+  { x: "91%", y: "33%", scale: 0.58, flip: true },
+  { x: "4%", y: "82%", scale: 0.8, flip: true },
+  { x: "68%", y: "86%", scale: 0.54, flip: false },
+  { x: "38%", y: "95%", scale: 0.42, flip: true },
+  { x: "55%", y: "-2%", scale: 0.38, flip: false },
+] as const;
+
 export function BugHunt({ anchors = MAIN_ANCHORS, className }: BugHuntProps) {
   const host = React.useRef<HTMLDivElement>(null);
   const body = React.useRef<HTMLButtonElement>(null);
@@ -397,6 +420,26 @@ export function BugHunt({ anchors = MAIN_ANCHORS, className }: BugHuntProps) {
         className={["bl-hunt", className].filter(Boolean).join(" ")}
         data-ready={zones.length ? "true" : "false"}
       >
+        {/* the scenery first, so nothing hung off a heading sits under it */}
+        {STREWN.map((web, index) => (
+          <span
+            key={`strewn-${index}`}
+            className="bl-web-rig"
+            data-strewn="true"
+            data-flip={web.flip ? "true" : undefined}
+            style={
+              {
+                left: web.x,
+                top: web.y,
+                "--web-scale": web.scale,
+              } as React.CSSProperties
+            }
+            aria-hidden="true"
+          >
+            <Web />
+          </span>
+        ))}
+
         {zones.map((zone, index) => (
           <span
             key={index}
