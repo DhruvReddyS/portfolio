@@ -688,6 +688,19 @@ export type School = {
   status: string;
   /** Headline figure for the school. */
   mark: { value: string; label: string };
+  /**
+   * The degree laid out as the stretch of time it actually occupies,
+   * so the two can be drawn one above the other and the overlap can be
+   * seen rather than asserted. `span` is the share of the lane a stage
+   * takes, not a date: one of these has four years with no milestones
+   * in it and the other has three stages of different lengths.
+   */
+  track: {
+    label: string;
+    note: string;
+    span: number;
+    state: "done" | "now";
+  }[];
   highlights: string[];
   /** Drop a file at /assets/edu/<id>.png and set it here. */
   image?: string;
@@ -707,6 +720,14 @@ export const education: School[] = [
     status: "In progress",
     monogram: "M",
     mark: { value: "9.34", label: "CGPA" },
+    track: [
+      {
+        label: "B.E. Computer Science and IT",
+        note: "On campus, four years, no stages to tick off",
+        span: 1,
+        state: "now",
+      },
+    ],
     highlights: [
       "President of the ASTRA technical club",
       "Winner, MVSR Project Expo 2026",
@@ -724,6 +745,16 @@ export const education: School[] = [
     status: "Diploma stage",
     monogram: "IITM",
     mark: { value: "2", label: "diplomas complete" },
+    track: [
+      { label: "Foundation", note: "Complete", span: 2, state: "done" },
+      { label: "Programming Diploma", note: "Complete", span: 2, state: "done" },
+      {
+        label: "Data Science Diploma",
+        note: "In progress",
+        span: 3,
+        state: "now",
+      },
+    ],
     highlights: [
       "Foundation stage complete",
       "Programming Diploma complete",

@@ -3644,6 +3644,7 @@ html.bl-locked body { overflow: hidden; }
 .bl-metric strong span,
 .bl-school-mark strong span,
 .bl-studio-marks strong span,
+.bl-plan-figure strong span,
 .bl-hero-counts strong span {
   font: inherit;
   letter-spacing: inherit;
@@ -13084,242 +13085,350 @@ body,
 }
 
 /* ==========================================================================
-   THE TWO PASSES
-   The one thing on this page you can pick up, in the act about the two
-   things he is carrying at once.
+   ONE TIMETABLE
+   Two lanes laid one over the other on a common rule, with a line down
+   through both of them at today. Two objects side by side say "here
+   are two things"; this says "at the same time", which is the claim.
    ========================================================================== */
 
-.bl-passes {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1rem, 3vw, 3rem);
-  margin-top: clamp(1rem, 3vh, 2rem);
-}
-
-/* ---- the strap -------------------------------------------------------- */
-
-.bl-hang {
-  position: relative;
-  height: clamp(27rem, 50vw, 37rem);
-}
-
-.bl-hang-strap {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  fill: none;
-  pointer-events: none;
-}
-
-.bl-hang-tape {
-  stroke: color-mix(in srgb, var(--bl-accent) 72%, #2a1007);
-  stroke-width: 13;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* the line of stitching down the middle of the webbing */
-.bl-hang-stitch {
-  stroke: color-mix(in srgb, var(--bl-bg) 55%, transparent);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* the ring it is threaded through, at the top of the box */
-.bl-hang-pin {
-  position: absolute;
-  top: -7px;
-  z-index: 3;
-  width: 22px;
-  height: 22px;
-  margin-left: -11px;
-  border-radius: 50%;
-  border: 3px solid color-mix(in srgb, var(--bl-ink) 45%, transparent);
-  background: var(--bl-bg);
-  pointer-events: none;
-}
-
-/* ---- the card ---------------------------------------------------------- */
-
-.bl-hang-card {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 2;
-  width: clamp(12rem, 21vw, 16.5rem);
-  /* hung from the point the rope ends at, and turned with it */
-  translate: calc(var(--x, 0px) - 50%) var(--y, 0px);
-  rotate: var(--lean, 0deg);
-  transform-origin: 50% -0.4rem;
-  cursor: grab;
-  /*
-   * Sideways is ours, down the page is theirs.
-   *
-   * A pass on a phone is most of the width of the screen, so taking
-   * every touch on it would mean a reader who put their thumb on the
-   * card could not scroll the page. Swinging one is a sideways gesture
-   * anyway, so the vertical axis is handed back to the page and only
-   * the horizontal one is captured.
-   */
-  touch-action: pan-y;
-  will-change: translate, rotate;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.bl-hang-card[data-held="true"] { cursor: grabbing; }
-
-/* the clip the strap is threaded into */
-.bl-hang-clip {
-  position: absolute;
-  left: 50%;
-  top: -0.65rem;
-  width: 2.6rem;
-  height: 1.3rem;
-  margin-left: -1.3rem;
-  border-radius: 0.35rem;
-  border: 2px solid color-mix(in srgb, var(--bl-ink) 40%, transparent);
-  background: linear-gradient(180deg, #4c4740, #22201c);
-  box-shadow: 0 3px 8px -4px rgba(0, 0, 0, 0.9);
-}
-
-.bl-hang-clip::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1.5rem;
-  height: 0.3rem;
-  margin: -0.15rem 0 0 -0.75rem;
-  border-radius: 0.15rem;
-  background: var(--bl-bg);
-}
-
-/* ---- what is printed on it -------------------------------------------- */
-
-.bl-id {
+.bl-plan {
   position: relative;
   display: grid;
-  gap: 0.55rem;
-  padding: 1.5rem 1rem 1rem;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  margin-top: clamp(1.25rem, 3vh, 2.25rem);
+  padding: clamp(1.1rem, 2.6vw, 2rem) clamp(1.1rem, 2.6vw, 2rem) clamp(1.6rem, 3.2vw, 2.4rem);
   border: 1px solid var(--bl-rule);
-  border-radius: 14px;
+  border-radius: 16px;
   background:
-    linear-gradient(
-      158deg,
-      color-mix(in srgb, var(--bl-ink) 7%, transparent),
-      transparent 48%
+    radial-gradient(
+      70% 120% at 88% 0%,
+      color-mix(in srgb, var(--bl-accent) 9%, transparent),
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(242, 239, 230, 0.022) 0 1px,
+      transparent 1px 44px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(242, 239, 230, 0.022) 0 1px,
+      transparent 1px 44px
     ),
     var(--bl-surface);
-  box-shadow:
-    0 26px 50px -26px rgba(0, 0, 0, 1),
-    inset 0 1px 0 color-mix(in srgb, var(--bl-ink) 10%, transparent);
   overflow: hidden;
 }
 
-/* a band of the school's own weather across the head of the card */
-.bl-id::before {
+/*
+ * A light going across the whole panel, once every few seconds. It is
+ * the thing that makes this read as a board being watched rather than
+ * a diagram that was printed and left, and at this contrast it is felt
+ * before it is seen.
+ */
+.bl-plan::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: -30%;
   top: 0;
-  height: 0.35rem;
-  background: var(--bl-accent);
+  bottom: 0;
+  width: 26%;
+  z-index: 3;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in srgb, var(--bl-ink) 5%, transparent) 45%,
+    color-mix(in srgb, var(--bl-accent) 9%, transparent) 55%,
+    transparent
+  );
+  animation: bl-plan-scan 7.5s var(--bl-ease) infinite;
+  pointer-events: none;
 }
 
-.bl-id[data-school="iitm"]::before {
-  background: color-mix(in srgb, var(--bl-accent) 45%, var(--bl-ink));
+@keyframes bl-plan-scan {
+  0%, 55% { transform: translateX(0); }
+  100% { transform: translateX(520%); }
 }
 
-.bl-id-head {
+/* ---- the rule the lanes are measured against -------------------------- */
+
+.bl-plan-scale {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6rem;
-}
-
-.bl-id-org {
-  font-family: var(--bl-poster);
-  font-weight: 900;
-  font-size: clamp(0.95rem, 1.6vw, 1.2rem);
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-  color: var(--bl-ink);
-}
-
-.bl-id-kind {
-  margin-top: -0.25rem;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0 0 0.35rem;
   font-family: var(--bl-mono);
-  font-size: 0.46rem;
-  letter-spacing: 0.26em;
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--bl-ink-dim);
 }
 
-.bl-id-shot {
-  display: block;
-  overflow: hidden;
-  aspect-ratio: 4 / 3;
-  border-radius: 8px;
-  border: 1px solid var(--bl-rule-soft);
-  background: color-mix(in srgb, var(--bl-ink) 4%, transparent);
+.bl-plan-scale i {
+  flex: 1;
+  height: 1px;
+  /* ticked, so it reads as a measure and not a divider */
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bl-rule) 0 2px,
+    transparent 2px 10px
+  );
 }
 
-.bl-id-shot > * { width: 100%; height: 100%; }
+.bl-plan-scale span:last-child { color: var(--bl-accent); }
 
-.bl-id-name {
-  margin: 0.15rem 0 0;
-  font-family: var(--bl-sans);
-  font-weight: 650;
-  font-size: clamp(0.92rem, 1.3vw, 1.05rem);
-  letter-spacing: -0.012em;
+/* ---- one degree ------------------------------------------------------- */
+
+.bl-plan-lane {
+  display: grid;
+  grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(0.9rem, 2.4vw, 2rem);
+  padding: clamp(0.9rem, 2vw, 1.3rem) 0;
+  border-top: 1px solid var(--bl-rule-soft);
+}
+
+.bl-plan-lane:first-of-type { border-top: 0; }
+
+.bl-plan-who h3 {
+  margin: 0;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
   color: var(--bl-ink);
 }
 
-.bl-id-course {
+.bl-plan-what {
   display: grid;
   gap: 0.1rem;
-  margin: 0;
+  margin: 0.35rem 0 0;
 }
 
-.bl-id-course strong {
+.bl-plan-what strong {
   font-family: var(--bl-mono);
-  font-size: 0.56rem;
+  font-size: 0.54rem;
   font-weight: 500;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--bl-accent);
 }
 
-.bl-id-course span {
-  font-size: 0.78rem;
+.bl-plan-what span {
+  font-size: 0.8rem;
   line-height: 1.4;
   color: var(--bl-ink-dim);
 }
 
-.bl-id-figure {
+/* ---- the lane itself --------------------------------------------------- */
+
+.bl-plan-run {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  min-width: 0;
+  height: clamp(3.4rem, 6vw, 4.4rem);
+}
+
+/* the weeks, ruled under the lane, so a stage is a length of something
+   rather than a rectangle of a length nobody can read */
+.bl-plan-run::before {
+  content: "";
+  position: absolute;
+  inset: -0.45rem 0;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--bl-ink) 13%, transparent) 0 1px,
+    transparent 1px 26px
+  );
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent 22%, transparent 78%, #000);
+  mask-image: linear-gradient(180deg, #000, transparent 22%, transparent 78%, #000);
+  pointer-events: none;
+}
+
+/* one lane, one shape: only the outer ends are rounded off */
+.bl-plan-stage:first-child { border-radius: 9px 4px 4px 9px; }
+.bl-plan-stage:last-child { border-radius: 4px 9px 9px 4px; }
+.bl-plan-stage:only-child { border-radius: 9px; }
+
+.bl-plan-stage {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 0.15rem;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 clamp(0.6rem, 1.4vw, 1rem);
+  border-radius: 7px;
+  /* grown from its own left edge by the scroll, the way a week fills */
+  transform-origin: 0 50%;
+  transition:
+    transform 0.35s var(--bl-ease),
+    box-shadow 0.35s var(--bl-ease);
+}
+
+/* glass, so a lane of them has depth rather than being four flat fills */
+.bl-plan-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-ink) 7%, transparent),
+    transparent 46%
+  );
+  pointer-events: none;
+}
+
+/*
+ * And a light passing along each one as it lands, once. The lanes are
+ * drawn from the left by the scroll and this follows a beat behind,
+ * which is what turns four boxes appearing into a line being read.
+ */
+.bl-plan-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background: linear-gradient(
+    100deg,
+    transparent 35%,
+    color-mix(in srgb, var(--bl-ink) 26%, transparent) 50%,
+    transparent 65%
+  );
+  background-size: 260% 100%;
+  background-position: 180% 0;
+  animation: bl-plan-pass 1.5s var(--bl-ease) 0.5s 1;
+  pointer-events: none;
+}
+
+@keyframes bl-plan-pass {
+  from { background-position: 180% 0; }
+  to { background-position: -80% 0; }
+}
+
+.bl-plan-stage:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 26px -16px rgba(0, 0, 0, 0.95);
+  z-index: 2;
+}
+
+/* and the rest of the board steps back while one is being read */
+.bl-plan:has(.bl-plan-stage:hover) .bl-plan-stage:not(:hover) {
+  opacity: 0.55;
+}
+
+.bl-plan-stage b,
+.bl-plan-stage span { position: relative; z-index: 1; }
+
+.bl-plan-stage b {
+  font-family: var(--bl-sans);
+  font-weight: 650;
+  font-size: clamp(0.72rem, 1.05vw, 0.9rem);
+  line-height: 1.2;
+  letter-spacing: -0.008em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bl-plan-stage span {
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* what is finished is solid; the page has been paid for it */
+.bl-plan-stage[data-state="done"] {
+  background: color-mix(in srgb, var(--bl-ink) 11%, transparent);
+  border: 1px solid var(--bl-rule);
+  color: var(--bl-ink);
+}
+
+.bl-plan-stage[data-state="done"] span { color: var(--bl-ink-dim); }
+
+/*
+ * And what is still running is hatched and lit, because it is the
+ * stretch of the lane that is being worked in this week. The hatching
+ * crawls, slowly, so the two open stages are the only moving things in
+ * the act and the eye goes to them.
+ */
+.bl-plan-stage[data-state="now"] {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--bl-accent) 26%, transparent) 0 7px,
+      transparent 7px 16px
+    ),
+    color-mix(in srgb, var(--bl-accent) 13%, transparent);
+  background-size: 22.6px 22.6px, auto;
+  color: var(--bl-ink);
+  animation: bl-plan-crawl 2.6s linear infinite;
+}
+
+.bl-plan-stage[data-state="now"] span { color: var(--bl-accent); }
+
+/* the open end of an open stage, which is where the work is */
+.bl-plan-stage[data-state="now"]::before {
+  background:
+    linear-gradient(
+      270deg,
+      color-mix(in srgb, var(--bl-accent) 30%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bl-ink) 7%, transparent),
+      transparent 46%
+    );
+  animation: bl-plan-breathe 3.4s ease-in-out infinite alternate;
+}
+
+@keyframes bl-plan-breathe {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+@keyframes bl-plan-crawl {
+  to { background-position: 22.6px 0, 0 0; }
+}
+
+/* ---- the figure at the end of the lane --------------------------------- */
+
+.bl-plan-figure {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  margin: 0.25rem 0 0;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--bl-rule-soft);
+  margin: 0.7rem 0 0;
 }
 
-.bl-id-figure strong {
+.bl-plan-figure strong {
   font-family: var(--bl-display);
   font-weight: 400;
-  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  font-variation-settings: "SOFT" 20, "opsz" 48;
+  font-size: clamp(1.8rem, 3.4vw, 2.8rem);
   line-height: 1;
   color: var(--bl-ink);
 }
 
-.bl-id-figure span {
+/*
+ * The direct child only. The counter next to it renders its value in a
+ * span of its own inside the <strong>, and a descendant selector here
+ * caught that too: the figure was set at eight pixels inside an element
+ * asking for forty-five, and measured as forty-five, which is why it
+ * took a screenshot to find.
+ */
+.bl-plan-figure > span {
   font-family: var(--bl-mono);
   font-size: 0.5rem;
   letter-spacing: 0.18em;
@@ -13327,63 +13436,88 @@ body,
   color: var(--bl-ink-dim);
 }
 
-/* stamped across the corner, the way a pass is overprinted */
-.bl-id-stamp {
+/* ---- today, crossing both of them -------------------------------------- */
+
+.bl-plan-now {
   position: absolute;
-  right: -2.4rem;
-  top: 2.1rem;
-  margin: 0;
-  padding: 0.22rem 2.6rem;
-  background: color-mix(in srgb, var(--bl-accent) 88%, transparent);
-  color: var(--bl-accent-ink);
-  font-family: var(--bl-mono);
-  font-size: 0.48rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transform: rotate(38deg);
+  right: clamp(1.1rem, 2.6vw, 2rem);
+  top: clamp(2.6rem, 5vw, 3.6rem);
+  bottom: clamp(1.6rem, 3.2vw, 2.4rem);
+  z-index: 2;
+  width: 0;
+  transform-origin: 50% 0;
   pointer-events: none;
 }
 
-/* and the barcode, which means nothing, as they all do */
-.bl-id-code {
-  display: block;
-  height: 1.6rem;
-  margin-top: 0.2rem;
-  border-radius: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--bl-ink) 0 1px,
-    transparent 1px 3px,
-    var(--bl-ink) 3px 5px,
-    transparent 5px 6px,
-    var(--bl-ink) 6px 7px,
-    transparent 7px 11px
+.bl-plan-now i {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--bl-accent) 12%,
+    var(--bl-accent) 88%,
+    transparent
   );
-  opacity: 0.55;
+  box-shadow: 0 0 1.4rem color-mix(in srgb, var(--bl-accent) 70%, transparent);
+  animation: bl-plan-live 2.8s ease-in-out infinite alternate;
 }
 
-/* ---- the cue, and what will not fit on a pass -------------------------- */
+@keyframes bl-plan-live {
+  from { opacity: 0.72; }
+  to { opacity: 1; }
+}
 
-.bl-pass-cue {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.8rem, 2vw, 1.4rem);
-  margin: clamp(1.25rem, 3vh, 2rem) 0 0;
+.bl-plan-now em {
+  position: absolute;
+  right: 0;
+  top: -1.35rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
   font-family: var(--bl-mono);
-  font-size: var(--bl-t-label, 0.58rem);
-  letter-spacing: 0.26em;
+  font-size: 0.46rem;
+  font-style: normal;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--bl-ink-dim);
 }
 
-.bl-pass-cue i {
-  flex: 1;
-  max-width: 7rem;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--bl-rule), transparent);
+@media (prefers-reduced-motion: reduce) {
+  .bl-plan::after,
+  .bl-plan-stage::after,
+  .bl-plan-stage[data-state="now"],
+  .bl-plan-stage[data-state="now"]::before,
+  .bl-plan-now i { animation: none; }
+}
+
+@media (max-width: 860px) {
+  /* the lane drops under the name and runs the width of the panel */
+  .bl-plan-lane { grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
+  .bl-plan-run { height: clamp(3rem, 13vw, 4rem); }
+  .bl-plan-now { top: clamp(2.4rem, 7vw, 3.2rem); }
+}
+
+@media (max-width: 560px) {
+  .bl-plan-stage { padding-inline: 0.5rem; }
+
+  /* a short stage would rather take two lines than lose half its name
+     to an ellipsis, and the lane is tall enough for both */
+  .bl-plan-stage b {
+    font-size: 0.66rem;
+    line-height: 1.15;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .bl-plan-stage span { font-size: 0.42rem; letter-spacing: 0.08em; }
+  .bl-plan-run { height: clamp(3.6rem, 16vw, 4.4rem); }
 }
 
 .bl-study-notes {
