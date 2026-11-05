@@ -798,10 +798,24 @@ export function ContactSection() {
         </p>
       </Reveal>
 
+      {/*
+        The line, written for the one thing a recruiter is actually
+        weighing, which is not how good he is. It is how exposed they
+        are if they are wrong about him.
+
+        It was a challenge before: nobody above hired a CV, they hired
+        the thing I showed them. True, and the wrong job for this spot.
+        A challenge asks the reader to prove something at the exact
+        moment they are deciding whether to risk anything, and the
+        honest answer to their risk is already in the seven acts above
+        it: five teams took it first, and every one of those is a date,
+        a place and a thing that shipped. So the close says that, and
+        lets the evidence do the reassuring.
+      */}
       <Reveal delay={120}>
         <h2 className="bl-close-line">
-          Nobody above hired a CV.
-          <em>They hired the thing I showed them.</em>
+          You are not taking a chance.
+          <em>Five teams already did.</em>
         </h2>
       </Reveal>
 

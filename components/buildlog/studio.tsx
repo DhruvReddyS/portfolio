@@ -5,7 +5,7 @@ import Image from "next/image";
 import { studio } from "@/lib/portfolio-data";
 import { servable } from "@/lib/image-sizes";
 import { Reveal } from "./reveal";
-import { Settle } from "./settle";
+import { Ruler } from "./ruler";
 import { SectionHeader } from "./sections";
 import {
   MarkAgent,
@@ -167,14 +167,17 @@ export function StudioSection() {
 
             {/*
               And where it came from, set the way the rest of this column
-              is not: large, heavy and tight, arriving as a heap of tilted
-              words that straightens itself out as the reader goes down
-              it. It is the only paragraph in the studio act, so it is
-              allowed to be the thing you look at rather than the thing
-              under the thing you look at.
+              is not: large, heavy and tight. It is the only paragraph in
+              the studio act, so it is allowed to be the thing you look
+              at rather than the thing under the thing you look at.
+
+              It is uncovered under a ruler rather than assembled out of
+              its own words, which is the statement act's trick and is
+              not borrowed here. Same idea, reading at the speed of the
+              scroll; two different ways of showing it.
             */}
             <p className="bl-bfu-lab">How it started</p>
-            <Settle className="bl-bfu-story">{studio.story}</Settle>
+            <Ruler className="bl-bfu-story">{studio.story}</Ruler>
 
             <p className="bl-bfu-count">
               <strong>5+</strong>

@@ -11279,7 +11279,7 @@ body,
   /* in ch, and on the element that is actually set in the display face:
      a ch on the figure around it is a ch of the body face, which is a
      third of the size and makes this column a quarter as wide as meant */
-  max-width: 12ch;
+  max-width: 13ch;
   text-wrap: balance;
   color: var(--bl-ink);
 }
@@ -12616,4 +12616,80 @@ body,
   .bl-close-way,
   .bl-close-way:hover,
   .bl-close-way:hover .bl-close-go { transform: none; }
+}
+
+/* ==========================================================================
+   THE READING RULER
+   A paragraph uncovered a line at a time, with the rule lying across
+   whichever line the scroll has got to. The type is never touched: only
+   the light over it moves, which is what keeps this act from being the
+   statement act over again.
+   ========================================================================== */
+
+.bl-ruler {
+  position: relative;
+  margin: 0;
+  isolation: isolate;
+}
+
+/*
+ * The veil over what has not been read.
+ *
+ * It starts a line's-worth transparent so the edge is soft, which stops
+ * the uncovered line reading as a hard horizontal cut across the type,
+ * and it is the page's own ground rather than a grey, so what is under
+ * it goes the colour the page goes and not the colour of a scrim.
+ */
+.bl-ruler::after {
+  content: "";
+  position: absolute;
+  left: -0.25em;
+  right: -0.25em;
+  top: var(--read, 100%);
+  bottom: -0.2em;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-bg) 10%, transparent),
+    color-mix(in srgb, var(--bl-bg) 84%, transparent) 0.9em,
+    color-mix(in srgb, var(--bl-bg) 88%, transparent)
+  );
+  /* the rule moves a whole line at a time, so the step between two
+     lines is eased rather than cut */
+  transition: top 0.32s var(--bl-ease);
+  pointer-events: none;
+}
+
+/* and the rule itself, lying on the line being read */
+.bl-ruler::before {
+  content: "";
+  position: absolute;
+  left: -0.25em;
+  right: -0.25em;
+  top: var(--read, 100%);
+  height: 2px;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    var(--bl-accent),
+    color-mix(in srgb, var(--bl-accent) 35%, transparent) 62%,
+    transparent
+  );
+  box-shadow: 0 0 1.1rem -0.1rem color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  opacity: 0;
+  transition:
+    opacity 0.35s var(--bl-ease),
+    top 0.32s var(--bl-ease);
+  pointer-events: none;
+}
+
+/* drawn only while there is something left under it */
+.bl-ruler[data-reading="true"]::before { opacity: 1; }
+
+/* nothing written on it, nothing in front of it */
+.bl-ruler:not([data-reading])::after { content: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-ruler::before,
+  .bl-ruler::after { content: none; }
 }

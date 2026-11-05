@@ -142,6 +142,19 @@ function BuildLog() {
           reader who disagrees has still been given something to hold,
           and a reader who agrees has a reason to keep going.
 
+          It went through two drafts that both failed the same test. The
+          first was an observation everybody agrees with, and the second
+          was the take everybody was already making that year. A line
+          nobody would argue with is not an opinion, it is a greeting.
+
+          This one is from the work. A crash reports itself; a model
+          that is confidently wrong does not, so it gets read, believed
+          and signed off, and the failure arrives downstream wearing
+          somebody's approval. That is the actual difference between
+          the software he grew up reading about and the software he
+          builds, and it is the reason the systems in the log are built
+          the way they are.
+
           The second half stays lit after the rest has cooled, because
           the second half is the claim and the first half is only the
           setup for it.
@@ -152,8 +165,8 @@ function BuildLog() {
             A word before the log
             <i aria-hidden="true" />
           </p>
-          <Statement lit={3} cite="An opinion, and I will defend it">
-            Building got cheap. Judgement did not.
+          <Statement lit={4} cite="Which is why I build for the second one">
+            A bug crashes. A hallucination gets approved.
           </Statement>
         </section>
 
