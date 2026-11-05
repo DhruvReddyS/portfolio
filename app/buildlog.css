@@ -8600,6 +8600,22 @@ body,
   pointer-events: none;
 }
 
+/*
+ * A stamp in the corner needs a corner to be empty. On a phone the card
+ * is one column and the last of its points runs the full width, so the
+ * stamp was sitting on top of "Winner, MVSR Project Expo 2026". It joins
+ * the flow instead, still tilted, still a stamp, just no longer on top
+ * of the sentence it was meant to sit beside.
+ */
+@media (max-width: 760px) {
+  .bl-degree-stamp {
+    position: static;
+    align-self: start;
+    margin: 1.1rem 0 0;
+    width: fit-content;
+  }
+}
+
 /* ---- the tie ---- */
 
 .bl-degree-tie {
@@ -8684,6 +8700,14 @@ body,
 .bl-orbit-marks {
   position: absolute;
   inset: 0;
+  /*
+   * Over the mark, not under it. The disc is written after the ring, so
+   * it was painting on top of whichever chips reached it: half of
+   * "Automations" went under the mark at three o'clock. A chip crossing
+   * in front of the disc reads as a chip in front of a disc, which is
+   * what it is.
+   */
+  z-index: 2;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -8759,6 +8783,7 @@ body,
 
 .bl-orbit-core {
   position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
   gap: 0.5rem;
@@ -8851,6 +8876,23 @@ body,
   .bl-studio-head { flex-wrap: wrap; }
   .bl-orbit { width: min(100%, 13rem); margin-inline: auto; }
   .bl-studio-id { flex: 1 1 100%; }
+
+  /*
+   * The ring is only as wide as a phone lets it be, and at that size a
+   * chip passing the three or nine o'clock position reached in far
+   * enough to go behind the mark's own disc: half of "Automations"
+   * disappeared under it. The disc gives up some room and the chips
+   * take less, so the two no longer want the same space.
+   */
+  .bl-orbit-core { width: 46%; }
+
+  .bl-orbit-marks li > span {
+    gap: 0.3rem;
+    padding: 0.26rem 0.46rem 0.26rem 0.34rem;
+  }
+
+  .bl-orbit-marks b { font-size: 0.48rem; letter-spacing: 0.08em; }
+  .bl-orbit-marks i svg { width: 12px; height: 12px; }
 }
 
 /* The mark is a wordmark at better than three to one. Squeezed into the
