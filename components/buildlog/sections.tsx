@@ -27,6 +27,7 @@ import {
   MarkArrow,
   MarkWindow,
   MarkClose,
+  MarkDownload,
   MarkGithub,
   MarkLinkedin,
   MarkMail,
@@ -590,7 +591,7 @@ export function LogSection() {
       <SectionHeader
         label="01 / Experience"
         title="Where it happened"
-        lead="A recruiter taught to read every résumé, a US property platform, a CMS built by four people he led, a business automated out of its own busywork, and groundwater predicted from ten thousand field readings."
+        lead="Four companies and a research lab, from June 2025 to now. The shortest ran two months; in one of them he was handed four developers and a deadline."
       />
 
       <Route onOpen={setOpen} />
@@ -750,6 +751,8 @@ export function WinsSection() {
 /* --------------------------------------------------------------- contact */
 
 export function ContactSection() {
+  const [copied, setCopied] = useState(false);
+
   return (
     <section className="bl-section bl-contact" id="contact">
       {/*
@@ -808,44 +811,84 @@ export function ContactSection() {
         </p>
       </Reveal>
 
-      {/* The three things a recruiter checks before they write back. */}
-      <Reveal delay={170}>
-        <ul className="bl-hire">
-          <li>
-            <b>Looking for</b>
-            <span>Full-stack and applied AI roles</span>
-          </li>
-          <li>
-            <b>Based in</b>
-            <span>{profile.location}, open to remote</span>
-          </li>
-          <li>
-            <b>Already shipped</b>
-            <span>Five internships, eight builds</span>
-          </li>
-        </ul>
-      </Reveal>
+      {/*
+        The desk. Everything a recruiter does next is on the left and
+        everything they check before doing it is on the right, which is
+        the order those two things actually happen in.
 
-      <Reveal delay={200}>
-        <Magnetic strength={0.22}>
-          <a className="bl-cta" href={`mailto:${profile.email}`}>
-            <span className="bl-cta-ring" aria-hidden="true" />
-            <span className="bl-cta-label">
-              <span>Send me the brief</span>
-              <span>Send me the brief</span>
-            </span>
-            <span className="bl-cta-mark" aria-hidden="true">
-              <MarkArrow size={22} />
-            </span>
-          </a>
-        </Magnetic>
-      </Reveal>
+        It was a centred column before: a button, then an address, then
+        three facts under it, each on its own line down the middle of the
+        page. That reads as a poster. This is the part of the page that
+        is meant to be used, so it is laid out like a form rather than
+        like a finale.
+      */}
+      <Reveal delay={180}>
+        <div className="bl-desk">
+          <div className="bl-desk-do">
+            <Magnetic strength={0.22}>
+              <a className="bl-cta" href={`mailto:${profile.email}`}>
+                <span className="bl-cta-ring" aria-hidden="true" />
+                <span className="bl-cta-label">
+                  <span>Send me the brief</span>
+                  <span>Send me the brief</span>
+                </span>
+                <span className="bl-cta-mark" aria-hidden="true">
+                  <MarkArrow size={22} />
+                </span>
+              </a>
+            </Magnetic>
 
-      <Reveal delay={260}>
-        <p className="bl-cta-sub">
-          <a href={`mailto:${profile.email}`}>{profile.email}</a>
-          <span>Replies within a day. Résumé on request or in the bar above.</span>
-        </p>
+            <div className="bl-desk-row">
+              {/*
+                Copying an address is what anyone actually does with one,
+                and it is two steps on a phone: select the text, miss,
+                select it again. One press, and it says so.
+              */}
+              <button
+                className="bl-desk-copy"
+                type="button"
+                data-done={copied ? "true" : undefined}
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(profile.email);
+                    setCopied(true);
+                    window.setTimeout(() => setCopied(false), 2200);
+                  } catch {
+                    // no clipboard: the address is still right there to read
+                  }
+                }}
+              >
+                <MarkPaper size={13} />
+                <span>{copied ? "Copied to clipboard" : profile.email}</span>
+              </button>
+
+              <a
+                className="bl-desk-alt"
+                href={profile.resume}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <MarkDownload size={12} />
+                Résumé, PDF
+              </a>
+            </div>
+          </div>
+
+          <dl className="bl-desk-facts">
+            <div>
+              <dt>Looking for</dt>
+              <dd>Full-stack and applied AI roles</dd>
+            </div>
+            <div>
+              <dt>Based in</dt>
+              <dd>{profile.location}, open to remote</dd>
+            </div>
+            <div>
+              <dt>Replies</dt>
+              <dd>Within a day, usually sooner</dd>
+            </div>
+          </dl>
+        </div>
       </Reveal>
 
       {/* The same four links used to sit here and again in the footer, two

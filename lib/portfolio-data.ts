@@ -746,17 +746,14 @@ export const studio = {
   initials: "BFU",
   tagline: "Digital Experiences. Built With Intent.",
   role: "Founder & Lead Engineer",
+  /* What the head above it does not already say. The first half of this
+     used to be a second telling of the two lines on the masthead. */
   summary:
-    "An independent digital studio building modern, purposeful websites for brands that care how they are seen. Every build is custom: clean structure, crafted layouts, no templates.",
+    "Every build is custom: clean structure, crafted layouts, no templates.",
   site: "https://freelance.byus4u.in/",
   email: "team.byusforu@gmail.com",
   /** Cropped to the mark and carried on transparency, so the card's own ground shows through. */
   logo: "/assets/byusforu-mark.png",
-  marks: [
-    { value: "07", label: "builds shipped" },
-    { value: "02", label: "clients in the US" },
-    { value: "1 yr", label: "support included" },
-  ],
   /** Two lines, because a studio card that needs a paragraph has not
       decided what it is for. */
   brief: [

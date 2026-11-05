@@ -150,17 +150,6 @@ export function StudioSection() {
                 </a>
               </div>
             </div>
-
-            <dl className="bl-studio-figures">
-              {studio.marks.map((mark) => (
-                <div key={mark.label}>
-                  <dt>{mark.label}</dt>
-                  <dd>
-                    <Counter value={mark.value} />
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
 
           {/* what the work is, counted rather than named */}

@@ -942,6 +942,96 @@ body {
   color: var(--bl-ink);
 }
 
+/* ---- the guide, once it has been opened on purpose -------------------
+   Four questions a stranger actually arrives with, and an answer that
+   is a fact already on this page plus the way to go and read it in
+   full. Wider than a nudge, because a nudge says one thing and this is
+   a thing you use.                                                   */
+
+.bl-bot[data-open] .bl-bot-card { max-width: 19.5rem; }
+
+/* the answer swaps in rather than cutting, keyed on its own text */
+.bl-bot-say { animation: bl-bot-said 0.34s var(--bl-ease); }
+
+@keyframes bl-bot-said {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: none; }
+}
+
+.bl-bot-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  margin: 0.15rem 0 0;
+  font-family: var(--bl-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-bot-rule i {
+  flex: 1;
+  height: 1px;
+  background: var(--bl-rule);
+}
+
+.bl-bot-asks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bl-bot-asks button {
+  padding: 0.38rem 0.68rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 999px;
+  background: var(--bl-bg);
+  color: var(--bl-ink-soft);
+  font-family: var(--bl-sans);
+  font-size: 0.74rem;
+  line-height: 1.1;
+  cursor: pointer;
+  transition:
+    border-color 0.2s var(--bl-ease),
+    color 0.2s var(--bl-ease),
+    background-color 0.2s var(--bl-ease),
+    transform 0.2s var(--bl-ease);
+}
+
+.bl-bot-asks button:hover {
+  border-color: var(--bl-accent);
+  color: var(--bl-ink);
+  transform: translateY(-1px);
+}
+
+.bl-bot-asks button[data-on="true"] {
+  border-color: var(--bl-accent);
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+}
+
+.bl-bot-count {
+  margin: 0;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+/* the opened panel's own text is a size down: it is a list, not a line */
+.bl-bot[data-open] .bl-bot-card p.bl-bot-say { font-size: 0.95rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-bot-say { animation: none; }
+  .bl-bot-asks button:hover { transform: none; }
+}
+
 .bl-bot-go {
   display: inline-flex;
   align-items: center;
@@ -1464,6 +1554,9 @@ html.bl-locked body { overflow: hidden; }
 .bl-cta:hover .bl-cta-ring { transform: scaleX(1); }
 
 /* the label rolls over to a second copy of itself */
+/* one line, whatever column it is sitting in */
+.bl-cta-label { white-space: nowrap; }
+
 .bl-cta-label {
   position: relative;
   display: grid;
@@ -1501,54 +1594,129 @@ html.bl-locked body { overflow: hidden; }
   transform: rotate(45deg);
 }
 
-/* ---- the three facts -------------------------------------------------
-   What a recruiter checks before they decide whether to write back. Set
-   as a row of plain pairs rather than cards: this is a reference, not a
-   thing to be sold.                                                    */
+/* ---- the desk ---------------------------------------------------------
+   The last act is the one part of this page meant to be used rather
+   than read, so it is laid out like a form: what to do on the left,
+   what to check before doing it on the right. It was a centred column
+   of a button, an address and three facts, each on its own line down
+   the middle, which reads as a poster and works like one.          */
 
-.bl-hire {
+.bl-desk {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1rem, 2.6vw, 2.4rem);
-  width: min(100%, 46rem);
-  margin: clamp(1.4rem, 3vw, 2.2rem) 0 0;
-  padding: clamp(1rem, 2vw, 1.4rem) 0 0;
-  border-top: 1px solid var(--bl-rule);
-  list-style: none;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+  width: min(100%, 54rem);
+  margin: clamp(1.75rem, 4vw, 2.75rem) auto 0;
+  padding: clamp(1.4rem, 3vw, 2.2rem);
+  border: 1px solid var(--bl-rule);
+  border-radius: clamp(1rem, 2vw, 1.6rem);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 60%),
+    var(--bl-surface);
+  box-shadow: 0 24px 60px -34px rgba(0, 0, 0, 0.95);
+  text-align: left;
 }
 
-.bl-hire li {
+.bl-desk-do {
   display: grid;
-  gap: 0.4em;
-  align-content: start;
+  justify-items: start;
+  gap: clamp(0.9rem, 2vw, 1.3rem);
 }
 
-.bl-hire b {
+.bl-desk-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+}
+
+/* the address, as the button it always wanted to be */
+.bl-desk-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px dashed color-mix(in srgb, var(--bl-accent) 45%, transparent);
+  border-radius: 999px;
+  background: none;
+  color: var(--bl-ink);
   font-family: var(--bl-mono);
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  cursor: copy;
+  transition:
+    border-color 0.25s var(--bl-ease),
+    color 0.25s var(--bl-ease),
+    background-color 0.25s var(--bl-ease);
+}
+
+.bl-desk-copy:hover {
+  border-style: solid;
+  border-color: var(--bl-accent);
+  color: var(--bl-accent);
+}
+
+.bl-desk-copy[data-done="true"] {
+  border-style: solid;
+  border-color: var(--bl-accent);
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+  cursor: default;
+}
+
+.bl-desk-alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--bl-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bl-ink-soft);
+  transition: color 0.2s var(--bl-ease);
+}
+
+.bl-desk-alt:hover { color: var(--bl-accent); }
+
+/* ---- and the three things checked before any of it happens ---- */
+
+.bl-desk-facts {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding-left: clamp(1.25rem, 3vw, 2.25rem);
+  border-left: 1px solid var(--bl-rule);
+}
+
+.bl-desk-facts > div { display: grid; gap: 0.25em; }
+
+.bl-desk-facts dt {
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--bl-accent);
 }
 
-.bl-hire span {
+.bl-desk-facts dd {
+  margin: 0;
   font-family: var(--bl-sans);
-  font-size: clamp(0.85rem, 1.15vw, 1rem);
-  line-height: 1.35;
+  font-size: clamp(0.84rem, 1.1vw, 0.98rem);
+  line-height: 1.3;
   color: var(--bl-ink);
 }
 
-@media (max-width: 680px) {
-  .bl-hire {
-    grid-template-columns: 1fr;
-    gap: 0.95rem;
+@media (max-width: 760px) {
+  .bl-desk {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.4rem;
   }
 
-  .bl-hire li {
-    grid-template-columns: 8.5rem minmax(0, 1fr);
-    align-items: baseline;
-    gap: 0.6rem;
+  .bl-desk-facts {
+    padding: 1.2rem 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--bl-rule);
   }
 }
 
