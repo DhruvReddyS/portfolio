@@ -13456,3 +13456,247 @@ body,
   .bl-colo-links a:hover,
   .bl-totop:hover { transform: none; }
 }
+
+/* ==========================================================================
+   THE SEAMS
+   One mark at every join between two acts, and no two the same object.
+   All of them wordless: what a join needs is not a sentence announcing
+   itself, it is to be a different thing than the last one.
+   ========================================================================== */
+
+.bl-seam {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.9rem, 2.4vw, 1.75rem);
+  width: 100%;
+  padding: clamp(2.5rem, 7vh, 5rem) var(--bl-gutter);
+  pointer-events: none;
+}
+
+.bl-seam i,
+.bl-seam b { display: block; }
+
+/* ---- the thread, under the cover --------------------------------------
+   One hairline hanging off the bottom of the hero with something
+   running down it, which is the only seam read vertically because it
+   is the only one that is about carrying on rather than changing.  */
+
+.bl-seam-thread {
+  position: relative;
+  flex-direction: column;
+  padding-block: clamp(2rem, 6vh, 4rem);
+}
+
+.bl-seam-drop {
+  width: 1px;
+  height: clamp(3.5rem, 9vh, 6.5rem);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    var(--bl-rule) 22%,
+    var(--bl-rule) 78%,
+    transparent
+  );
+}
+
+.bl-seam-bead {
+  position: absolute;
+  left: 50%;
+  top: clamp(2rem, 6vh, 4rem);
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--bl-accent);
+  box-shadow: 0 0 0.9rem color-mix(in srgb, var(--bl-accent) 80%, transparent);
+  animation: bl-seam-fall 3.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes bl-seam-fall {
+  0% { transform: translateY(0); opacity: 0; }
+  14% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(clamp(3.5rem, 9vh, 6.5rem)); opacity: 0; }
+}
+
+/* ---- the measure, before the log --------------------------------------
+   What follows is dated, and this is the thing dates are read off.  */
+
+.bl-seam-measure { gap: clamp(0.8rem, 2vw, 1.4rem); }
+
+.bl-seam-ticks {
+  flex: 1;
+  max-width: 24rem;
+  height: 14px;
+  background:
+    /* the long ones, every fifth */
+    repeating-linear-gradient(
+      90deg,
+      var(--bl-rule) 0 1px,
+      transparent 1px 65px
+    ),
+    /* and the short ones between */
+    linear-gradient(var(--bl-rule-soft), var(--bl-rule-soft)) bottom / 100% 1px
+      no-repeat,
+    repeating-linear-gradient(
+        90deg,
+        var(--bl-rule-soft) 0 1px,
+        transparent 1px 13px
+      )
+      bottom / 100% 6px no-repeat;
+  background-repeat: repeat-x, no-repeat, repeat-x;
+}
+
+.bl-seam-ticks:first-child {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 45%);
+  mask-image: linear-gradient(90deg, transparent, #000 45%);
+}
+
+.bl-seam-ticks:last-child {
+  -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent);
+  mask-image: linear-gradient(90deg, #000 55%, transparent);
+}
+
+.bl-seam-pip {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  background: var(--bl-accent);
+  transform: rotate(45deg);
+}
+
+/* ---- the perforation, where a page comes out --------------------------- */
+
+.bl-seam-tear { gap: 0; }
+
+.bl-seam-perf {
+  flex: 1;
+  max-width: 54rem;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bl-rule) 0 7px,
+    transparent 7px 16px
+  );
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+/* the half-moon bitten out of each margin, which is what makes a
+   dashed line a tear-off rather than a divider */
+.bl-seam-notch {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--bl-rule);
+  border-radius: 50%;
+  background: var(--bl-bg);
+}
+
+/* ---- the stitch, before the toolkit ------------------------------------ */
+
+.bl-seam-zig {
+  flex: 1;
+  max-width: 20rem;
+  height: 12px;
+  background:
+    linear-gradient(
+        135deg,
+        transparent 44%,
+        color-mix(in srgb, var(--bl-accent) 72%, transparent) 44% 56%,
+        transparent 56%
+      )
+      0 0 / 12px 12px repeat-x,
+    linear-gradient(
+        45deg,
+        transparent 44%,
+        color-mix(in srgb, var(--bl-accent) 72%, transparent) 44% 56%,
+        transparent 56%
+      )
+      6px 0 / 12px 12px repeat-x;
+}
+
+.bl-seam-zig:first-child {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 55%);
+  mask-image: linear-gradient(90deg, transparent, #000 55%);
+}
+
+.bl-seam-zig:last-child {
+  -webkit-mask-image: linear-gradient(90deg, #000 45%, transparent);
+  mask-image: linear-gradient(90deg, #000 45%, transparent);
+}
+
+/* the eye of the needle it was all sewn with */
+.bl-seam-eye {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border: 1.5px solid var(--bl-accent);
+  border-radius: 50%;
+}
+
+/* ---- the film rail, before the photographs ----------------------------- */
+
+.bl-seam-rail {
+  width: min(100%, 58rem);
+  height: 24px;
+  border-top: 1px solid var(--bl-rule);
+  border-bottom: 1px solid var(--bl-rule);
+  background:
+    linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--bl-ink) 13%, transparent) 0 13px,
+        transparent 13px 30px
+      )
+      center / 30px 9px repeat-x;
+  animation: bl-seam-reel 5s linear infinite;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+@keyframes bl-seam-reel {
+  to { background-position: 30px center; }
+}
+
+/* ---- the flourish, before the last page -------------------------------- */
+
+.bl-seam-hair {
+  flex: 1;
+  max-width: 18rem;
+  height: 1px;
+  background: var(--bl-rule);
+}
+
+.bl-seam-hair:first-child {
+  background: linear-gradient(90deg, transparent, var(--bl-rule));
+}
+
+.bl-seam-hair:last-child {
+  background: linear-gradient(90deg, var(--bl-rule), transparent);
+}
+
+.bl-seam-curl {
+  flex: none;
+  width: clamp(3.5rem, 7vw, 4.5rem);
+  height: auto;
+  fill: none;
+  stroke: var(--bl-accent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-seam-bead,
+  .bl-seam-rail { animation: none; }
+  .bl-seam-bead { opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .bl-seam { padding-block: clamp(2rem, 6vh, 3.5rem); }
+  .bl-seam-ticks { max-width: 9rem; }
+  .bl-seam-zig { max-width: 7rem; }
+  .bl-seam-hair { max-width: 6rem; }
+}
