@@ -12853,19 +12853,17 @@ body,
    which is the version that always works.
    ========================================================================== */
 
-@media (min-width: 880px) and (min-height: 900px) {
-  .bl-footer {
-    position: sticky;
-    bottom: 0;
-    z-index: 0;
-  }
+.bl-footer[data-reveal="true"] {
+  position: sticky;
+  bottom: 0;
+  z-index: 0;
+}
 
-  /* the curtain: opaque, and over the top of it */
-  .bl-main {
-    position: relative;
-    z-index: 2;
-    background: var(--bl-bg);
-  }
+/* the curtain: opaque, and over the top of it */
+.bl-root:has(.bl-footer[data-reveal="true"]) .bl-main {
+  position: relative;
+  z-index: 2;
+  background: var(--bl-bg);
 }
 
 /* ---- the light it is uncovered into ----------------------------------- */
@@ -12962,4 +12960,125 @@ body,
 
 @media (prefers-reduced-motion: reduce) {
   .bl-footer::after { animation: none; }
+}
+
+/* ==========================================================================
+   THE TICKER AND THE WATERMARK
+   Two things the last page was missing: the standing facts, moving, and
+   the name of the act it is, set at the size of the act.
+   ========================================================================== */
+
+/* ---- the ticker -------------------------------------------------------- */
+
+/*
+ * Full bleed and tipped off the horizontal, which is what keeps it from
+ * reading as a third rule across a page that already has several. It is
+ * pushed past both gutters so the rotated ends are cut off by the
+ * footer rather than floating in from nowhere.
+ */
+.bl-ticker {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin:
+    calc(clamp(1rem, 3vh, 2rem) * -1)
+    calc((var(--bl-gutter) + 6vw) * -1)
+    clamp(2.25rem, 6vh, 3.75rem);
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--bl-rule);
+  border-bottom: 1px solid var(--bl-rule);
+  background: color-mix(in srgb, var(--bl-bg) 72%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 22px 44px -28px rgba(0, 0, 0, 1);
+  transform: rotate(-1.4deg);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.bl-ticker-run {
+  display: flex;
+  width: max-content;
+  animation: bl-ticker-go 38s linear infinite;
+}
+
+/* two copies, so the second is where the first was when it wraps */
+@keyframes bl-ticker-go {
+  to { transform: translateX(-50%); }
+}
+
+.bl-ticker:hover .bl-ticker-run { animation-play-state: paused; }
+
+.bl-ticker-set { display: flex; flex: none; }
+
+.bl-ticker-one {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(1.6rem, 4vw, 3rem);
+  padding-right: clamp(1.6rem, 4vw, 3rem);
+  font-family: var(--bl-mono);
+  font-size: clamp(0.56rem, 0.9vw, 0.7rem);
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--bl-ink-dim);
+}
+
+/* a lozenge between one fact and the next, drawn rather than typed, so
+   it does not depend on the mono face having a mark for it */
+.bl-ticker-one i {
+  flex: none;
+  width: 5px;
+  height: 5px;
+  background: var(--bl-accent);
+  transform: rotate(45deg);
+}
+
+/* ---- the watermark ----------------------------------------------------- */
+
+/*
+ * The name of the act, behind the act.
+ *
+ * Outlined rather than filled, and the outline fades out before it gets
+ * to the foot, so it is a thing the small print is printed over rather
+ * than a thing competing with it. A book puts its title on the colophon
+ * page; this one puts the word itself.
+ */
+.bl-footer > .bl-footer-giant {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  z-index: 0;
+  margin: 0;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: clamp(4rem, 19vw, 17rem);
+  line-height: 0.76;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--bl-ink) 7%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bl-ink) 9%, transparent),
+    transparent 62%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-ticker-run { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .bl-ticker { margin-inline: calc((var(--bl-gutter) + 10vw) * -1); }
+  .bl-ticker-one { letter-spacing: 0.22em; }
+  .bl-footer > .bl-footer-giant { top: 9%; font-size: clamp(3.5rem, 26vw, 9rem); }
 }

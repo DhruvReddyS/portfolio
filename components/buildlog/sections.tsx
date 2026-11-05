@@ -884,11 +884,134 @@ export function ContactSection() {
  * who are still reading. What it is set in, what it was made with, where it
  * was made, and one way to reach the person who made it.
  */
+/**
+ * The four things a recruiter checks before anything else, running
+ * across the top of the last page.
+ *
+ * They used to sit in the close as a list of three, where they were
+ * furniture in front of the one line that act exists for. Down here
+ * they are what a ticker is for: the facts that are true today and
+ * might not be in a month, moving, in the smallest type on the site.
+ *
+ * Nothing on this page repeats: the page has two other moving bands and
+ * both are curved, accent-filled and say one sentence. This is straight,
+ * ruled top and bottom, tipped off the horizontal, and says five.
+ */
+const TICKER = [
+  "Open to work",
+  "Full-stack and applied AI",
+  "Hyderabad, open to remote",
+  "Replies within a day",
+  "Freelance through ByUsForU",
+];
+
+function TickerRun() {
+  return (
+    <span className="bl-ticker-set">
+      {TICKER.map((line) => (
+        <span className="bl-ticker-one" key={line}>
+          {line}
+          <i aria-hidden="true" />
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export function BuildLogFooter({ time }: { time: string }) {
   const { scrollTo } = useSmoothScroll();
+  const giant = useRef<HTMLParagraphElement>(null);
+  const foot = useRef<HTMLElement>(null);
+
+  /*
+   * Whether the last page can be uncovered rather than scrolled to.
+   *
+   * Pinning it to the foot of the window only works while the whole
+   * thing fits in the window; a page taller than that would be pinned
+   * with its head cut off and the colophon would never be reachable.
+   * Which widths and heights those are is not something a media query
+   * can be told, because the answer depends on how tall this footer
+   * happens to be at that width, and that moves every time a line of
+   * it is rewritten. So it is measured.
+   */
+  useEffect(() => {
+    const node = foot.current;
+    if (!node) return;
+
+    let was: boolean | null = null;
+    const fits = () => {
+      const ok =
+        window.innerWidth >= 880 && node.offsetHeight <= window.innerHeight - 8;
+      /* only written when it changes, so observing the element whose
+         own attribute this is cannot turn into a loop */
+      if (ok === was) return;
+      was = ok;
+      if (ok) node.dataset.reveal = "true";
+      else delete node.dataset.reveal;
+    };
+
+    fits();
+    const watch = new ResizeObserver(fits);
+    watch.observe(node);
+    window.addEventListener("resize", fits);
+
+    return () => {
+      watch.disconnect();
+      window.removeEventListener("resize", fits);
+    };
+  }, []);
+
+  /*
+   * The watermark rises as the curtain lifts.
+   *
+   * Tied to the footer rather than played on arrival, because the
+   * footer is pinned for the whole of its own reveal: the scroll that
+   * uncovers it is the only clock this can run on that matches what
+   * the reader is doing.
+   */
+  useEffect(() => {
+    const word = giant.current;
+    if (!word) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const context = gsap.context(() => {
+      gsap.fromTo(
+        word,
+        { yPercent: 26, scale: 0.86, opacity: 0 },
+        {
+          yPercent: 0,
+          scale: 1,
+          opacity: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: word.closest(".bl-footer"),
+            start: "top bottom",
+            end: "bottom bottom",
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+    }, word);
+
+    return () => context.revert();
+  }, []);
 
   return (
-    <footer className="bl-footer" id="footer">
+    <footer className="bl-footer" id="footer" ref={foot}>
+      {/* the word this act is, set the size of the act */}
+      <p className="bl-footer-giant" ref={giant} aria-hidden="true">
+        Colophon
+      </p>
+
+      {/* and the standing facts, going past */}
+      <div className="bl-ticker" aria-hidden="true">
+        <div className="bl-ticker-run">
+          <TickerRun />
+          <TickerRun />
+        </div>
+      </div>
+
       {/*
         The last page, in three parts and in the order you would want them:
         how to reach him, what the thing is made of, and then his name.
