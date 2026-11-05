@@ -49,7 +49,7 @@ export function StudioSection() {
       <SectionHeader
         label="06 / Independent"
         title="And a studio he runs"
-        lead="Clients, not coursework. Seven builds so far, two of them for clients in the US, and a year of support after each one goes live."
+        lead="Clients, not coursework. He founded it, he scopes it, he builds it, and two of the people paying for it are in the United States."
         note={`${studio.shipped} builds · ${studio.delivered} delivered`}
       />
 

@@ -135,8 +135,8 @@ function BuildLog() {
         <section className="bl-say" aria-label="What he is for">
           <p className="bl-say-kicker">A word before the log</p>
           <Statement>
-            Anyone can make a thing work once. I am interested in the part where it keeps
-            working.
+            Most of what I know came out of the part nobody demos: the second month,
+            when it is live and the edge cases start arriving.
           </Statement>
         </section>
 
@@ -144,7 +144,7 @@ function BuildLog() {
         <WorkIndex onOpen={setOpenCase} />
 
         {/* the seam between what got built and where he learned to */}
-        <Roller text="Shipped, not demoed" />
+        <Roller text="Built first, graded later" />
 
         <EducationSection />
         <ToolkitSection />
@@ -158,7 +158,7 @@ function BuildLog() {
           clients, which is where the claim has to be worth something.
         */}
         <Roller
-          text="The part where it keeps working"
+          text="From contests to contracts"
           bend="down"
           way="right"
           tone="negative"

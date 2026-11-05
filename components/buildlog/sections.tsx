@@ -590,7 +590,7 @@ export function LogSection() {
       <SectionHeader
         label="01 / Experience"
         title="Where it happened"
-        lead="Five rooms, five different problems. Open any one for the whole account."
+        lead="A recruiter taught to read every résumé, a US property platform, a CMS built by four people he led, a business automated out of its own busywork, and groundwater predicted from ten thousand field readings."
       />
 
       <Route onOpen={setOpen} />
@@ -715,7 +715,7 @@ export function WinsSection() {
       <SectionHeader
         label="05 / Recognition"
         title="What it won"
-        lead="Four of them. Drag the line, and press the one in the middle for the story behind it."
+        lead="A hackathon taken off sixty-five other teams, a club that kept filling up, and two more besides. Drag the line."
         note={`${awards.length} pinned up`}
       />
 

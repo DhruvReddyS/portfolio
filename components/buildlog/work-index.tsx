@@ -103,7 +103,7 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
       <SectionHeader
         label="02 / Selected work"
         title="What got built"
-        lead="Six builds and two side quests. Press any one of them for the full case file."
+        lead="Six that went live and two that never left the bench. Each one keeps its own file: what it was for, what broke, and what it cost to put right."
         note={`${rows.length} on the wall`}
       />
 

@@ -9189,12 +9189,20 @@ body,
  */
 .bl-crowd {
   opacity: 0.42;
-  /* shallower than before: at this brightness a tall band walks straight
-     through the line under the button */
-  height: min(32vh, 17rem);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 48%, #000 92%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, #000 48%, #000 92%, transparent);
+  /*
+   * Shallower again, and held under the act's own foot. At this
+   * brightness the band was walking straight through the address under
+   * the button: dark grey type over a crowd of mid-grey people, which is
+   * two things in the same place and neither of them readable. The act
+   * now keeps a foot of clear ground for that line and the crowd starts
+   * below it.
+   */
+  height: min(22vh, 11.5rem);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 56%, #000 94%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 56%, #000 94%, transparent);
 }
+
+.bl-contact { padding-bottom: calc(var(--bl-s-act) + min(22vh, 11.5rem)); }
 
 /* ==========================================================================
    THE BAR
