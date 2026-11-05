@@ -13,6 +13,7 @@ import {
   type LogEntry,
 } from "@/lib/portfolio-data";
 import { Reveal } from "./reveal";
+import { Handshake } from "./handshake";
 import { whenCurtainOpens } from "@/lib/curtain";
 import { Counter, Magnetic, useSmoothScroll } from "./smooth";
 import { HeroInk } from "./ink";
@@ -799,23 +800,25 @@ export function ContactSection() {
       </Reveal>
 
       {/*
-        The line, written for the one thing a recruiter is actually
-        weighing, which is not how good he is. It is how exposed they
-        are if they are wrong about him.
+        Two hands meeting, and then the line.
 
-        It was a challenge before: nobody above hired a CV, they hired
-        the thing I showed them. True, and the wrong job for this spot.
-        A challenge asks the reader to prove something at the exact
-        moment they are deciding whether to risk anything, and the
-        honest answer to their risk is already in the seven acts above
-        it: five teams took it first, and every one of those is a date,
-        a place and a thing that shipped. So the close says that, and
-        lets the evidence do the reassuring.
+        Three drafts of this said something about hiring him: don't take
+        a chance, five teams already did, nobody above hired a CV. All
+        three put him on one side of a table asking to be let over, and
+        the page has spent seven acts earning the right not to stand
+        there. The work above is finished, dated and someone else's
+        problem now. The only interesting thing left is the one nobody
+        has built, and that is a sentence with two people in it.
+
+        Which is what the drawing is for. It is the only picture on this
+        page that is about what happens after it.
       */}
+      <Handshake />
+
       <Reveal delay={120}>
         <h2 className="bl-close-line">
-          You are not taking a chance.
-          <em>Five teams already did.</em>
+          Everything above already exists.
+          <em>The next one needs two of us.</em>
         </h2>
       </Reveal>
 
@@ -955,10 +958,12 @@ export function BuildLogFooter({ time }: { time: string }) {
         <span>No template, no page builder, no agency</span>
 
         {/* the end of a book is the one place a way back belongs */}
-        <button type="button" className="bl-totop" onClick={() => scrollTo(0)}>
-          <MarkArrow size={12} />
-          Back to the cover
-        </button>
+        <Magnetic strength={0.3}>
+          <button type="button" className="bl-totop" onClick={() => scrollTo(0)}>
+            <MarkArrow size={12} />
+            Back to the cover
+          </button>
+        </Magnetic>
       </div>
 
       {/*

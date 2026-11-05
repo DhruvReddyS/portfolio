@@ -12693,3 +12693,273 @@ body,
   .bl-ruler::before,
   .bl-ruler::after { content: none; }
 }
+
+/* ==========================================================================
+   TWO HANDS MEETING
+   The only picture on the page that is about what happens after it.
+   ========================================================================== */
+
+.bl-shake {
+  width: min(100%, clamp(13rem, 30vw, 22rem));
+  margin: clamp(0.5rem, 2vh, 1.5rem) auto clamp(0.25rem, 1.5vh, 1rem);
+  color: var(--bl-ink);
+}
+
+.bl-shake svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* the two forearms run off the edges rather than being capped, so the
+     drawing is a crop of something longer and not a logo */
+  overflow: hidden;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/*
+ * Solid, not drawn.
+ *
+ * The first version of this was line art at three and a half units of
+ * stroke, which at the size it is set came out as wire: thin, grey and
+ * fussy, with the clasp reading as a scribble. Everything on this page
+ * that is meant to be looked at rather than read is a block of colour,
+ * so the hands are too.
+ *
+ * His is the page's ink, theirs is the accent, and the one in front
+ * carries a line of the page's own ground laid outside its fill, which
+ * is what cuts it away from the hand behind. Two solid shapes of
+ * different colours with nothing between them read as one shape in two
+ * colours.
+ */
+.bl-shake-left path { fill: var(--bl-ink); stroke: none; }
+
+.bl-shake-right path {
+  fill: var(--bl-accent);
+  stroke: var(--bl-bg);
+  stroke-width: 6;
+  paint-order: stroke fill;
+}
+
+/* the creases, cut back out of whichever hand they are on */
+.bl-shake-cuff,
+.bl-shake-crease {
+  fill: none !important;
+  stroke: var(--bl-bg) !important;
+  stroke-width: 4.5 !important;
+  paint-order: normal !important;
+}
+
+.bl-shake-left .bl-shake-cuff { stroke: var(--bl-bg) !important; }
+
+/* ---- the arrival ------------------------------------------------------ */
+
+.bl-shake-left,
+.bl-shake-right {
+  opacity: 0;
+  transition:
+    transform 0.85s cubic-bezier(0.2, 0.9, 0.25, 1),
+    opacity 0.5s var(--bl-ease);
+}
+
+.bl-shake-left { transform: translateX(-26%); }
+.bl-shake-right { transform: translateX(26%); }
+
+.bl-shake[data-met="true"] .bl-shake-left,
+.bl-shake[data-met="true"] .bl-shake-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* the right hand lands a breath after the left, so they meet rather
+   than arrive */
+.bl-shake[data-met="true"] .bl-shake-right { transition-delay: 0.08s; }
+
+/* ---- and then the shake ------------------------------------------------
+   A burst, a rest, and again. A handshake that never stops is not a
+   handshake, it is a loading spinner with hands.                      */
+
+.bl-shake[data-met="true"] .bl-shake-pair {
+  animation: bl-shake-go 4.2s var(--bl-ease) 0.8s infinite;
+}
+
+@keyframes bl-shake-go {
+  0%, 6% { transform: translateY(0) rotate(0deg); }
+  10% { transform: translateY(-5px) rotate(-1.4deg); }
+  15% { transform: translateY(4px) rotate(1deg); }
+  20% { transform: translateY(-3.5px) rotate(-0.9deg); }
+  25% { transform: translateY(2.5px) rotate(0.7deg); }
+  30% { transform: translateY(-1.5px) rotate(-0.4deg); }
+  36%, 100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* ---- the ring the contact throws -------------------------------------- */
+
+.bl-shake-spark {
+  stroke: var(--bl-accent);
+  stroke-width: 2;
+  opacity: 0;
+}
+
+.bl-shake-spark circle { transform-origin: 130px 62px; }
+.bl-shake-spark path { transform-origin: 130px 62px; }
+
+.bl-shake[data-met="true"] .bl-shake-spark { animation: bl-shake-lit 4.2s var(--bl-ease) 0.8s infinite; }
+.bl-shake[data-met="true"] .bl-shake-spark circle:first-child { animation: bl-shake-ring 4.2s ease-out 0.8s infinite; }
+.bl-shake[data-met="true"] .bl-shake-spark circle:nth-child(2) { animation: bl-shake-ring 4.2s ease-out 0.95s infinite; }
+.bl-shake[data-met="true"] .bl-shake-spark path { animation: bl-shake-rays 4.2s ease-out 0.8s infinite; }
+
+@keyframes bl-shake-lit {
+  0% { opacity: 0; }
+  5% { opacity: 1; }
+  30%, 100% { opacity: 0; }
+}
+
+@keyframes bl-shake-ring {
+  0% { transform: scale(0.45); }
+  30%, 100% { transform: scale(1.5); }
+}
+
+@keyframes bl-shake-rays {
+  0% { transform: scale(0.35); }
+  26%, 100% { transform: scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-shake-left,
+  .bl-shake-right {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .bl-shake-pair,
+  .bl-shake-spark,
+  .bl-shake-spark circle,
+  .bl-shake-spark path { animation: none; }
+
+  .bl-shake-spark { opacity: 0; }
+}
+
+/* ==========================================================================
+   THE LAST PAGE, REVEALED
+   The footer stops being the next thing down the page and becomes the
+   thing the page slides off. It is pinned to the foot of the window and
+   the log passes over the top of it, so the colophon is uncovered rather
+   than scrolled to.
+
+   Only where it fits. The reveal needs the whole last page to be shorter
+   than the window, and on a phone it is twice as tall, so below these
+   sizes the footer goes back to being the next thing down the page,
+   which is the version that always works.
+   ========================================================================== */
+
+@media (min-width: 880px) and (min-height: 900px) {
+  .bl-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 0;
+  }
+
+  /* the curtain: opaque, and over the top of it */
+  .bl-main {
+    position: relative;
+    z-index: 2;
+    background: var(--bl-bg);
+  }
+}
+
+/* ---- the light it is uncovered into ----------------------------------- */
+
+/*
+ * An aurora and a grid, which is the one piece of scenery the last page
+ * never had. The grid is the same ruled paper the toolkit's bench is
+ * drawn on, so the first act and the last are made of the same stock;
+ * the glow is the only soft light on the site and it is here because
+ * this is the only part of the page nobody has to read.
+ */
+.bl-footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      58% 46% at 50% 38%,
+      color-mix(in srgb, var(--bl-accent) 13%, transparent),
+      transparent 72%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(242, 239, 230, 0.028) 0 1px,
+      transparent 1px 58px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(242, 239, 230, 0.028) 0 1px,
+      transparent 1px 58px
+    );
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 26%, #000 74%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 26%, #000 74%, transparent);
+  animation: bl-footer-breathe 11s ease-in-out infinite alternate;
+}
+
+@keyframes bl-footer-breathe {
+  from { opacity: 0.72; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.04); }
+}
+
+.bl-footer > * { position: relative; z-index: 1; }
+
+/* ---- the links, as pills you can pick up ------------------------------- */
+
+.bl-colo-links a,
+.bl-totop {
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--bl-ink) 9%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--bl-ink) 5%, transparent),
+    color-mix(in srgb, var(--bl-ink) 1%, transparent)
+  );
+  box-shadow:
+    0 10px 24px -14px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 color-mix(in srgb, var(--bl-ink) 9%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s var(--bl-ease);
+}
+
+.bl-colo-links a:hover,
+.bl-totop:hover {
+  border-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--bl-accent) 14%, transparent),
+    color-mix(in srgb, var(--bl-ink) 2%, transparent)
+  );
+  box-shadow:
+    0 18px 34px -14px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 color-mix(in srgb, var(--bl-ink) 18%, transparent);
+}
+
+/* the drawn underline belonged to a plain link; a pill has its own edge */
+.bl-colo-links a::after { content: none; }
+
+.bl-colo-links { gap: 0.55rem; }
+
+/* and the way back, which is the one control on the page that moves to
+   meet the pointer */
+.bl-totop {
+  margin-left: auto;
+  padding: 0.6rem 1.15rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-footer::after { animation: none; }
+}
