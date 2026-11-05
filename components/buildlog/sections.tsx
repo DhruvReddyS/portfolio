@@ -20,7 +20,6 @@ import { Plate } from "./plate";
 import { Rotator } from "./rotator";
 import { Marked, MarkedLine } from "./marked";
 import { Route } from "./route";
-import { AsciiArt } from "@/components/ui/ascii-art";
 import { CrowdCanvas } from "@/components/ui/skiper39";
 import { PolaroidLine } from "@/components/ui/polaroid-line";
 import { StampedWordmark } from "@/components/ui/stamped-wordmark";
@@ -874,20 +873,16 @@ export function BuildLogFooter({ time }: { time: string }) {
 
   return (
     <footer className="bl-footer" id="footer">
-      {/* the name, pressed into the last page */}
-      <StampedWordmark
-        word="Dhruv Reddy"
-        count={11}
-        marks={[
-          <MarkRosette key="r" size={20} />,
-          <MarkPaper key="p" size={20} />,
-          <MarkWindow key="w" size={20} />,
-          <MarkGithub key="g" size={20} />,
-          <MarkArrow key="a" size={20} />,
-          <MarkMail key="m" size={20} />,
-        ]}
-      />
+      {/*
+        The last page, in three parts and in the order you would want them:
+        how to reach him, what the thing is made of, and then his name.
 
+        It used to open with the name and close with the small print, with
+        a portrait drawn in ASCII characters and an email set two sizes
+        larger than anything near it in between. The portrait was already
+        on the cover and the address does not need shouting; what a last
+        page owes a reader is the way out, legibly, and then nothing.
+      */}
       <div className="bl-colo">
         <div className="bl-colo-say">
           <p className="bl-colo-kicker">Say hello</p>
@@ -917,43 +912,27 @@ export function BuildLogFooter({ time }: { time: string }) {
           </div>
         </div>
 
-        {/* signed off in characters, which is the only portrait a log book
-            would have room to print */}
-        <figure className="bl-colo-art">
-          <AsciiArt
-            src="/assets/dhruv.png"
-            resolution={62}
-            charset="standard"
-            color="var(--bl-ink-soft)"
-            backgroundColor="transparent"
-            animationStyle="fade"
-            animationDuration={1.4}
-            animateOnView={false}
-            objectFit="contain"
-            className="bl-ascii"
-          />
-          <figcaption>Signed, in characters</figcaption>
-        </figure>
+        <dl className="bl-colo-set">
+          <div>
+            <dt>Set in</dt>
+            <dd>Fraunces, Instrument Sans, Archivo and JetBrains Mono.</dd>
+          </div>
+          <div>
+            <dt>Built with</dt>
+            <dd>Next.js, GSAP and Lenis, served from the edge.</dd>
+          </div>
+          <div>
+            <dt>Tracks</dt>
+            <dd>Nothing. No analytics, no cookies, no third-party scripts.</dd>
+          </div>
+          <div>
+            <dt>Written by</dt>
+            <dd>
+              {profile.full}, in {profile.location}, by hand.
+            </dd>
+          </div>
+        </dl>
       </div>
-
-      <dl className="bl-colo-set">
-        <div>
-          <dt>Set in</dt>
-          <dd>Fraunces, Instrument Sans and JetBrains Mono.</dd>
-        </div>
-        <div>
-          <dt>Built with</dt>
-          <dd>Next.js, GSAP and Lenis, served from the edge.</dd>
-        </div>
-        <div>
-          <dt>Tracks</dt>
-          <dd>Nothing. No analytics, no cookies, no third-party scripts.</dd>
-        </div>
-        <div>
-          <dt>Written by</dt>
-          <dd>{profile.full}, in {profile.location}, by hand.</dd>
-        </div>
-      </dl>
 
       <div className="bl-footer-base">
         <span>
@@ -963,14 +942,35 @@ export function BuildLogFooter({ time }: { time: string }) {
         <span>Designed and engineered by {profile.name}</span>
 
         {/* the end of a book is the one place a way back belongs */}
-        <button
-          type="button"
-          className="bl-totop"
-          onClick={() => scrollTo(0)}
-        >
+        <button type="button" className="bl-totop" onClick={() => scrollTo(0)}>
           <MarkArrow size={12} />
           Back to the cover
         </button>
+      </div>
+
+      {/*
+        And his name, pressed into the very last of the page, under
+        everything else. It is the only thing down here that is allowed
+        to be large, and it is the last thing the page says.
+      */}
+      <div className="bl-signoff">
+        <StampedWordmark
+          word="Dhruv Reddy"
+          count={11}
+          marks={[
+            <MarkRosette key="r" size={20} />,
+            <MarkPaper key="p" size={20} />,
+            <MarkWindow key="w" size={20} />,
+            <MarkGithub key="g" size={20} />,
+            <MarkArrow key="a" size={20} />,
+            <MarkMail key="m" size={20} />,
+          ]}
+        />
+        <p className="bl-signoff-end" aria-hidden="true">
+          <i />
+          End of log
+          <i />
+        </p>
       </div>
     </footer>
   );

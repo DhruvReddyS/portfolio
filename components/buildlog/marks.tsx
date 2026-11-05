@@ -210,6 +210,39 @@ export function MarkWindow(props: MarkProps) {
   );
 }
 
+/** A glass over a word, for the search work. */
+export function MarkSeek(props: MarkProps) {
+  return (
+    <Mark mark="seek" {...props}>
+      <path d="M10.6 3.4c3.9-.2 7.2 2.9 7.3 6.8.1 3.9-3 7.2-6.9 7.3-3.9.1-7.2-3-7.3-6.9-.1-3.8 2.9-7.1 6.9-7.2z" />
+      <path d="M15.9 15.6c1.7 1.6 3.3 3.1 4.8 4.6" />
+      <path d="M7.9 11.6c.9-.8 1.7-1.6 2.5-2.4 1 .9 1.9 1.8 2.8 2.7" />
+    </Mark>
+  );
+}
+
+/** A bubble with something said in it, for the chat work. */
+export function MarkChat(props: MarkProps) {
+  return (
+    <Mark mark="chat" {...props}>
+      <path d="M4 6.1c5.4-.5 10.8-.5 16.1-.1.3 3.5.3 7 0 10.4-3.3.3-6.6.4-9.9.3-1.5 1.3-3 2.4-4.6 3.4.2-1.2.4-2.4.5-3.6-.7-.1-1.4-.1-2.1-.2-.3-3.4-.3-6.8 0-10.2z" />
+      <path d="M8.2 10.9h.1M12 10.9h.1M15.8 10.9h.1" strokeWidth={2.4} />
+    </Mark>
+  );
+}
+
+/** A line going up over its own bars, for the growth work. */
+export function MarkRise(props: MarkProps) {
+  return (
+    <Mark mark="rise" {...props}>
+      <path d="M4 20.2c5.4.3 10.8.3 16.2.1" />
+      <path d="M7.1 20V15M11.4 20v-7.6M15.7 20V9.4" />
+      <path d="M4.6 11.1C8.1 9 11.6 6.7 15.4 4.4" />
+      <path d="M11.9 3.9c1.4-.1 2.7-.2 3.9-.2.1 1.2.1 2.5 0 3.8" />
+    </Mark>
+  );
+}
+
 /** Looping thought, for the applied-AI pillar. */
 export function MarkLoop(props: MarkProps) {
   return (

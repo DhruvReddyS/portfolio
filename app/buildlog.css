@@ -6211,13 +6211,22 @@ html.bl-locked body { overflow: hidden; }
 
 /* ---------- the colophon ---------------------------------------------- */
 
+/*
+ * Two columns: how to reach him, and what the thing is made of. The
+ * second used to be a row of its own below both, which left the right
+ * half of this one holding a portrait the cover had already shown.
+ */
 .bl-colo {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(1.5rem, 5vw, 4rem);
-  align-items: end;
+  grid-template-columns: minmax(0, 23rem) minmax(0, 1.3fr);
+  gap: clamp(1.75rem, 5vw, 4.5rem);
+  align-items: start;
   padding-bottom: clamp(2rem, 5vh, 3.25rem);
   border-bottom: 1px solid var(--bl-rule);
+}
+
+@media (max-width: 860px) {
+  .bl-colo { grid-template-columns: minmax(0, 1fr); }
 }
 
 .bl-colo-say { display: grid; gap: 0.9rem; justify-items: start; }
@@ -6231,15 +6240,26 @@ html.bl-locked body { overflow: hidden; }
   color: var(--bl-ink-dim);
 }
 
+/*
+ * An address, not a headline. It was set at up to three rem in the
+ * display face, which made the largest thing on the last page a string
+ * nobody reads, they copy. One line of type the size of a sentence,
+ * underlined so it is obviously a link.
+ */
 .bl-colo-mail {
-  font-family: var(--bl-display);
-  font-weight: 400;
-  font-variation-settings: "SOFT" 20, "WONK" 1, "opsz" 48;
-  font-size: clamp(1.05rem, 4.4vw, 3rem);
-  line-height: 1.06;
-  letter-spacing: -0.02em;
+  justify-self: start;
+  font-family: var(--bl-sans);
+  font-weight: 500;
+  font-size: clamp(0.95rem, 1.4vw, 1.12rem);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
   color: var(--bl-ink);
-  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--bl-accent) 55%, transparent);
+  text-underline-offset: 0.3em;
+  text-decoration-thickness: 1px;
+  /* break at the at-sign rather than mid-word, which split the domain */
+  overflow-wrap: break-word;
   transition: color 0.25s var(--bl-ease);
 }
 
@@ -6284,14 +6304,42 @@ html.bl-locked body { overflow: hidden; }
 
 .bl-colo-links a:hover { color: var(--bl-accent); }
 
-.bl-colo-art { width: clamp(7rem, 14vw, 11rem); opacity: 0.6; }
+/* ---- the sign-off -----------------------------------------------------
+   His name, pressed into the very last of the page and under everything
+   else on it. It is the only thing down here allowed to be large.     */
+
+.bl-signoff {
+  position: relative;
+  margin-top: clamp(2.5rem, 7vh, 5rem);
+  padding-top: clamp(1.5rem, 4vh, 2.5rem);
+}
+
+.bl-signoff-end {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.8rem, 2vw, 1.4rem);
+  margin: clamp(1rem, 3vh, 1.9rem) 0 0;
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-signoff-end i {
+  flex: 1;
+  max-width: 8rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--bl-rule), transparent);
+}
 
 /* the small print, four lines, hanging off their own labels */
 .bl-colo-set {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 1.1rem clamp(1.5rem, 4vw, 3.5rem);
-  margin: clamp(1.75rem, 4vh, 2.75rem) 0 clamp(1.75rem, 4vh, 2.75rem);
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.1rem clamp(1.5rem, 3vw, 2.75rem);
+  margin: 0;
 }
 
 .bl-colo-set > div { display: grid; gap: 0.3rem; align-content: start; }
@@ -7479,41 +7527,66 @@ body,
 /* Named bl-tool rather than bl-chip because bl-chip is already the tag in a
    case file, and inheriting its uppercase turned every maker's name into
    NEXT.JS and FRAMER MOTION. */
+/*
+ * A keycap, not an outline.
+ *
+ * These are objects: they fall, they land on each other, you can pick one
+ * up and throw it. An outlined pill reads as a tag and a tag does not have
+ * a top and a bottom, so the pile looked like a diagram of a pile. This
+ * one is lit from above like everything else on the cover: a bright line
+ * along the top edge, a dark one along the bottom, a soft gradient down
+ * the face and its own shadow underneath. Four shadows, no filters, so a
+ * heap of thirty-one of them is still only one paint.
+ */
 .bl-tool {
   position: absolute;
   left: 0;
   top: 0;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  height: 2.3rem;
-  padding: 0 0.85rem;
-  border: 1px solid var(--bl-ink);
-  border-radius: 12px;
-  background: var(--bl-bg);
+  gap: 0.55rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(243, 241, 234, 0.14);
+  border-radius: 13px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.02) 44%,
+      rgba(0, 0, 0, 0.16) 100%
+    ),
+    var(--bl-surface-2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 1px 1px rgba(0, 0, 0, 0.42),
+    0 7px 16px -7px rgba(0, 0, 0, 0.8);
   color: var(--bl-ink);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   letter-spacing: -0.01em;
   white-space: nowrap;
   cursor: grab;
   touch-action: none;
   user-select: none;
   will-change: transform;
+  transition: box-shadow 0.2s var(--bl-ease);
 }
 
-.bl-tool[data-held="true"] { cursor: grabbing; }
-
-.bl-tool[data-lead="true"] {
-  background: var(--bl-accent);
-  border-color: var(--bl-accent);
-  color: var(--bl-accent-ink);
+/* picked up: off the heap, so the shadow goes long and the top edge
+   catches more of the light */
+.bl-tool[data-held="true"] {
+  cursor: grabbing;
+  border-color: rgba(243, 241, 234, 0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    0 16px 30px -12px rgba(0, 0, 0, 0.9);
 }
-
-.bl-tool[data-lead="true"] .bl-tool-mark { color: inherit; }
 
 .bl-tool-mark {
   display: inline-flex;
-  font-size: 1rem;
+  font-size: 1.08rem;
   /* no tone set means it takes the page's ink, which is right for the marks
      that are a flat black wherever you find them */
   color: var(--bl-ink);
@@ -7554,8 +7627,8 @@ body,
 }
 
 @media (max-width: 700px) {
-  .bl-tool { height: 2.05rem; font-size: 0.74rem; padding: 0 0.65rem; gap: 0.4rem; }
-  .bl-tool-mark { font-size: 0.85rem; }
+  .bl-tool { height: 2.15rem; font-size: 0.76rem; padding: 0 0.7rem; gap: 0.42rem; }
+  .bl-tool-mark { font-size: 0.9rem; }
 }
 
 /* ---------- the close, centred ----------------------------------------- */
@@ -7656,7 +7729,7 @@ body,
  * has to get taller as it gets narrower: three per row on a phone is nine
  * rows of pile, and at the desktop height they stack straight out of the top.
  */
-.bl-pile { height: var(--bl-pile-h, 21rem); }
+.bl-pile { height: var(--bl-pile-h, 26rem); }
 
 @media (max-width: 1100px) { .bl-pile { height: var(--bl-pile-h, 24rem); } }
 @media (max-width: 760px) { .bl-pile { height: var(--bl-pile-h, 30rem); } }
@@ -8573,9 +8646,211 @@ body,
 .bl-studio-head {
   display: flex;
   align-items: center;
-  gap: clamp(0.85rem, 2vw, 1.4rem);
-  padding: clamp(1.1rem, 2.4vw, 1.75rem) var(--bl-pad-card);
+  gap: clamp(1.1rem, 3vw, 2.6rem);
+  padding: clamp(1.4rem, 3vw, 2.4rem) var(--bl-pad-card);
   border-bottom: 1px solid var(--bl-rule);
+}
+
+/* ---- the mark, and the five things it does -----------------------------
+   The services were a sentence under the logo: five of them separated by
+   middots, which nobody reads past the second. Round the mark they are
+   read as what the mark does, and the ring turns slowly enough that it
+   is a thing in the room rather than a thing demanding attention.      */
+
+.bl-orbit {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(11rem, 20vw, 15rem);
+  aspect-ratio: 1;
+  /* the chips sit on the face of it rather than flat on the page */
+  perspective: 700px;
+}
+
+.bl-orbit-ring {
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+  border: 1px solid var(--bl-rule);
+}
+
+.bl-orbit-ring-out {
+  inset: 2%;
+  border-style: dashed;
+  border-color: var(--bl-rule-soft);
+}
+
+.bl-orbit-marks {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: bl-orbit-turn 48s linear infinite;
+}
+
+.bl-orbit-marks li {
+  position: absolute;
+  /* inside the dashed ring, so a chip never clips the stage's edge */
+  inset: 7%;
+  display: grid;
+  place-items: start center;
+  /* each one stood off the centre by its own angle, so the five are
+     spaced without a single number being written down twice */
+  transform: rotate(var(--turn));
+}
+
+/*
+ * Counter-turned at the same rate, so a label is upright wherever the
+ * ring has got to. Two animations rather than one piece of script.
+ */
+.bl-orbit-marks li > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.34rem 0.6rem 0.34rem 0.42rem;
+  border: 1px solid rgba(243, 241, 234, 0.14);
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.09),
+      rgba(0, 0, 0, 0.16)
+    ),
+    var(--bl-surface-2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 6px 14px -7px rgba(0, 0, 0, 0.9);
+  color: var(--bl-ink);
+  /*
+   * Two rotations that have to compose: the chip's own standing angle,
+   * undone so the label is upright, and the ring's turn, undone so it
+   * stays upright as the ring goes round. They are written on different
+   * properties on purpose, because `rotate` is applied before
+   * `transform` rather than replacing it, and an animation on one leaves
+   * the other alone.
+   */
+  rotate: calc(var(--turn) * -1);
+  animation: bl-orbit-hold 48s linear infinite;
+}
+
+.bl-orbit-marks i {
+  display: inline-flex;
+  color: var(--bl-accent);
+}
+
+.bl-orbit-marks b {
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@keyframes bl-orbit-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bl-orbit-hold {
+  to { transform: rotate(-360deg); }
+}
+
+.bl-orbit-core {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 0.5rem;
+  width: 58%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--bl-accent) 13%, transparent),
+      transparent 72%
+    ),
+    var(--bl-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 36px -18px rgba(0, 0, 0, 0.95);
+}
+
+.bl-founder {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  background: var(--bl-accent);
+  color: var(--bl-accent-ink);
+  font-family: var(--bl-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.bl-founder i {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ---- the two lines, and the count ---- */
+
+.bl-studio-brief {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.bl-studio-brief li {
+  font-family: var(--bl-sans);
+  font-size: clamp(0.88rem, 1.25vw, 1.05rem);
+  line-height: 1.4;
+  color: var(--bl-ink-soft);
+}
+
+.bl-studio-brief li:first-child { color: var(--bl-ink); }
+
+.bl-studio-count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+}
+
+.bl-studio-count strong {
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  line-height: 1;
+  color: var(--bl-accent);
+}
+
+.bl-studio-count span {
+  font-family: var(--bl-mono);
+  font-size: var(--bl-t-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-orbit-marks,
+  .bl-orbit-marks li > span { animation: none; }
+}
+
+/* On a phone the masthead stacks, and a ring of five chips beside a
+   column of type does not fit either way round. */
+@media (max-width: 760px) {
+  .bl-studio-head { flex-wrap: wrap; }
+  .bl-orbit { width: min(100%, 13rem); margin-inline: auto; }
+  .bl-studio-id { flex: 1 1 100%; }
 }
 
 /* The mark is a wordmark at better than three to one. Squeezed into the
@@ -8877,18 +9152,22 @@ body,
 /* ---------- what the two lit acts need now the lamp is off ------------- */
 
 /*
- * The chips were ink-on-paper: a near-white fill with a dark outline. On this
- * ground the same two tokens give the opposite and better thing, an outlined
- * chip on near-black, but the fill has to come off the page colour or every
- * one of them is a hole punched in the pile.
+ * The chip's face, on the dark ground. It is a keycap: lit from above like
+ * everything else here, with a bright line along the top edge, a dark one
+ * along the bottom, a gradient down the face and its own shadow under it.
+ * The fill has to come off a page colour rather than the ink, or every one
+ * of them is a hole punched in the pile.
  */
 .bl-tool {
-  background: var(--bl-surface);
-  border-color: color-mix(in srgb, var(--bl-ink) 34%, transparent);
-}
-
-.bl-tool[data-lead="true"] {
-  border-color: var(--bl-accent);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.02) 44%,
+      rgba(0, 0, 0, 0.18) 100%
+    ),
+    var(--bl-surface-2);
+  border-color: rgba(243, 241, 234, 0.15);
 }
 
 /* a maker's mark drawn in flat black needs to be drawn in the page's ink */

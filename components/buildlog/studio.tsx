@@ -8,7 +8,15 @@ import { Reveal } from "./reveal";
 import { Counter } from "./smooth";
 import { Roll, SectionHeader } from "./sections";
 import { MarkedLine } from "./marked";
-import { MarkArrow, MarkMail } from "./marks";
+import {
+  MarkArrow,
+  MarkChat,
+  MarkLoop,
+  MarkMail,
+  MarkRise,
+  MarkSeek,
+  MarkWindow,
+} from "./marks";
 
 /**
  * The studio, as its own letterhead laid on the log.
@@ -26,6 +34,15 @@ import { MarkArrow, MarkMail } from "./marks";
  */
 
 
+/** The five service marks, by the name the data gives them. */
+const SERVICE_MARKS: Record<string, React.ReactNode> = {
+  window: <MarkWindow size={15} />,
+  seek: <MarkSeek size={15} />,
+  chat: <MarkChat size={15} />,
+  loop: <MarkLoop size={15} />,
+  rise: <MarkRise size={15} />,
+};
+
 export function StudioSection() {
   return (
     <section className="bl-section bl-studio" id="studio">
@@ -39,13 +56,67 @@ export function StudioSection() {
       <Reveal>
         <div className="bl-studio-card">
           <header className="bl-studio-head">
-            <span className="bl-studio-logo">
-              <Image src={studio.logo} alt={studio.name} {...servable(949, 297)} />
-            </span>
+            {/*
+              The mark, with the five things the studio takes on going
+              round it. They are placed on the ring by angle rather than
+              laid out in a row because that is what the sentence under
+              the logo used to be: a row of five services nobody reads to
+              the end of. Going round the mark they are read as what the
+              mark does.
+            */}
+            <div className="bl-orbit">
+              <span className="bl-orbit-ring" aria-hidden="true" />
+              <span className="bl-orbit-ring bl-orbit-ring-out" aria-hidden="true" />
+
+              <ul className="bl-orbit-marks">
+                {studio.services.map((service, index) => {
+                  const turn = (index / studio.services.length) * 360;
+                  return (
+                    <li
+                      key={service.label}
+                      style={{ "--turn": `${turn}deg` } as React.CSSProperties}
+                    >
+                      <span>
+                        <i aria-hidden="true">{SERVICE_MARKS[service.mark]}</i>
+                        <b>{service.label}</b>
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="bl-orbit-core">
+                <span className="bl-studio-logo">
+                  <Image
+                    src={studio.logo}
+                    alt={studio.name}
+                    {...servable(949, 297)}
+                  />
+                </span>
+                {/* the one claim on this card that is about him, not it */}
+                <span className="bl-founder">
+                  <i aria-hidden="true" />
+                  Founder
+                </span>
+              </div>
+            </div>
 
             <div className="bl-studio-id">
               <h3 className="bl-studio-name">{studio.name}</h3>
               <p className="bl-studio-tagline">{studio.tagline}</p>
+
+              <ul className="bl-studio-brief">
+                {studio.brief.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+
+              <p className="bl-studio-count">
+                <strong>
+                  <Counter value={String(studio.shipped).padStart(2, "0")} />
+                </strong>
+                <span>projects shipped</span>
+              </p>
             </div>
 
             <span className="bl-studio-role">{studio.role}</span>
@@ -97,7 +168,7 @@ export function StudioSection() {
             <p className="bl-roster-head">
               <span>The work</span>
               <i aria-hidden="true" />
-              <em>{studio.services.join(" · ")}</em>
+              <em>{studio.services.map((one) => one.label).join(" · ")}</em>
             </p>
 
             <ul>

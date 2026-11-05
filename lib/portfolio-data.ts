@@ -757,11 +757,19 @@ export const studio = {
     { value: "02", label: "clients in the US" },
     { value: "1 yr", label: "support included" },
   ],
+  /** Two lines, because a studio card that needs a paragraph has not
+      decided what it is for. */
+  brief: [
+    "We build the site, then we keep it working.",
+    "Scoped, built, handed over, supported for a year.",
+  ],
+  /** What the studio actually takes on, in its own words. */
   services: [
-    "Digital design & development",
-    "Brand-aligned UI and UX",
-    "Technical setup & deployment",
-    "Launch and go-live support",
+    { label: "Websites", mark: "window" },
+    { label: "SEO", mark: "seek" },
+    { label: "Chatbots", mark: "chat" },
+    { label: "Automations", mark: "loop" },
+    { label: "Marketing", mark: "rise" },
   ],
   process: [
     { step: "01", title: "Understand the brand", note: "Vision, audience and goals, clarified early." },
