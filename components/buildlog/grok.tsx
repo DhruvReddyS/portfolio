@@ -47,7 +47,7 @@ const ANSWERS: Answer[] = [
   },
   {
     ask: "What is he best at?",
-    line: "Full stack, with applied AI on top. Thirty-one tools in the heap and every one has shipped inside something on this page.",
+    line: "Full stack, with applied AI on top. Everything in the heap has shipped inside something else on this page, which is the only endorsement any of it gets.",
     go: { label: "See the heap", href: "#stack" },
     animation: "curious",
   },
@@ -73,7 +73,11 @@ export function GrokCompanion({ section }: { section: string }) {
   const [nudging, setNudging] = useState(false);
   /** Which of the four is being answered, if any. */
   const [asked, setAsked] = useState<number | null>(null);
+  /** True once the footer is on screen; it gets out of the way there. */
+  const [ending, setEnding] = useState(false);
   const idle = useRef<number | undefined>(undefined);
+  /** How many times it has spoken up uninvited. Two is the ration. */
+  const spoke = useRef(0);
 
   // Remember every act that has been reached.
   useEffect(() => {
@@ -86,12 +90,28 @@ export function GrokCompanion({ section }: { section: string }) {
   const unseen = ACTS.filter((id) => !seen.includes(id));
   const read = Math.round(((ACTS.length - unseen.length) / ACTS.length) * 100);
 
-  // It speaks up only after you have gone quiet, and only once per pause.
+  /*
+   * It speaks up after a pause, and only twice in a visit.
+   *
+   * It used to do this every nine seconds of stillness, for ever. On a
+   * page this long, stillness is what reading looks like: the reader
+   * stops to take in an act and gets interrupted for it, again and
+   * again, by a card over the bottom right corner of whatever they
+   * were reading. Twice is enough to say it is there; after that it
+   * waits to be pressed.
+   */
   useEffect(() => {
     const wake = () => {
       setNudging(false);
       window.clearTimeout(idle.current);
-      idle.current = window.setTimeout(() => setNudging(true), 9000);
+      /* nothing while it is already open, and nothing once it has had
+         its two; `open` is a dependency rather than a ref read inside
+         the timer, so opening it simply cancels the next one */
+      if (open || spoke.current >= 2) return;
+      idle.current = window.setTimeout(() => {
+        spoke.current += 1;
+        setNudging(true);
+      }, 14000);
     };
 
     wake();
@@ -100,6 +120,42 @@ export function GrokCompanion({ section }: { section: string }) {
     return () => {
       window.clearTimeout(idle.current);
       events.forEach((e) => window.removeEventListener(e, wake));
+    };
+  }, [open]);
+
+  /*
+   * And it stands down over the last page, where every line is already
+   * a way to reach him and the card would be sitting on top of them.
+   *
+   * Measured off the foot of <main> rather than off the footer itself,
+   * which cannot be watched for this: the footer is pinned to the
+   * bottom of the window for the whole of the page so that the log can
+   * slide off it, so it is technically on screen from the first scroll
+   * and an observer on it reports the end of the page at the start of
+   * it. What actually says the footer is showing is the log running
+   * out above it.
+   */
+  useEffect(() => {
+    const log = document.querySelector<HTMLElement>(".bl-main");
+    if (!log) return;
+
+    let frame = 0;
+    const look = () => {
+      frame = 0;
+      setEnding(log.getBoundingClientRect().bottom <= window.innerHeight - 40);
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(look);
+    };
+
+    look();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -115,7 +171,7 @@ export function GrokCompanion({ section }: { section: string }) {
     if (seen.length === 0) {
       return {
         ask: "",
-        line: "Seven acts down there. Ask me something, or I will keep count.",
+        line: `${ACTS.length} acts down there. Ask me something, or I will keep count.`,
         animation: "idle",
       };
     }
@@ -141,8 +197,10 @@ export function GrokCompanion({ section }: { section: string }) {
     setAsked(null);
   }, []);
 
-  // Never over the hero: the credentials live in that corner.
-  const showing = (open || nudging) && section !== "hero";
+  /* Never over the hero, where the credentials live in that corner,
+     and never over the last page, which is nothing but ways to reach
+     him already. */
+  const showing = (open || nudging) && section !== "hero" && !ending;
 
   return (
     <div className="bl-bot" data-showing={showing} data-open={open || undefined}>
@@ -197,7 +255,7 @@ export function GrokCompanion({ section }: { section: string }) {
         className="bl-bot-dock"
         type="button"
         aria-expanded={open}
-        aria-label={`Guide. ${read}% of the log read. ${saying.line}`}
+        aria-label={open ? "Close the guide" : "Open the guide"}
         onClick={() => {
           setOpen((v) => !v);
           setNudging(false);

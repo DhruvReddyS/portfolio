@@ -1093,8 +1093,8 @@ export function BuildLogFooter({ time }: { time: string }) {
       */}
       <div className="bl-signoff">
         <StampedWordmark
-          word="Dhruv Reddy"
-          count={11}
+          word="S. Dhruv Reddy"
+          count={13}
           marks={[
             <MarkRosette key="r" size={20} />,
             <MarkPaper key="p" size={20} />,
