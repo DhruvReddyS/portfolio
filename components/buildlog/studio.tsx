@@ -5,6 +5,7 @@ import Image from "next/image";
 import { studio } from "@/lib/portfolio-data";
 import { servable } from "@/lib/image-sizes";
 import { Reveal } from "./reveal";
+import { Settle } from "./settle";
 import { SectionHeader } from "./sections";
 import {
   MarkAgent,
@@ -164,7 +165,16 @@ export function StudioSection() {
             <p className="bl-bfu-what">The creative design studio</p>
             <p className="bl-bfu-job">{studio.tagline}</p>
 
-            <p className="bl-bfu-story">{studio.story}</p>
+            {/*
+              And where it came from, set the way the rest of this column
+              is not: large, heavy and tight, arriving as a heap of tilted
+              words that straightens itself out as the reader goes down
+              it. It is the only paragraph in the studio act, so it is
+              allowed to be the thing you look at rather than the thing
+              under the thing you look at.
+            */}
+            <p className="bl-bfu-lab">How it started</p>
+            <Settle className="bl-bfu-story">{studio.story}</Settle>
 
             <p className="bl-bfu-count">
               <strong>5+</strong>

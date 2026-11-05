@@ -12241,3 +12241,212 @@ body,
   .bl-colo-where i::after { animation: none; }
   .bl-signoff-end i { transform: none; }
 }
+
+/* ==========================================================================
+   THE SETTLING PARAGRAPH
+   A heap of over-size, tilted words that straightens itself into a
+   sentence as the scroll reaches it, word by word.
+   ========================================================================== */
+
+.bl-bfu-lab {
+  margin: 1.4rem 0 0.5rem;
+  font-family: var(--bl-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-settle {
+  margin: 0;
+  /* the words are scaled up before they settle, so they need somewhere
+     to overlap into rather than a scrollbar */
+  overflow: visible;
+}
+
+.bl-settle-word { display: inline; }
+
+.bl-settle-word > span {
+  display: inline-block;
+  transform-origin: 50% 60%;
+  will-change: transform, color;
+}
+
+.bl-bfu-story {
+  max-width: 20ch;
+  font-family: var(--bl-poster);
+  font-weight: 900;
+  font-stretch: 102%;
+  font-size: clamp(1.45rem, 2.7vw, 2.35rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--bl-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-settle-word > span { transform: none; color: var(--bl-ink); }
+}
+
+/* ==========================================================================
+   THE OPEN BRIEF
+   The close, printed as the thing it is asking for.
+   ========================================================================== */
+
+.bl-brief {
+  position: relative;
+  display: grid;
+  gap: clamp(1.5rem, 3.5vw, 2.5rem);
+  width: min(100%, 62rem);
+  margin-inline: auto;
+  padding: clamp(1.4rem, 3.4vw, 2.6rem);
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 32%, transparent);
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      90% 120% at 100% 0%,
+      color-mix(in srgb, var(--bl-accent) 9%, transparent),
+      transparent 62%
+    ),
+    var(--bl-surface);
+  text-align: left;
+}
+
+.bl-brief-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  padding-bottom: clamp(0.9rem, 2vw, 1.3rem);
+  border-bottom: 1px solid var(--bl-rule);
+}
+
+.bl-brief-tag {
+  font-family: var(--bl-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bl-accent);
+}
+
+.bl-brief-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-brief-live i {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bl-stamp);
+}
+
+.bl-brief-live i::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid var(--bl-stamp);
+  animation: bl-nib-ping 2.8s ease-out infinite;
+}
+
+/* ---- the three lines, with his answers already against them ----------- */
+
+.bl-brief-form {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.bl-brief-form > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0.4rem 1rem;
+}
+
+.bl-brief-form dt {
+  position: relative;
+  overflow: hidden;
+  font-family: var(--bl-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  white-space: nowrap;
+}
+
+/* the dotted leader a form has between the label and the space for the
+   answer, which is what makes this a form and not three more facts */
+.bl-brief-form dt::after {
+  content: " ....................................";
+  color: var(--bl-rule);
+  letter-spacing: 0.1em;
+}
+
+.bl-brief-form dd {
+  margin: 0;
+  font-family: var(--bl-display);
+  font-style: italic;
+  font-size: clamp(1.05rem, 1.9vw, 1.5rem);
+  line-height: 1.2;
+  color: var(--bl-ink);
+}
+
+.bl-brief-form > div:nth-child(2) dd { color: var(--bl-accent); }
+
+/* ---- what to press ----------------------------------------------------- */
+
+.bl-brief-do {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(0.9rem, 2.5vw, 1.75rem);
+}
+
+.bl-cta-wide {
+  padding-inline: clamp(1.4rem, 3.5vw, 2.6rem);
+  font-size: clamp(0.82rem, 1.2vw, 0.98rem);
+}
+
+/* ---- and the three things checked before any of it --------------------- */
+
+.bl-brief-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem clamp(1.25rem, 3vw, 2.5rem);
+  margin: 0;
+  padding-top: clamp(1rem, 2.4vw, 1.6rem);
+  border-top: 1px solid var(--bl-rule);
+}
+
+.bl-brief-facts > div { display: grid; gap: 0.25em; align-content: start; }
+
+.bl-brief-facts dt {
+  font-family: var(--bl-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-brief-facts dd {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--bl-ink-soft);
+}
+
+@media (max-width: 620px) {
+  .bl-brief-form > div { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
+  .bl-brief-form dt::after { content: ""; }
+  .bl-brief-do { gap: 1rem; }
+  .bl-cta-wide { width: 100%; justify-content: center; }
+}

@@ -819,21 +819,55 @@ export function ContactSection() {
       </Reveal>
 
       {/*
-        The desk. Everything a recruiter does next is on the left and
-        everything they check before doing it is on the right, which is
-        the order those two things actually happen in.
+        The close, as the brief itself.
 
-        It was a centred column before: a button, then an address, then
-        three facts under it, each on its own line down the middle of the
-        page. That reads as a poster. This is the part of the page that
-        is meant to be used, so it is laid out like a form rather than
-        like a finale.
+        It has been a centred column of links, and then a desk: a button
+        on the left, three facts on the right, laid out like a form. The
+        desk was the right instinct and the wrong object. A form is a
+        thing you fill in, and this one had nothing in it: it was a
+        button with facts beside it, which is what every portfolio ends
+        with.
+
+        So it is the brief, already half written. The three lines a
+        recruiter would have to put in an email are printed with his
+        answers against them, which does two things at once: it tells
+        them exactly what to send, and it says what he is asking for in
+        the only register this page has earned by now, which is a
+        challenge rather than a request. The second line is the whole
+        pitch and it fits in nine words.
+
+        Everything useful survives: the address can still be copied in
+        one press, the résumé is still one tap, and the three facts a
+        recruiter checks before any of that are along the foot.
       */}
       <Reveal delay={180}>
-        <div className="bl-desk">
-          <div className="bl-desk-do">
+        <div className="bl-brief">
+          <header className="bl-brief-head">
+            <span className="bl-brief-tag">Open brief</span>
+            <span className="bl-brief-live">
+              <i aria-hidden="true" />
+              Taking one now
+            </span>
+          </header>
+
+          <dl className="bl-brief-form">
+            <div>
+              <dt>The role</dt>
+              <dd>Yours to name</dd>
+            </div>
+            <div>
+              <dt>The hard part</dt>
+              <dd>The bit nobody on the team wants</dd>
+            </div>
+            <div>
+              <dt>The deadline</dt>
+              <dd>Whatever you already promised somebody</dd>
+            </div>
+          </dl>
+
+          <div className="bl-brief-do">
             <Magnetic strength={0.22}>
-              <a className="bl-cta" href={`mailto:${profile.email}`}>
+              <a className="bl-cta bl-cta-wide" href={`mailto:${profile.email}`}>
                 <span className="bl-cta-ring" aria-hidden="true" />
                 <span className="bl-cta-label">
                   <span>Send me the brief</span>
@@ -881,7 +915,7 @@ export function ContactSection() {
             </div>
           </div>
 
-          <dl className="bl-desk-facts">
+          <dl className="bl-brief-facts">
             <div>
               <dt>Looking for</dt>
               <dd>Full-stack and applied AI roles</dd>
@@ -1011,9 +1045,9 @@ export function BuildLogFooter({ time }: { time: string }) {
           </div>
           <div>
             <dt>Written by</dt>
-            <dd>
-              {profile.full}, in {profile.location}, by hand.
-            </dd>
+            {/* not his name a third time in the same six inches of page:
+                it is signed above, and stamped the size of a door below */}
+            <dd>One person, in {profile.location}, by hand.</dd>
           </div>
         </dl>
       </div>
@@ -1023,7 +1057,7 @@ export function BuildLogFooter({ time }: { time: string }) {
           © {new Date().getFullYear()} {profile.full}
         </span>
         <a href="/colophon">Colophon, privacy &amp; terms</a>
-        <span>Designed and engineered by {profile.name}</span>
+        <span>No template, no page builder, no agency</span>
 
         {/* the end of a book is the one place a way back belongs */}
         <button type="button" className="bl-totop" onClick={() => scrollTo(0)}>
