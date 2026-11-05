@@ -28,15 +28,18 @@ export function Statement({
   children,
   id,
   cite,
+  lit = 0,
 }: {
   children: string;
   id?: string;
   /** The small line under it, if the quote wants signing. */
   cite?: string;
+  /** How many words at the end stay in the accent. */
+  lit?: number;
 }) {
   return (
     <figure className="bl-saybox">
-      <Settle as="blockquote" className="bl-statement" id={id}>
+      <Settle as="blockquote" className="bl-statement" id={id} lit={lit}>
         {children}
       </Settle>
 

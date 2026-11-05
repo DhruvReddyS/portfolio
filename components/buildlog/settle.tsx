@@ -46,12 +46,19 @@ export function Settle({
   className,
   as = "p",
   id,
+  lit = 0,
 }: {
   children: string;
   className?: string;
   /** The element the words are set in. */
   as?: "p" | "blockquote";
   id?: string;
+  /**
+   * How many words at the end keep the accent instead of cooling into
+   * the ink. For a sentence whose second half is the argument: the
+   * claim stays lit and the setup settles back into the page.
+   */
+  lit?: number;
 }) {
   const host = useRef<HTMLElement>(null);
 
@@ -107,16 +114,26 @@ export function Settle({
        * band of movement and the paragraph is lit where it is being read
        * rather than where it is being assembled.
        */
+      const held = words.length - Math.max(0, lit);
+
       line.fromTo(
         words,
         { color: "var(--bl-accent)" },
-        { color: "var(--bl-ink)", ease: "none", stagger: { each: 0.34 } },
+        {
+          /* the words that carry the claim never cool: they arrive in the
+             accent with the rest and are simply the ones left lit when
+             the band has gone past */
+          color: (index: number) =>
+            index >= held ? "var(--bl-accent)" : "var(--bl-ink)",
+          ease: "none",
+          stagger: { each: 0.34 },
+        },
         0.9,
       );
     }, node);
 
     return () => context.revert();
-  }, [children]);
+  }, [children, lit]);
 
   const words = children.split(" ");
   const Tag = as;

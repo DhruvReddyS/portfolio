@@ -11250,12 +11250,12 @@ body,
   content: "\201C";
   position: absolute;
   left: 50%;
-  top: clamp(-5.5rem, -9vw, -2.6rem);
+  top: clamp(-7.5rem, -11vw, -3.2rem);
   z-index: 0;
   font-family: var(--bl-display);
-  font-size: clamp(9rem, 22vw, 18rem);
+  font-size: clamp(11rem, 27vw, 24rem);
   line-height: 1;
-  color: color-mix(in srgb, var(--bl-accent) 13%, transparent);
+  color: color-mix(in srgb, var(--bl-accent) 12%, transparent);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -11267,13 +11267,19 @@ body,
   font-family: var(--bl-display);
   font-weight: 400;
   font-variation-settings: "SOFT" 28, "WONK" 1, "opsz" 64;
-  font-size: clamp(1.7rem, 4.6vw, 3.9rem);
-  line-height: 1.1;
-  letter-spacing: -0.026em;
+  /*
+   * Big. It is six words with an argument in them and it has a whole
+   * screen to itself, so it is set at the size the one opinion on a
+   * page of evidence has earned: larger than any heading here and
+   * second only to the name on the cover.
+   */
+  font-size: clamp(2.5rem, 9vw, 7.4rem);
+  line-height: 0.94;
+  letter-spacing: -0.034em;
   /* in ch, and on the element that is actually set in the display face:
      a ch on the figure around it is a ch of the body face, which is a
      third of the size and makes this column a quarter as wide as meant */
-  max-width: 19ch;
+  max-width: 12ch;
   text-wrap: balance;
   color: var(--bl-ink);
 }
@@ -11299,7 +11305,7 @@ body,
 
 
 @media (max-width: 760px) {
-  .bl-statement { max-width: 15ch; }
+  .bl-statement { max-width: 11ch; }
 }
 
 /* ==========================================================================

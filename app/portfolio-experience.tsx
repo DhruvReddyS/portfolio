@@ -132,15 +132,28 @@ function BuildLog() {
           is the thing a reader actually decides on. Here, once, before any
           of it.
         */}
+        {/*
+          One opinion, before the evidence.
+
+          The page is about to spend seven acts proving things, and an
+          argument made entirely out of proof never says what the person
+          making it believes. This is the only line on the site that can
+          be disagreed with, which is the only reason it is here: a
+          reader who disagrees has still been given something to hold,
+          and a reader who agrees has a reason to keep going.
+
+          The second half stays lit after the rest has cooled, because
+          the second half is the claim and the first half is only the
+          setup for it.
+        */}
         <section className="bl-say" aria-label="What he is for">
           <p className="bl-say-kicker">
             <i aria-hidden="true" />
             A word before the log
             <i aria-hidden="true" />
           </p>
-          <Statement cite="Learned the expensive way, twice">
-            A demo is a promise. The second month is when you find out whether
-            you were good for it.
+          <Statement lit={3} cite="An opinion, and I will defend it">
+            Building got cheap. Judgement did not.
           </Statement>
         </section>
 
