@@ -67,18 +67,61 @@ const WORD: Record<string, string> = {
  *
  * In order, so that doing it over and over tells a small story rather
  * than shuffling a bag: surprise, amusement, suspicion, the slow loss
- * of patience, an apology, and then it gives up and enjoys itself.
+ * of patience, an apology, a truce, and then it gives up and enjoys
+ * itself. The register is the page's own, which is dry: a guide that
+ * tells jokes is unbearable, and one that is quietly unimpressed with
+ * you is funny for as long as you keep going.
  */
 const POKES: { animation: GrokAnimation; line: string }[] = [
   { animation: "surprised", line: "Oh. Hello." },
   { animation: "laughing", line: "Again? Go on then." },
-  { animation: "suspicious", line: "You are not reading any of this, are you." },
-  { animation: "playful", line: "Two of us are enjoying this." },
-  { animation: "bored", line: "There is a whole log down there, you know." },
+  { animation: "curious", line: "You are not reading any of this, are you." },
+  { animation: "playful", line: "Two of us are enjoying this. One of us is me." },
+  { animation: "bored", line: "There is a whole log down there. Seven acts. All dated." },
+  { animation: "suspicious", line: "I am starting to think you came for the button." },
   { animation: "angry", line: "Right. That is quite enough of that." },
   { animation: "shy", line: "Sorry. That was uncalled for." },
-  { animation: "celebrate", line: "Fine, you win. Go and read something." },
+  { animation: "confused", line: "Truce?" },
+  { animation: "celebrate", line: "Fine. You win. I will just stand here looking pleased." },
 ];
+
+/*
+ * And then the ones nobody is meant to get to, for the reader who
+ * keeps going after the story has finished. They are rarer on purpose:
+ * the joke is that there is more, not that there is a lot.
+ */
+const DEEP: { animation: GrokAnimation; line: string }[] = [
+  { animation: "bored", line: "You have now clicked me more times than anyone has read act four." },
+  { animation: "suspicious", line: "I have twenty-three faces. You have seen most of them." },
+  { animation: "playful", line: "This is the most engagement this corner has ever had." },
+  { animation: "proud", line: "At this rate I am going on the CV." },
+  { animation: "laughing", line: "He built me to answer questions. You have not asked one." },
+  { animation: "happy", line: "Genuinely, though. The case files are good. Go on." },
+];
+
+/*
+ * A word at the quarters, once each. The ring already says how far
+ * down you are; this is the part the ring cannot do, which is have an
+ * opinion about it.
+ */
+const MILE: { at: number; animation: GrokAnimation; line: string }[] = [
+  { at: 0.25, animation: "curious", line: "A quarter down. The good bit is further in." },
+  { at: 0.5, animation: "happy", line: "Halfway. Nobody gets halfway by accident." },
+  { at: 0.75, animation: "proud", line: "Three quarters. He is going to be insufferable about this." },
+  { at: 0.98, animation: "celebrate", line: "That is the lot. You read a portfolio to the end. Who does that." },
+];
+
+/** The one-offs, for the things a reader does that nothing else covers. */
+const MOMENT: Record<string, { animation: GrokAnimation; line: string }> = {
+  skimmed: {
+    animation: "surprised",
+    line: "You went straight to the bottom. Bold. There were seven acts.",
+  },
+  back: { animation: "happy", line: "Oh. You came back." },
+  linger: { animation: "shy", line: "Yes? Is there something on my face?" },
+  dozing: { animation: "drowsy", line: "Right. I am having a sit down." },
+  woken: { animation: "waking", line: "I am up. I am up." },
+};
 
 export function GrokCompanion({ section }: { section: string }) {
   /** What it is saying, if anything, and why. */
@@ -94,13 +137,23 @@ export function GrokCompanion({ section }: { section: string }) {
   /** How many times it has been clicked. */
   const [pokes, setPokes] = useState(0);
   const [poking, setPoking] = useState(false);
+  /** The face the last click asked for, held while it is reacting. */
+  const [reaction, setReaction] = useState<GrokAnimation>("surprised");
   /** How far down the page the reader has got, 0 to 1. */
   const [through, setThrough] = useState(0);
 
   const hush = useRef<number | undefined>(undefined);
   const reacting = useRef<number | undefined>(undefined);
+  const lingering = useRef<number | undefined>(undefined);
   /** Acts it has already said its piece about. */
   const told = useRef(new Set<string>());
+  /** Quarters it has already had an opinion about. */
+  const passed = useRef(new Set<number>());
+  /** One-offs it has already used up. */
+  const spent = useRef(new Set<string>());
+  /** Deep cuts already heard, so it works through them rather than
+      landing on the same one twice running. */
+  const heard = useRef(new Set<number>());
 
   /** Say one thing, for a while, then stop saying it. */
   const speak = useCallback((line: string, mood: GrokAnimation | undefined, ms: number) => {
@@ -108,6 +161,69 @@ export function GrokCompanion({ section }: { section: string }) {
     window.clearTimeout(hush.current);
     hush.current = window.setTimeout(() => setSays(null), ms);
   }, []);
+
+  /** One of the one-offs, if it has not been used yet. */
+  const moment = useCallback(
+    (key: keyof typeof MOMENT, ms = 3400) => {
+      if (spent.current.has(key)) return;
+      spent.current.add(key);
+      const say = MOMENT[key];
+      speak(say.line, say.animation, ms);
+    },
+    [speak],
+  );
+
+  /*
+   * The quarters, and the reader who went straight past all of them.
+   *
+   * Held in a ref and called from the scroll frame rather than run as
+   * its own effect on `through`, which would be an effect firing on
+   * every pixel of a very long page.
+   */
+  const mark = useCallback(
+    (at: number) => {
+      for (const stop of MILE) {
+        if (at < stop.at || passed.current.has(stop.at)) continue;
+        passed.current.add(stop.at);
+
+        /* the bottom, reached by somebody who has not stopped anywhere:
+           the only reading of that is a thumb on the scrollbar */
+        if (stop.at > 0.9 && told.current.size < 3) {
+          moment("skimmed", 4200);
+          return;
+        }
+
+        speak(stop.line, stop.animation, 4200);
+        return;
+      }
+    },
+    [moment, speak],
+  );
+
+  /* a click: the next reaction, held long enough to be read, and once
+     the story has run out, one of the ones nobody is meant to see */
+  const prod = useCallback(() => {
+    const done = pokes >= POKES.length;
+
+    let next: { animation: GrokAnimation; line: string };
+    if (!done) {
+      next = POKES[pokes];
+    } else {
+      /* work through them rather than landing on the same one twice */
+      if (heard.current.size >= DEEP.length) heard.current.clear();
+      const left = DEEP.map((_, i) => i).filter((i) => !heard.current.has(i));
+      const index = left[Math.floor(Math.random() * left.length)];
+      heard.current.add(index);
+      next = DEEP[index];
+    }
+
+    setPokes((n) => n + 1);
+    setPoking(true);
+    setReaction(next.animation);
+    window.clearTimeout(reacting.current);
+    reacting.current = window.setTimeout(() => setPoking(false), 2800);
+    speak(next.line, next.animation, 2800);
+  }, [pokes, speak]);
 
   /*
    * A word on arriving somewhere new, once per act per visit, and a
@@ -178,7 +294,9 @@ export function GrokCompanion({ section }: { section: string }) {
     const read = () => {
       frame = 0;
       const run = document.documentElement.scrollHeight - window.innerHeight;
-      setThrough(run > 0 ? Math.min(1, Math.max(0, window.scrollY / run)) : 0);
+      const at = run > 0 ? Math.min(1, Math.max(0, window.scrollY / run)) : 0;
+      setThrough(at);
+      mark(at);
 
       const now = performance.now();
       const gap = now - when;
@@ -207,25 +325,41 @@ export function GrokCompanion({ section }: { section: string }) {
       window.clearTimeout(calm);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, []);
+    /* stable: it is built from two callbacks that are themselves
+       stable, so listing it costs nothing and saying so is cheaper
+       than a reader wondering whether it was left out on purpose */
+  }, [mark]);
 
-  useEffect(
-    () => () => {
+  /*
+   * Coming back to the tab, which is the one thing a reader does that
+   * happens entirely outside the page.
+   */
+  useEffect(() => {
+    const look = () => {
+      if (document.visibilityState === "visible") moment("back");
+    };
+    document.addEventListener("visibilitychange", look);
+    return () => document.removeEventListener("visibilitychange", look);
+  }, [moment]);
+
+  /*
+   * And going under, and coming back up. It says so, because an object
+   * that falls asleep without mentioning it has simply stopped.
+   */
+  useEffect(() => {
+    if (still === 1) moment("dozing", 2600);
+  }, [still, moment]);
+
+  useEffect(() => {
+    window.clearTimeout(hush.current);
+    window.clearTimeout(reacting.current);
+    window.clearTimeout(lingering.current);
+    return () => {
       window.clearTimeout(hush.current);
       window.clearTimeout(reacting.current);
-    },
-    [],
-  );
-
-  /* a click: the next reaction, held long enough to be read */
-  const prod = useCallback(() => {
-    const next = POKES[pokes % POKES.length];
-    setPokes((n) => n + 1);
-    setPoking(true);
-    window.clearTimeout(reacting.current);
-    reacting.current = window.setTimeout(() => setPoking(false), 2600);
-    speak(next.line, next.animation, 2600);
-  }, [pokes, speak]);
+      window.clearTimeout(lingering.current);
+    };
+  }, []);
 
   /*
    * Which claim on its face wins.
@@ -236,7 +370,7 @@ export function GrokCompanion({ section }: { section: string }) {
    * page being thrown, and last the act it is standing in.
    */
   const mood: GrokAnimation = poking
-    ? POKES[(pokes - 1 + POKES.length) % POKES.length].animation
+    ? reaction
     : (says?.mood ??
       (near
         ? "listening"
@@ -269,8 +403,16 @@ export function GrokCompanion({ section }: { section: string }) {
         type="button"
         aria-label={`The guide, ${Math.round(through * 100)}% down the page. Click it.`}
         onClick={prod}
-        onPointerEnter={() => setNear(true)}
-        onPointerLeave={() => setNear(false)}
+        onPointerEnter={() => {
+          setNear(true);
+          /* standing over it without pressing it is its own thing */
+          window.clearTimeout(lingering.current);
+          lingering.current = window.setTimeout(() => moment("linger"), 2600);
+        }}
+        onPointerLeave={() => {
+          setNear(false);
+          window.clearTimeout(lingering.current);
+        }}
         data-poked={poking || undefined}
       >
         {/* the rim is how far down the page the reader has got */}
