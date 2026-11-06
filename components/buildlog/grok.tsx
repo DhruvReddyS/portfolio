@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { profile, sections } from "@/lib/portfolio-data";
+import {
+  awards,
+  caseFiles,
+  education,
+  logEntries,
+  profile,
+  sections,
+  studio,
+} from "@/lib/portfolio-data";
 import { MarkArrow } from "./marks";
 import type { GrokAnimation } from "./grok-avatar";
 
@@ -14,15 +22,25 @@ const GrokAvatar = dynamic(() => import("./grok-avatar"), {
 /**
  * The guide, which answers questions rather than announcing itself.
  *
- * It used to do one thing: wait for you to go still, then say which act
- * you had not reached. That is a progress bar with a face on it, and a
- * progress bar is not a reason to press anything.
+ * It began as a progress bar with a face on it, waiting for you to go
+ * still and then telling you which act you had not reached. Then it
+ * became a short list of the questions a stranger actually arrives
+ * with, which was better and still had two things wrong with it.
  *
- * So it keeps the count, and the ring still shows it, but the thing it
- * opens is a short list of the questions somebody actually arrives with.
- * Every answer is a fact that is already on this page, with the way to go
- * and read it in full: the guide is a shortcut through the log, not a
- * second version of it.
+ * The first was that it typed its own facts. It told people there were
+ * thirty-one tools in the heap for a week after the heap stopped being
+ * thirty-one, and nothing in the build would ever have caught it,
+ * because a hand-written sentence about the data is not the data.
+ * Everything it says is now computed from the same source the acts are
+ * drawn from, so the only way for it to go stale is for the page to go
+ * stale with it.
+ *
+ * The second was that it did not know where you were standing. It had
+ * the current act the whole time and used it for nothing but a nudge.
+ * The first thing it offers now is a question about the act in front of
+ * you, answered out of that act's own entries, so a reader in the case
+ * files is handed the case files and a reader at the studio is handed
+ * the studio. The four standing questions keep their place underneath.
  */
 
 type Answer = {
@@ -34,46 +52,133 @@ type Answer = {
   animation: GrokAnimation;
 };
 
-/*
- * Four questions, in the order a stranger asks them: can I hire him, what
- * is he, what has he made, and has anyone else paid for it.
- */
-const ANSWERS: Answer[] = [
-  {
-    ask: "Is he free?",
-    line: `Open to work, from ${profile.location} or remote, and he answers inside a day.`,
-    go: { label: "Write to him", href: "#contact" },
-    animation: "excited",
-  },
-  {
-    ask: "What is he best at?",
-    line: "Full stack, with applied AI on top. Everything in the heap has shipped inside something else on this page, which is the only endorsement any of it gets.",
-    go: { label: "See the heap", href: "#stack" },
-    animation: "curious",
-  },
-  {
-    ask: "Show me one thing",
-    line: "Corpusil: legal answers that cite their sources, or do not get given at all.",
-    go: { label: "Open the case files", href: "#work" },
-    animation: "excited",
-  },
-  {
-    ask: "Has anyone paid him?",
-    line: "Two clients in the United States, through a studio he founded and still runs.",
-    go: { label: "See the studio", href: "#studio" },
-    animation: "curious",
-  },
-];
-
 const ACTS = sections.map((item) => item.id);
+
+/** The room he is in now, if he is in one. */
+const live = logEntries.find((entry) => entry.status === "current");
+
+/*
+ * The question that belongs to whatever is on screen, answered out of
+ * that act's own entries. Null for the acts where the page is already
+ * saying the only thing worth saying.
+ */
+function forAct(id: string, pick: number): Answer | null {
+  switch (id) {
+    case "log":
+      return {
+        ask: "What were these?",
+        line: live
+          ? `${logEntries.length} rooms. ${live.company} is the one still running: ${live.headline}`
+          : `${logEntries.length} rooms, four companies and a research lab.`,
+        animation: "searching",
+      };
+
+    case "work": {
+      const file = caseFiles[pick % caseFiles.length];
+      return {
+        ask: "Which one first?",
+        line: `${file.name}. ${file.thesis}`,
+        go: { label: "Open it", href: "#work" },
+        animation: "proud",
+      };
+    }
+
+    case "education":
+      return {
+        ask: "Two at once, really?",
+        line: `${education[0].short} at ${education[0].mark.value} ${education[0].mark.label}, and ${education[1].short} with ${education[1].mark.value} ${education[1].mark.label}. The same weeks, not one after the other.`,
+        animation: "surprised",
+      };
+
+    case "stack":
+      return {
+        ask: "Has he used all of it?",
+        line: "Every one of them has shipped inside something else on this page. That is the only endorsement any of them gets here.",
+        animation: "working",
+      };
+
+    case "wins":
+      return {
+        ask: "What did he actually win?",
+        line: `${awards[0].title}: ${awards[0].place}. ${awards.length} pinned up in all.`,
+        go: { label: "Read it", href: "#wins" },
+        animation: "celebrate",
+      };
+
+    case "studio":
+      return {
+        ask: "Is the studio real?",
+        line: `${studio.shipped} builds, ${studio.delivered} delivered, and two of the people paying for them are in the United States.`,
+        go: { label: "Visit it", href: studio.site },
+        animation: "proud",
+      };
+
+    case "contact":
+      return {
+        ask: "How fast does he reply?",
+        line: "Within a day, usually sooner. Send the hard part rather than the job title.",
+        animation: "excited",
+      };
+
+    default:
+      return null;
+  }
+}
+
+/*
+ * And the four a stranger arrives with, in the order they arrive: can I
+ * hire him, what is he, what has he made, and has anybody else paid for
+ * it. Pressing the third one again moves to the next build, which is the
+ * only thing in here worth pressing twice.
+ */
+function standing(pick: number): Answer[] {
+  const file = caseFiles[pick % caseFiles.length];
+
+  return [
+    {
+      ask: "Is he free?",
+      line: `Open to work, from ${profile.location} or remote, and he answers inside a day.`,
+      go: { label: "Write to him", href: "#contact" },
+      animation: "excited",
+    },
+    {
+      ask: "What is he best at?",
+      line: "Full stack, with applied AI on top. Everything in the heap has shipped inside something else on this page.",
+      go: { label: "See the heap", href: "#stack" },
+      animation: "thinking",
+    },
+    {
+      ask: "Show me one thing",
+      line: `${file.name}. ${file.thesis}`,
+      go: { label: `All ${caseFiles.length} case files`, href: "#work" },
+      animation: "playful",
+    },
+    {
+      ask: "Has anyone paid him?",
+      line: `${studio.delivered} delivered out of ${studio.shipped}, through a studio he founded and still runs.`,
+      go: { label: "See the studio", href: "#studio" },
+      animation: "curious",
+    },
+  ];
+}
 
 export function GrokCompanion({ section }: { section: string }) {
   const [seen, setSeen] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [nudging, setNudging] = useState(false);
-  /** Which of the four is being answered, if any. */
-  const [asked, setAsked] = useState<number | null>(null);
-  /** True once the footer is on screen; it gets out of the way there. */
+  /**
+   * Which question is being answered, and which act it was asked in.
+   *
+   * The act it was asked in is carried with it so that moving to
+   * another one drops the selection by arithmetic rather than by an
+   * effect reaching back in to clear it: a different act offers a
+   * different first question, and an index kept across the change
+   * points at the wrong one.
+   */
+  const [asked, setAsked] = useState<{ at: string; of: number } | null>(null);
+  /** Which build it is offering. Pressing for another moves it on. */
+  const [pick, setPick] = useState(0);
+  /** True once the log has run out above the last page. */
   const [ending, setEnding] = useState(false);
   const idle = useRef<number | undefined>(undefined);
   /** How many times it has spoken up uninvited. Two is the ration. */
@@ -97,16 +202,12 @@ export function GrokCompanion({ section }: { section: string }) {
    * page this long, stillness is what reading looks like: the reader
    * stops to take in an act and gets interrupted for it, again and
    * again, by a card over the bottom right corner of whatever they
-   * were reading. Twice is enough to say it is there; after that it
-   * waits to be pressed.
+   * were reading.
    */
   useEffect(() => {
     const wake = () => {
       setNudging(false);
       window.clearTimeout(idle.current);
-      /* nothing while it is already open, and nothing once it has had
-         its two; `open` is a dependency rather than a ref read inside
-         the timer, so opening it simply cancels the next one */
       if (open || spoke.current >= 2) return;
       idle.current = window.setTimeout(() => {
         spoke.current += 1;
@@ -125,15 +226,15 @@ export function GrokCompanion({ section }: { section: string }) {
 
   /*
    * And it stands down over the last page, where every line is already
-   * a way to reach him and the card would be sitting on top of them.
+   * a way to reach him.
    *
    * Measured off the foot of <main> rather than off the footer itself,
    * which cannot be watched for this: the footer is pinned to the
    * bottom of the window for the whole of the page so that the log can
    * slide off it, so it is technically on screen from the first scroll
    * and an observer on it reports the end of the page at the start of
-   * it. What actually says the footer is showing is the log running
-   * out above it.
+   * it. What actually says the footer is showing is the log running out
+   * above it.
    */
   useEffect(() => {
     const log = document.querySelector<HTMLElement>(".bl-main");
@@ -159,13 +260,20 @@ export function GrokCompanion({ section }: { section: string }) {
     };
   }, []);
 
+  /* the act's own question first, then the four anybody would ask */
+  const asks = useMemo(() => {
+    const here = forAct(section, pick);
+    return here ? [here, ...standing(pick)] : standing(pick);
+  }, [section, pick]);
+
   /** What it says when nobody has asked it anything. */
   const resting = useMemo<Answer>(() => {
     if (unseen.length === 0) {
       return {
         ask: "",
-        line: "That is the whole log. Anything you want to know?",
-        animation: "excited",
+        line: "That is the whole log, all seven. The only thing left is the part that needs you in it.",
+        go: { label: "Go to the close", href: "#contact" },
+        animation: "celebrate",
       };
     }
     if (seen.length === 0) {
@@ -184,7 +292,8 @@ export function GrokCompanion({ section }: { section: string }) {
     };
   }, [unseen, seen.length]);
 
-  const saying = asked === null ? resting : ANSWERS[asked];
+  const picked = asked && asked.at === section ? asked.of : null;
+  const saying = picked === null ? resting : (asks[picked] ?? resting);
 
   const avatar = useMemo(
     () => <GrokAvatar animation={saying.animation} size="100%" ariaLabel="" />,
@@ -211,7 +320,13 @@ export function GrokCompanion({ section }: { section: string }) {
           </p>
 
           {saying.go && (
-            <a className="bl-bot-go" href={saying.go.href} onClick={quiet}>
+            <a
+              className="bl-bot-go"
+              href={saying.go.href}
+              target={saying.go.href.startsWith("#") ? undefined : "_blank"}
+              rel={saying.go.href.startsWith("#") ? undefined : "noreferrer"}
+              onClick={quiet}
+            >
               {saying.go.label} <MarkArrow size={12} />
             </a>
           )}
@@ -230,12 +345,22 @@ export function GrokCompanion({ section }: { section: string }) {
               </p>
 
               <ul className="bl-bot-asks">
-                {ANSWERS.map((answer, index) => (
+                {asks.map((answer, index) => (
                   <li key={answer.ask}>
                     <button
                       type="button"
-                      data-on={asked === index ? "true" : undefined}
-                      onClick={() => setAsked(asked === index ? null : index)}
+                      data-on={picked === index ? "true" : undefined}
+                      onClick={() => {
+                        /* pressing the one already open asks it again,
+                           which for the two that offer a build means
+                           the next build rather than nothing */
+                        if (picked === index) {
+                          if (/one|first/i.test(answer.ask)) setPick((n) => n + 1);
+                          else setAsked(null);
+                          return;
+                        }
+                        setAsked({ at: section, of: index });
+                      }}
                     >
                       {answer.ask}
                     </button>
