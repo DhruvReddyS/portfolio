@@ -13530,3 +13530,83 @@ body,
   .bl-bot-face:hover,
   .bl-bot-face:active { transform: none; }
 }
+
+/* ==========================================================================
+   THE GUIDE, AS A FACE AND A LINE
+   The panel is gone. Everything it offered was a link somewhere on this
+   page already, and the one thing it had that the page did not was the
+   face. So: the face, and one short thing at a time.
+   ========================================================================== */
+
+/* the dock, with the ring and the percentage taken off it */
+.bl-bot-dock {
+  width: 3.6rem;
+  height: 3.6rem;
+  border: 1px solid var(--bl-rule);
+  background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--bl-accent) 12%, transparent),
+      transparent 78%
+    ),
+    var(--bl-surface);
+  transition:
+    transform 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
+    border-color 0.3s var(--bl-ease),
+    box-shadow 0.3s var(--bl-ease);
+}
+
+.bl-bot-dock:hover {
+  transform: scale(1.09);
+  border-color: color-mix(in srgb, var(--bl-accent) 60%, transparent);
+  box-shadow:
+    0 0.75rem 2rem rgba(0, 0, 0, 0.5),
+    0 0 1.9rem -0.4rem color-mix(in srgb, var(--bl-accent) 65%, transparent);
+}
+
+.bl-bot-dock:active { transform: scale(0.93); }
+
+.bl-bot-body { width: 80%; height: 80%; }
+
+/* a shove when it is clicked, which is the reaction arriving before the
+   animation on its face has had time to */
+.bl-bot-dock[data-poked] {
+  animation: bl-bot-shove 0.5s var(--bl-ease);
+  border-color: var(--bl-accent);
+}
+
+/* ---- the one thing it is saying ---------------------------------------- */
+
+/*
+ * A line, not a card. No heading, no rule, no list and nothing to
+ * press: it says its piece, it is readable in about as long as it is
+ * shown for, and then it is not there any more.
+ */
+.bl-bot-puff {
+  max-width: min(17rem, calc(100vw - 2 * var(--bl-gutter)));
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 12px 12px 4px 12px;
+  background: color-mix(in srgb, var(--bl-surface-2) 94%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0.9rem 2.2rem rgba(0, 0, 0, 0.5);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--bl-ink-soft);
+  text-align: left;
+  animation: bl-bot-puff 0.4s cubic-bezier(0.2, 0.9, 0.25, 1);
+  pointer-events: none;
+}
+
+@keyframes bl-bot-puff {
+  from { opacity: 0; transform: translateY(0.5rem) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bl-bot-puff,
+  .bl-bot-dock[data-poked] { animation: none; }
+  .bl-bot-dock:hover,
+  .bl-bot-dock:active { transform: none; }
+}

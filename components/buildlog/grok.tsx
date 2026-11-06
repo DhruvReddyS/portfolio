@@ -2,16 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import {
-  awards,
-  caseFiles,
-  education,
-  logEntries,
-  profile,
-  sections,
-  studio,
-} from "@/lib/portfolio-data";
-import { MarkArrow } from "./marks";
+import { caseFiles, education, logEntries, studio } from "@/lib/portfolio-data";
 import type { GrokAnimation } from "./grok-avatar";
 
 const GrokAvatar = dynamic(() => import("./grok-avatar"), {
@@ -20,49 +11,23 @@ const GrokAvatar = dynamic(() => import("./grok-avatar"), {
 });
 
 /**
- * The guide, which answers questions rather than announcing itself.
+ * The guide, which is a face in the corner and nothing else.
  *
- * It began as a progress bar with a face on it, waiting for you to go
- * still and then telling you which act you had not reached. Then it
- * became a short list of the questions a stranger actually arrives
- * with, which was better and still had two things wrong with it.
+ * It has been a progress bar with a face on it, then a panel of
+ * questions with a ring and a percentage and a list of chips, and the
+ * panel was the problem: a page that is already seven acts of reading
+ * does not want an eighth thing to operate in the bottom right corner.
+ * Everything that panel offered is a link somewhere on the page
+ * already, and the one thing it had that the page did not was the face.
  *
- * The first was that it typed its own facts. It told people there were
- * thirty-one tools in the heap for a week after the heap stopped being
- * thirty-one, and nothing in the build would ever have caught it,
- * because a hand-written sentence about the data is not the data.
- * Everything it says is now computed from the same source the acts are
- * drawn from, so the only way for it to go stale is for the page to go
- * stale with it.
- *
- * The second was that it did not know where you were standing. It had
- * the current act the whole time and used it for nothing but a nudge.
- * The first thing it offers now is a question about the act in front of
- * you, answered out of that act's own entries, so a reader in the case
- * files is handed the case files and a reader at the studio is handed
- * the studio. The four standing questions keep their place underneath.
+ * So it is the face. It watches which act you are in and says one short
+ * thing about it, once, the first time you arrive. It notices the page
+ * being thrown about. It gets heavy and goes to sleep if you stop
+ * touching anything. It looks up when the pointer comes near it, and it
+ * answers being clicked. There is nothing to open and nothing to close.
  */
 
-type Answer = {
-  /** What the visitor presses. */
-  ask: string;
-  /** What it says back, which has to be true and has to be short. */
-  line: string;
-  go?: { label: string; href: string };
-  animation: GrokAnimation;
-};
-
-const ACTS = sections.map((item) => item.id);
-
-/*
- * What it is doing when nobody has asked it anything.
- *
- * The avatar came with twenty-three animations and this page was using
- * three of them, which made it a logo that blinked. It is a face: the
- * cheapest way to make a face worth looking at is to let it have an
- * opinion about what is going on, so it takes its mood from the act in
- * front of it and from what the reader is doing to the page.
- */
+/** What its face is doing in each act, when nothing else is happening. */
 const MOOD: Record<string, GrokAnimation> = {
   log: "searching",
   work: "curious",
@@ -73,216 +38,125 @@ const MOOD: Record<string, GrokAnimation> = {
   contact: "excited",
 };
 
+/** The room he is in now, if he is in one. */
+const live = logEntries.find((entry) => entry.status === "current");
+
 /*
- * And what happens if you keep prodding it.
+ * One line per act, said once, the first time it is reached.
  *
- * In order, so that pressing it over and over tells a small story
- * rather than shuffling a bag: surprise, amusement, suspicion, then
- * the slow loss of patience, and then it gives up and enjoys itself.
- * It is the one part of this page that is a toy and it says so by
- * behaving like one.
+ * Every one of them is either a fact counted off the data or a thing
+ * the reader can do here that is not obvious from looking. None of
+ * them repeats a line the act has already printed: a guide that reads
+ * the headline back to you is a guide that wastes the corner it is
+ * standing in.
+ */
+const WORD: Record<string, string> = {
+  log: live
+    ? `${logEntries.length} rooms down here. ${live.company} is the one he has not left.`
+    : `${logEntries.length} rooms down here.`,
+  work: `${caseFiles.length} files, and every one of them opens. Press one.`,
+  education: `${education[0].short} and ${education[1].short}, in the same weeks. Not one after the other.`,
+  stack: "You can pick those up and throw them at each other, by the way.",
+  wins: "Drag the line. There are more of them than fit.",
+  studio: `Not coursework, this one. ${studio.shipped} builds, ${studio.delivered} delivered.`,
+  contact: "Right. This is the part that needs you in it.",
+};
+
+/*
+ * And what it says if you keep clicking it.
+ *
+ * In order, so that doing it over and over tells a small story rather
+ * than shuffling a bag: surprise, amusement, suspicion, the slow loss
+ * of patience, an apology, and then it gives up and enjoys itself.
  */
 const POKES: { animation: GrokAnimation; line: string }[] = [
   { animation: "surprised", line: "Oh. Hello." },
   { animation: "laughing", line: "Again? Go on then." },
   { animation: "suspicious", line: "You are not reading any of this, are you." },
   { animation: "playful", line: "Two of us are enjoying this." },
-  { animation: "bored", line: "There are seven acts down there, you know." },
+  { animation: "bored", line: "There is a whole log down there, you know." },
   { animation: "angry", line: "Right. That is quite enough of that." },
   { animation: "shy", line: "Sorry. That was uncalled for." },
-  { animation: "celebrate", line: "Fine. You win. Ask me something." },
+  { animation: "celebrate", line: "Fine, you win. Go and read something." },
 ];
 
-/** The room he is in now, if he is in one. */
-const live = logEntries.find((entry) => entry.status === "current");
-
-/*
- * The question that belongs to whatever is on screen, answered out of
- * that act's own entries. Null for the acts where the page is already
- * saying the only thing worth saying.
- */
-function forAct(id: string, pick: number): Answer | null {
-  switch (id) {
-    case "log":
-      return {
-        ask: "What were these?",
-        line: live
-          ? `${logEntries.length} rooms. ${live.company} is the one still running: ${live.headline}`
-          : `${logEntries.length} rooms, four companies and a research lab.`,
-        animation: "searching",
-      };
-
-    case "work": {
-      const file = caseFiles[pick % caseFiles.length];
-      return {
-        ask: "Which one first?",
-        line: `${file.name}. ${file.thesis}`,
-        go: { label: "Open it", href: "#work" },
-        animation: "proud",
-      };
-    }
-
-    case "education":
-      return {
-        ask: "Two at once, really?",
-        line: `${education[0].short} at ${education[0].mark.value} ${education[0].mark.label}, and ${education[1].short} with ${education[1].mark.value} ${education[1].mark.label}. The same weeks, not one after the other.`,
-        animation: "surprised",
-      };
-
-    case "stack":
-      return {
-        ask: "Has he used all of it?",
-        line: "Every one of them has shipped inside something else on this page. That is the only endorsement any of them gets here.",
-        animation: "working",
-      };
-
-    case "wins":
-      return {
-        ask: "What did he actually win?",
-        line: `${awards[0].title}: ${awards[0].place}. ${awards.length} pinned up in all.`,
-        go: { label: "Read it", href: "#wins" },
-        animation: "celebrate",
-      };
-
-    case "studio":
-      return {
-        ask: "Is the studio real?",
-        line: `${studio.shipped} builds, ${studio.delivered} delivered, and two of the people paying for them are in the United States.`,
-        go: { label: "Visit it", href: studio.site },
-        animation: "proud",
-      };
-
-    case "contact":
-      return {
-        ask: "How fast does he reply?",
-        line: "Within a day, usually sooner. Send the hard part rather than the job title.",
-        animation: "excited",
-      };
-
-    default:
-      return null;
-  }
-}
-
-/*
- * And the four a stranger arrives with, in the order they arrive: can I
- * hire him, what is he, what has he made, and has anybody else paid for
- * it. Pressing the third one again moves to the next build, which is the
- * only thing in here worth pressing twice.
- */
-function standing(pick: number): Answer[] {
-  const file = caseFiles[pick % caseFiles.length];
-
-  return [
-    {
-      ask: "Is he free?",
-      line: `Open to work, from ${profile.location} or remote, and he answers inside a day.`,
-      go: { label: "Write to him", href: "#contact" },
-      animation: "excited",
-    },
-    {
-      ask: "What is he best at?",
-      line: "Full stack, with applied AI on top. Everything in the heap has shipped inside something else on this page.",
-      go: { label: "See the heap", href: "#stack" },
-      animation: "thinking",
-    },
-    {
-      ask: "Show me one thing",
-      line: `${file.name}. ${file.thesis}`,
-      go: { label: `All ${caseFiles.length} case files`, href: "#work" },
-      animation: "playful",
-    },
-    {
-      ask: "Has anyone paid him?",
-      line: `${studio.delivered} delivered out of ${studio.shipped}, through a studio he founded and still runs.`,
-      go: { label: "See the studio", href: "#studio" },
-      animation: "curious",
-    },
-  ];
-}
-
 export function GrokCompanion({ section }: { section: string }) {
-  const [seen, setSeen] = useState<string[]>([]);
-  const [open, setOpen] = useState(false);
-  const [nudging, setNudging] = useState(false);
-  /**
-   * Which question is being answered, and which act it was asked in.
-   *
-   * The act it was asked in is carried with it so that moving to
-   * another one drops the selection by arithmetic rather than by an
-   * effect reaching back in to clear it: a different act offers a
-   * different first question, and an index kept across the change
-   * points at the wrong one.
-   */
-  const [asked, setAsked] = useState<{ at: string; of: number } | null>(null);
-  /** Which build it is offering. Pressing for another moves it on. */
-  const [pick, setPick] = useState(0);
-  /** True once the log has run out above the last page. */
-  const [ending, setEnding] = useState(false);
+  /** What it is saying, if anything, and why. */
+  const [says, setSays] = useState<{ line: string; mood?: GrokAnimation } | null>(
+    null,
+  );
   /** 0 awake, 1 getting heavy, 2 asleep. Cleared by any interaction. */
   const [still, setStill] = useState(0);
   /** True for a moment after the page is thrown past it. */
   const [rushing, setRushing] = useState(false);
-  /** How many times it has been prodded, and whether it is reacting. */
+  /** True while the pointer is on it. */
+  const [near, setNear] = useState(false);
+  /** How many times it has been clicked. */
   const [pokes, setPokes] = useState(0);
   const [poking, setPoking] = useState(false);
+
+  const hush = useRef<number | undefined>(undefined);
   const reacting = useRef<number | undefined>(undefined);
-  const idle = useRef<number | undefined>(undefined);
-  /** How many times it has spoken up uninvited. Two is the ration. */
-  const spoke = useRef(0);
+  /** Acts it has already said its piece about. */
+  const told = useRef(new Set<string>());
 
-  // Remember every act that has been reached.
-  useEffect(() => {
-    if (section === "top" || !ACTS.includes(section)) return;
-    queueMicrotask(() =>
-      setSeen((prev) => (prev.includes(section) ? prev : [...prev, section])),
-    );
-  }, [section]);
-
-  const unseen = ACTS.filter((id) => !seen.includes(id));
-  const read = Math.round(((ACTS.length - unseen.length) / ACTS.length) * 100);
+  /** Say one thing, for a while, then stop saying it. */
+  const speak = useCallback((line: string, mood: GrokAnimation | undefined, ms: number) => {
+    setSays({ line, mood });
+    window.clearTimeout(hush.current);
+    hush.current = window.setTimeout(() => setSays(null), ms);
+  }, []);
 
   /*
-   * It speaks up after a pause, and only twice in a visit.
-   *
-   * It used to do this every nine seconds of stillness, for ever. On a
-   * page this long, stillness is what reading looks like: the reader
-   * stops to take in an act and gets interrupted for it, again and
-   * again, by a card over the bottom right corner of whatever they
-   * were reading.
+   * A word on arriving somewhere new, once per act per visit, and a
+   * beat late so that it lands after the act has, rather than racing
+   * the heading onto the screen.
+   */
+  useEffect(() => {
+    const line = WORD[section];
+    if (!line || told.current.has(section)) return;
+
+    /*
+     * Marked as told when it is actually said, not when it is lined up.
+     *
+     * Scrolling through the page changes the act several times on the
+     * way past, and each change cancels the one before it. Marking the
+     * act on the way in meant every act was ticked off by a reader
+     * going down the page at any speed at all, and it then had nothing
+     * to say anywhere. It has to get the words out first.
+     */
+    const wait = window.setTimeout(() => {
+      told.current.add(section);
+      speak(line, MOOD[section], 6000);
+    }, 1400);
+
+    return () => window.clearTimeout(wait);
+  }, [section, speak]);
+
+  /*
+   * It gets heavy, then it goes under, and any touch brings it back. A
+   * face that is wide awake in the corner of a long page is a face that
+   * is staring.
    */
   useEffect(() => {
     const heavy: number[] = [];
 
     const wake = () => {
-      setNudging(false);
       setStill(0);
-      window.clearTimeout(idle.current);
       heavy.forEach(window.clearTimeout);
       heavy.length = 0;
-
-      /* it gets heavy, then it goes under, and any touch brings it back.
-         A face that is always wide awake in the corner of a long page is
-         a face that is staring */
       heavy.push(window.setTimeout(() => setStill(1), 22000));
       heavy.push(window.setTimeout(() => setStill(2), 40000));
-
-      if (open || spoke.current >= 2) return;
-      idle.current = window.setTimeout(() => {
-        spoke.current += 1;
-        setNudging(true);
-      }, 14000);
     };
 
     wake();
     const events: (keyof WindowEventMap)[] = ["scroll", "pointerdown", "keydown"];
     events.forEach((e) => window.addEventListener(e, wake, { passive: true }));
     return () => {
-      window.clearTimeout(idle.current);
       heavy.forEach(window.clearTimeout);
       events.forEach((e) => window.removeEventListener(e, wake));
     };
-  }, [open]);
+  }, []);
 
   /* and it notices being thrown down the page, which is the one thing a
      reader does that a face in the corner could plausibly react to */
@@ -312,241 +186,74 @@ export function GrokCompanion({ section }: { section: string }) {
     };
   }, []);
 
-  /*
-   * And it stands down over the last page, where every line is already
-   * a way to reach him.
-   *
-   * Measured off the foot of <main> rather than off the footer itself,
-   * which cannot be watched for this: the footer is pinned to the
-   * bottom of the window for the whole of the page so that the log can
-   * slide off it, so it is technically on screen from the first scroll
-   * and an observer on it reports the end of the page at the start of
-   * it. What actually says the footer is showing is the log running out
-   * above it.
-   */
-  useEffect(() => {
-    const log = document.querySelector<HTMLElement>(".bl-main");
-    if (!log) return;
+  useEffect(
+    () => () => {
+      window.clearTimeout(hush.current);
+      window.clearTimeout(reacting.current);
+    },
+    [],
+  );
 
-    let frame = 0;
-    const look = () => {
-      frame = 0;
-      setEnding(log.getBoundingClientRect().bottom <= window.innerHeight - 40);
-    };
-    const onScroll = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(look);
-    };
-
-    look();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) cancelAnimationFrame(frame);
-    };
-  }, []);
-
-  /* the act's own question first, then the four anybody would ask */
-  const asks = useMemo(() => {
-    const here = forAct(section, pick);
-    return here ? [here, ...standing(pick)] : standing(pick);
-  }, [section, pick]);
-
-  /** What it says when nobody has asked it anything. */
-  const resting = useMemo<Answer>(() => {
-    if (unseen.length === 0) {
-      return {
-        ask: "",
-        line: "That is the whole log, all seven. The only thing left is the part that needs you in it.",
-        go: { label: "Go to the close", href: "#contact" },
-        animation: "celebrate",
-      };
-    }
-    if (seen.length === 0) {
-      return {
-        ask: "",
-        line: `${ACTS.length} acts down there. Ask me something, or I will keep count.`,
-        animation: "idle",
-      };
-    }
-    const next = sections.find((item) => item.id === unseen[0]);
-    return {
-      ask: "",
-      line: `You have not been to ${next?.label ?? "the rest"} yet.`,
-      go: next ? { label: "Take me there", href: `#${next.id}` } : undefined,
-      animation: "curious",
-    };
-  }, [unseen, seen.length]);
-
-  const picked = asked && asked.at === section ? asked.of : null;
-  const answered = picked === null ? resting : (asks[picked] ?? resting);
-  const prodded = POKES[pokes % POKES.length];
-  const saying = poking ? { ...prodded, go: undefined, ask: "" } : answered;
+  /* a click: the next reaction, held long enough to be read */
+  const prod = useCallback(() => {
+    const next = POKES[pokes % POKES.length];
+    setPokes((n) => n + 1);
+    setPoking(true);
+    window.clearTimeout(reacting.current);
+    reacting.current = window.setTimeout(() => setPoking(false), 2600);
+    speak(next.line, next.animation, 2600);
+  }, [pokes, speak]);
 
   /*
-   * What its face is doing, in order of who has the better claim on it.
+   * Which claim on its face wins.
    *
-   * Being prodded beats everything, because that is the one thing the
-   * reader did on purpose to the face itself. Then whatever it was
-   * asked. Then sleep, then being thrown down the page, then the act in
-   * front of it. Everything below the thing that is happening now is
-   * still true; it just is not the most interesting thing about it.
+   * Being clicked beats everything, because that is the one thing the
+   * reader did on purpose to the face itself. Then whatever it is
+   * saying. Then the pointer arriving near it, then sleep, then the
+   * page being thrown, and last the act it is standing in.
    */
   const mood: GrokAnimation = poking
-    ? prodded.animation
-    : picked !== null
-      ? answered.animation
-      : still === 2
-        ? "sleeping"
-        : still === 1
-          ? "drowsy"
-          : rushing
-            ? "surprised"
-            : unseen.length === 0
-              ? "celebrate"
-              : (MOOD[section] ?? answered.animation);
+    ? POKES[(pokes - 1 + POKES.length) % POKES.length].animation
+    : (says?.mood ??
+      (near
+        ? "listening"
+        : still === 2
+          ? "sleeping"
+          : still === 1
+            ? "drowsy"
+            : rushing
+              ? "surprised"
+              : (MOOD[section] ?? "idle")));
 
   const avatar = useMemo(
     () => <GrokAvatar animation={mood} size="100%" ariaLabel="" />,
     [mood],
   );
 
-  /* a prod: the next reaction, held long enough to be read, and then it
-     goes back to whatever it was doing before */
-  const prod = useCallback(() => {
-    setPokes((n) => n + 1);
-    setPoking(true);
-    window.clearTimeout(reacting.current);
-    reacting.current = window.setTimeout(() => setPoking(false), 2600);
-  }, []);
-
-  useEffect(() => () => window.clearTimeout(reacting.current), []);
-
-  const quiet = useCallback(() => {
-    setNudging(false);
-    setOpen(false);
-    setAsked(null);
-  }, []);
-
-  /* Never over the hero, where the credentials live in that corner,
-     and never over the last page, which is nothing but ways to reach
-     him already. */
-  const showing = (open || nudging) && section !== "hero" && !ending;
+  /* Never over the hero, where the credentials live in that corner. */
+  const here = section !== "hero";
 
   return (
-    <div className="bl-bot" data-showing={showing} data-open={open || undefined}>
-      {showing && (
-        <div className="bl-bot-card" role="status">
-          {/*
-            The face, at a size worth looking at, and it answers being
-            prodded. It is the one thing on this page that is a toy, and
-            the only way a toy earns its corner is by being one.
-          */}
-          {open && (
-            <button
-              className="bl-bot-face"
-              type="button"
-              onClick={prod}
-              aria-label="Prod the guide"
-              data-poked={poking || undefined}
-            >
-              <span>{avatar}</span>
-            </button>
-          )}
-
-          <p className="bl-bot-say" key={saying.line}>
-            {saying.line}
-          </p>
-
-          {saying.go && (
-            <a
-              className="bl-bot-go"
-              href={saying.go.href}
-              target={saying.go.href.startsWith("#") ? undefined : "_blank"}
-              rel={saying.go.href.startsWith("#") ? undefined : "noreferrer"}
-              onClick={quiet}
-            >
-              {saying.go.label} <MarkArrow size={12} />
-            </a>
-          )}
-
-          {/*
-            The questions only appear once it has been opened on purpose.
-            A nudge that arrives on its own has said its one thing and
-            should not then unfold into a menu.
-          */}
-          {open && (
-            <>
-              <p className="bl-bot-rule" aria-hidden="true">
-                <i />
-                Ask it
-                <i />
-              </p>
-
-              <ul className="bl-bot-asks">
-                {asks.map((answer, index) => (
-                  <li key={answer.ask}>
-                    <button
-                      type="button"
-                      data-on={picked === index ? "true" : undefined}
-                      onClick={() => {
-                        /* pressing the one already open asks it again,
-                           which for the two that offer a build means
-                           the next build rather than nothing */
-                        if (picked === index) {
-                          if (/one|first/i.test(answer.ask)) setPick((n) => n + 1);
-                          else setAsked(null);
-                          return;
-                        }
-                        setAsked({ at: section, of: index });
-                      }}
-                    >
-                      {answer.ask}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-
-              <p className="bl-bot-count">
-                {ACTS.length - unseen.length} of {ACTS.length} acts read
-              </p>
-            </>
-          )}
-        </div>
+    <div className="bl-bot" data-showing={here} data-quiet={!says || undefined}>
+      {says && here && (
+        <p className="bl-bot-puff" key={says.line} role="status">
+          {says.line}
+        </p>
       )}
 
       <button
         className="bl-bot-dock"
         type="button"
-        aria-expanded={open}
-        aria-label={open ? "Close the guide" : "Open the guide"}
-        onClick={() => {
-          setOpen((v) => !v);
-          setNudging(false);
-          setAsked(null);
-        }}
+        aria-label="The guide. Click it."
+        onClick={prod}
+        onPointerEnter={() => setNear(true)}
+        onPointerLeave={() => setNear(false)}
+        data-poked={poking || undefined}
       >
-        {/* the ring is how much of the log has been reached */}
-        <svg className="bl-bot-ring" viewBox="0 0 44 44" aria-hidden="true">
-          <circle className="bl-bot-ring-track" cx="22" cy="22" r="20" />
-          <circle
-            className="bl-bot-ring-fill"
-            cx="22"
-            cy="22"
-            r="20"
-            style={{ strokeDashoffset: 125.6 - (125.6 * read) / 100 }}
-          />
-        </svg>
         <span className="bl-bot-body" data-asleep={still === 2 || undefined}>
           {avatar}
         </span>
       </button>
-
-      <span className="bl-bot-read" aria-hidden="true">
-        {read}%
-      </span>
     </div>
   );
 }
