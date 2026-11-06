@@ -54,6 +54,45 @@ type Answer = {
 
 const ACTS = sections.map((item) => item.id);
 
+/*
+ * What it is doing when nobody has asked it anything.
+ *
+ * The avatar came with twenty-three animations and this page was using
+ * three of them, which made it a logo that blinked. It is a face: the
+ * cheapest way to make a face worth looking at is to let it have an
+ * opinion about what is going on, so it takes its mood from the act in
+ * front of it and from what the reader is doing to the page.
+ */
+const MOOD: Record<string, GrokAnimation> = {
+  log: "searching",
+  work: "curious",
+  education: "thinking",
+  stack: "working",
+  wins: "happy",
+  studio: "proud",
+  contact: "excited",
+};
+
+/*
+ * And what happens if you keep prodding it.
+ *
+ * In order, so that pressing it over and over tells a small story
+ * rather than shuffling a bag: surprise, amusement, suspicion, then
+ * the slow loss of patience, and then it gives up and enjoys itself.
+ * It is the one part of this page that is a toy and it says so by
+ * behaving like one.
+ */
+const POKES: { animation: GrokAnimation; line: string }[] = [
+  { animation: "surprised", line: "Oh. Hello." },
+  { animation: "laughing", line: "Again? Go on then." },
+  { animation: "suspicious", line: "You are not reading any of this, are you." },
+  { animation: "playful", line: "Two of us are enjoying this." },
+  { animation: "bored", line: "There are seven acts down there, you know." },
+  { animation: "angry", line: "Right. That is quite enough of that." },
+  { animation: "shy", line: "Sorry. That was uncalled for." },
+  { animation: "celebrate", line: "Fine. You win. Ask me something." },
+];
+
 /** The room he is in now, if he is in one. */
 const live = logEntries.find((entry) => entry.status === "current");
 
@@ -180,6 +219,14 @@ export function GrokCompanion({ section }: { section: string }) {
   const [pick, setPick] = useState(0);
   /** True once the log has run out above the last page. */
   const [ending, setEnding] = useState(false);
+  /** 0 awake, 1 getting heavy, 2 asleep. Cleared by any interaction. */
+  const [still, setStill] = useState(0);
+  /** True for a moment after the page is thrown past it. */
+  const [rushing, setRushing] = useState(false);
+  /** How many times it has been prodded, and whether it is reacting. */
+  const [pokes, setPokes] = useState(0);
+  const [poking, setPoking] = useState(false);
+  const reacting = useRef<number | undefined>(undefined);
   const idle = useRef<number | undefined>(undefined);
   /** How many times it has spoken up uninvited. Two is the ration. */
   const spoke = useRef(0);
@@ -205,9 +252,21 @@ export function GrokCompanion({ section }: { section: string }) {
    * were reading.
    */
   useEffect(() => {
+    const heavy: number[] = [];
+
     const wake = () => {
       setNudging(false);
+      setStill(0);
       window.clearTimeout(idle.current);
+      heavy.forEach(window.clearTimeout);
+      heavy.length = 0;
+
+      /* it gets heavy, then it goes under, and any touch brings it back.
+         A face that is always wide awake in the corner of a long page is
+         a face that is staring */
+      heavy.push(window.setTimeout(() => setStill(1), 22000));
+      heavy.push(window.setTimeout(() => setStill(2), 40000));
+
       if (open || spoke.current >= 2) return;
       idle.current = window.setTimeout(() => {
         spoke.current += 1;
@@ -220,9 +279,38 @@ export function GrokCompanion({ section }: { section: string }) {
     events.forEach((e) => window.addEventListener(e, wake, { passive: true }));
     return () => {
       window.clearTimeout(idle.current);
+      heavy.forEach(window.clearTimeout);
       events.forEach((e) => window.removeEventListener(e, wake));
     };
   }, [open]);
+
+  /* and it notices being thrown down the page, which is the one thing a
+     reader does that a face in the corner could plausibly react to */
+  useEffect(() => {
+    let was = window.scrollY;
+    let when = performance.now();
+    let calm = 0;
+
+    const onScroll = () => {
+      const now = performance.now();
+      const gap = now - when;
+      if (gap < 40) return;
+      const speed = Math.abs(window.scrollY - was) / gap;
+      was = window.scrollY;
+      when = now;
+
+      if (speed < 2.4) return;
+      setRushing(true);
+      window.clearTimeout(calm);
+      calm = window.setTimeout(() => setRushing(false), 900);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(calm);
+    };
+  }, []);
 
   /*
    * And it stands down over the last page, where every line is already
@@ -293,12 +381,48 @@ export function GrokCompanion({ section }: { section: string }) {
   }, [unseen, seen.length]);
 
   const picked = asked && asked.at === section ? asked.of : null;
-  const saying = picked === null ? resting : (asks[picked] ?? resting);
+  const answered = picked === null ? resting : (asks[picked] ?? resting);
+  const prodded = POKES[pokes % POKES.length];
+  const saying = poking ? { ...prodded, go: undefined, ask: "" } : answered;
+
+  /*
+   * What its face is doing, in order of who has the better claim on it.
+   *
+   * Being prodded beats everything, because that is the one thing the
+   * reader did on purpose to the face itself. Then whatever it was
+   * asked. Then sleep, then being thrown down the page, then the act in
+   * front of it. Everything below the thing that is happening now is
+   * still true; it just is not the most interesting thing about it.
+   */
+  const mood: GrokAnimation = poking
+    ? prodded.animation
+    : picked !== null
+      ? answered.animation
+      : still === 2
+        ? "sleeping"
+        : still === 1
+          ? "drowsy"
+          : rushing
+            ? "surprised"
+            : unseen.length === 0
+              ? "celebrate"
+              : (MOOD[section] ?? answered.animation);
 
   const avatar = useMemo(
-    () => <GrokAvatar animation={saying.animation} size="100%" ariaLabel="" />,
-    [saying.animation],
+    () => <GrokAvatar animation={mood} size="100%" ariaLabel="" />,
+    [mood],
   );
+
+  /* a prod: the next reaction, held long enough to be read, and then it
+     goes back to whatever it was doing before */
+  const prod = useCallback(() => {
+    setPokes((n) => n + 1);
+    setPoking(true);
+    window.clearTimeout(reacting.current);
+    reacting.current = window.setTimeout(() => setPoking(false), 2600);
+  }, []);
+
+  useEffect(() => () => window.clearTimeout(reacting.current), []);
 
   const quiet = useCallback(() => {
     setNudging(false);
@@ -315,6 +439,23 @@ export function GrokCompanion({ section }: { section: string }) {
     <div className="bl-bot" data-showing={showing} data-open={open || undefined}>
       {showing && (
         <div className="bl-bot-card" role="status">
+          {/*
+            The face, at a size worth looking at, and it answers being
+            prodded. It is the one thing on this page that is a toy, and
+            the only way a toy earns its corner is by being one.
+          */}
+          {open && (
+            <button
+              className="bl-bot-face"
+              type="button"
+              onClick={prod}
+              aria-label="Prod the guide"
+              data-poked={poking || undefined}
+            >
+              <span>{avatar}</span>
+            </button>
+          )}
+
           <p className="bl-bot-say" key={saying.line}>
             {saying.line}
           </p>
@@ -398,7 +539,9 @@ export function GrokCompanion({ section }: { section: string }) {
             style={{ strokeDashoffset: 125.6 - (125.6 * read) / 100 }}
           />
         </svg>
-        <span className="bl-bot-body">{avatar}</span>
+        <span className="bl-bot-body" data-asleep={still === 2 || undefined}>
+          {avatar}
+        </span>
       </button>
 
       <span className="bl-bot-read" aria-hidden="true">
