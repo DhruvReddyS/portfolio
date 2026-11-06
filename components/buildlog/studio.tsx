@@ -179,9 +179,18 @@ export function StudioSection() {
             <p className="bl-bfu-lab">How it started</p>
             <Ruler className="bl-bfu-story">{studio.story}</Ruler>
 
+            {/*
+              Counted off the roster above it rather than typed in. It
+              said 5+ for a while, which was both vaguer and smaller
+              than the truth: the two lines of work under `studio.work`
+              add up to seven, four of them handed over.
+            */}
             <p className="bl-bfu-count">
-              <strong>5+</strong>
-              <span>projects shipped</span>
+              <strong>{studio.shipped}</strong>
+              <span>
+                builds shipped
+                <i aria-hidden="true" /> {studio.delivered} delivered
+              </span>
             </p>
 
             <div className="bl-bfu-ways">

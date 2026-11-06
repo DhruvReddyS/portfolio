@@ -111,6 +111,87 @@ const MILE: { at: number; animation: GrokAnimation; line: string }[] = [
   { at: 0.98, animation: "celebrate", line: "That is the lot. You read a portfolio to the end. Who does that." },
 ];
 
+/*
+ * And what it has to say about the page rather than about itself.
+ *
+ * It had noticed everything a reader did except the only thing they
+ * were actually doing, which is pointing at the work. Every key here
+ * is written on the thing itself in the markup, as data-guide, and the
+ * line stays over here with the rest of its voice: the cards are not
+ * in the business of being funny, and the guide is not in the business
+ * of knowing where anything is.
+ *
+ * Each one is a fact off the file it belongs to, said shorter than the
+ * file says it. Nothing here is a second telling of the caption the
+ * reader is already looking at.
+ */
+const ASIDE: Record<string, { animation: GrokAnimation; line: string }> = {
+  "log:simplehire": {
+    animation: "working",
+    line: "That one has no end date. He is on it now.",
+  },
+  "log:axon": {
+    animation: "curious",
+    line: "First prototype to a live site, and the client was in the States.",
+  },
+  "log:paper": {
+    animation: "proud",
+    line: "Four developers under him, and the CMS they still run on.",
+  },
+  "log:sai": {
+    animation: "happy",
+    line: "Four systems in two months. One of them talks to the customers.",
+  },
+  "log:otbi": {
+    animation: "thinking",
+    line: "Ten thousand field readings, and the three people reading them.",
+  },
+  "work:corpusil": {
+    animation: "thinking",
+    line: "49,684 passages indexed. It will not answer without one of them.",
+  },
+  "work:codesync": {
+    animation: "celebrate",
+    line: "This is the one that won twice. Open it.",
+  },
+  "work:trinetra": {
+    animation: "surprised",
+    line: "No servers at all. The QR code is the handshake.",
+  },
+  "work:ascend": {
+    animation: "happy",
+    line: "Live, and everything on it loads inside two seconds.",
+  },
+  "work:hms": {
+    animation: "curious",
+    line: "Three roles, one hospital, nobody standing on anybody.",
+  },
+  "work:quizmaster": {
+    animation: "working",
+    line: "It marks itself, then it tells you what the mark meant.",
+  },
+  "work:reconai": {
+    animation: "suspicious",
+    line: "Fraud drawn as a graph, with a score you can argue with.",
+  },
+  "work:snapfix": {
+    animation: "shy",
+    line: "That one was never submitted. It is up here anyway.",
+  },
+  resume: {
+    animation: "proud",
+    line: "That is the one page. This is the long version.",
+  },
+  "way:email": {
+    animation: "excited",
+    line: "He reads that one himself. There is nobody else to read it.",
+  },
+  "way:linkedin": {
+    animation: "happy",
+    line: "Same person. Fewer jokes.",
+  },
+};
+
 /** The one-offs, for the things a reader does that nothing else covers. */
 const MOMENT: Record<string, { animation: GrokAnimation; line: string }> = {
   skimmed: {
@@ -121,6 +202,10 @@ const MOMENT: Record<string, { animation: GrokAnimation; line: string }> = {
   linger: { animation: "shy", line: "Yes? Is there something on my face?" },
   dozing: { animation: "drowsy", line: "Right. I am having a sit down." },
   woken: { animation: "waking", line: "I am up. I am up." },
+  copied: {
+    animation: "celebrate",
+    line: "You copied the address. That is this whole page's job, done.",
+  },
 };
 
 export function GrokCompanion({ section }: { section: string }) {
@@ -154,6 +239,12 @@ export function GrokCompanion({ section }: { section: string }) {
   /** Deep cuts already heard, so it works through them rather than
       landing on the same one twice running. */
   const heard = useRef(new Set<number>());
+  /** Things on the page it has already had its say about. */
+  const noticed = useRef(new Set<string>());
+  /** The pointer has to rest on something before it is pointing at it. */
+  const pointing = useRef<number | undefined>(undefined);
+  /** When it last remarked on something, so it does not chatter. */
+  const remarked = useRef(0);
 
   /** Say one thing, for a while, then stop saying it. */
   const speak = useCallback((line: string, mood: GrokAnimation | undefined, ms: number) => {
@@ -245,7 +336,7 @@ export function GrokCompanion({ section }: { section: string }) {
      */
     const wait = window.setTimeout(() => {
       told.current.add(section);
-      speak(line, MOOD[section], 6000);
+      speak(line, MOOD[section], 5000);
     }, 1400);
 
     return () => window.clearTimeout(wait);
@@ -331,6 +422,69 @@ export function GrokCompanion({ section }: { section: string }) {
   }, [mark]);
 
   /*
+   * Pointing at something.
+   *
+   * The reader's hand is on the work for most of this page and the
+   * guide had nothing to say about any of it: it knew which act you
+   * were in and whether you had prodded it, which is the page in the
+   * abstract and the guide in particular, and not the thing you are
+   * actually looking at.
+   *
+   * One listener, delegated, because the things worth remarking on are
+   * five rooms, eight builds and three links and they arrive and leave
+   * as the page scrolls. The pointer has to rest for a moment before it
+   * counts as pointing, it says each thing once, and it keeps six
+   * seconds between remarks, because a corner that comments on every
+   * card the pointer crosses is a corner you close.
+   *
+   * Hover only. On a touch screen pointerover fires on the tap that is
+   * about to open the thing, so the line would arrive over a card that
+   * is already gone.
+   */
+  useEffect(() => {
+    if (!window.matchMedia("(any-hover: hover)").matches) return;
+
+    const over = (event: PointerEvent) => {
+      window.clearTimeout(pointing.current);
+
+      const found = (event.target as Element | null)?.closest?.("[data-guide]");
+      const key = found?.getAttribute("data-guide");
+      if (!key) return;
+
+      const say = ASIDE[key];
+      if (!say || noticed.current.has(key)) return;
+
+      pointing.current = window.setTimeout(() => {
+        const now = Date.now();
+        if (now - remarked.current < 6000) return;
+        remarked.current = now;
+        noticed.current.add(key);
+        speak(say.line, say.animation, 3800);
+      }, 420);
+    };
+
+    document.addEventListener("pointerover", over, { passive: true });
+    return () => {
+      document.removeEventListener("pointerover", over);
+      window.clearTimeout(pointing.current);
+    };
+  }, [speak]);
+
+  /*
+   * And the one action on this page that is worth anything to him,
+   * which is somebody taking the address away with them.
+   */
+  useEffect(() => {
+    const took = () => {
+      const text = window.getSelection?.()?.toString() ?? "";
+      if (!text.includes("@")) return;
+      moment("copied", 3800);
+    };
+    document.addEventListener("copy", took);
+    return () => document.removeEventListener("copy", took);
+  }, [moment]);
+
+  /*
    * Coming back to the tab, which is the one thing a reader does that
    * happens entirely outside the page.
    */
@@ -354,10 +508,12 @@ export function GrokCompanion({ section }: { section: string }) {
     window.clearTimeout(hush.current);
     window.clearTimeout(reacting.current);
     window.clearTimeout(lingering.current);
+    window.clearTimeout(pointing.current);
     return () => {
       window.clearTimeout(hush.current);
       window.clearTimeout(reacting.current);
       window.clearTimeout(lingering.current);
+      window.clearTimeout(pointing.current);
     };
   }, []);
 

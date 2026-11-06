@@ -208,7 +208,7 @@ test("build emits the client module and the referenced assets", async () => {
   }
 
   // the social card sits at the public root rather than under assets/
-  await access(new URL("og.png", clientRoot));
+  await access(new URL("og.jpg", clientRoot));
 });
 
 test("the avatar is kept out of the server bundle", async () => {

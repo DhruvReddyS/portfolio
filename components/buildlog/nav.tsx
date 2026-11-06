@@ -174,6 +174,8 @@ export function BuildLogNav({ active }: { active: string }) {
           <div className="bl-nav-end">
             <a
               className="bl-resume"
+              /* the guide in the corner has a line about this */
+              data-guide="resume"
               href={profile.resume}
               target="_blank"
               rel="noreferrer"

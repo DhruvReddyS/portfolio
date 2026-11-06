@@ -683,6 +683,8 @@ export function Route({ onOpen }: { onOpen: (entry: LogEntry) => void }) {
             <button
               className="bl-route-head"
               type="button"
+              /* the guide in the corner has a line about this room */
+              data-guide={`log:${entry.id}`}
               onClick={() => onOpen(entry)}
             >
               <span

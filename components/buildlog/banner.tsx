@@ -30,14 +30,12 @@ function lean(seed: string) {
 export function ProjectBanner({
   id,
   name,
-  kind,
   stack,
   logo,
   monogram,
 }: {
   id: string;
   name: string;
-  kind: string;
   stack: string[];
   logo?: BannerLogo;
   monogram: string;
@@ -58,7 +56,12 @@ export function ProjectBanner({
     >
       <span className="bl-banner-grid" aria-hidden="true" />
 
-      <p className="bl-banner-kind">{kind}</p>
+      {/*
+        The kind used to be printed here as well as on the card's own
+        pill, which sits directly over this line: two labels a hair
+        apart saying the same four words. The pill stays, because it is
+        the one that is set to be read; this one went.
+      */}
 
       <div className="bl-banner-mark">
         {logo ? (

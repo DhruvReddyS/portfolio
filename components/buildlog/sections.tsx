@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   awards,
+  logEntries,
   logStories,
   profile,
   type Award,
@@ -245,27 +246,62 @@ export function Hero({ time }: { time: string }) {
        * itself: that element's transform belongs to the CSS that brings it
        * in, and two owners of one transform means whichever wrote last wins.
        */
+      /*
+       * Written as fromTo, every start value spelled out.
+       *
+       * These were `to` tweens, which means GSAP reads the start value
+       * off the page the first time the tween renders. The hero's own
+       * opening is still running at that moment, and the page can be
+       * refreshed mid-opening by anything that resizes it: a phone
+       * turned on its side, a desktop window dragged wider, a mobile
+       * browser's address bar sliding away. When that happened the
+       * portrait's start value was recorded as its opening's first
+       * frame, which is opacity 0, and the man never came back.
+       *
+       * The values below are what the CSS says they are, so there is
+       * nothing left to read off the page and nothing to get wrong.
+       */
+      const held = { immediateRender: false, ease: "none" } as const;
+
       exit
-        .to(".bl-hero-wordmark", { yPercent: -44, opacity: 0.06, ease: "none" }, 0)
-        .to(".bl-field", { yPercent: -26, opacity: 0, ease: "none" }, 0)
-        .to(".bl-hero-figure", { yPercent: -13, scale: 1.06, opacity: 0.22, ease: "none" }, 0)
-        .to(
+        .fromTo(
+          ".bl-hero-wordmark",
+          { yPercent: 0, opacity: 1 },
+          { yPercent: -44, opacity: 0.06, ...held },
+          0,
+        )
+        .fromTo(
+          ".bl-field",
+          { yPercent: 0, opacity: 1 },
+          { yPercent: -26, opacity: 0, ...held },
+          0,
+        )
+        .fromTo(
+          ".bl-hero-figure",
+          { yPercent: 0, scale: 1, opacity: 1 },
+          { yPercent: -13, scale: 1.06, opacity: 0.22, ...held },
+          0,
+        )
+        .fromTo(
           ".bl-hero-left .bl-reveal > *",
+          { y: 0, opacity: 1 },
           // pixels, not percent: these five are a caption, a headline, a
           // paragraph and two rows of links, and a share of each one's own
           // height puts the tall middle of the stack out in front of the
           // things below it instead of behind them
-          { y: (i: number) => -(12 + i * 26), opacity: 0, ease: "none" },
+          { y: (i: number) => -(12 + i * 26), opacity: 0, ...held },
           0,
         )
-        .to(
+        .fromTo(
           ".bl-tally-row dt",
-          { yPercent: (i: number) => -14 - i * 12, opacity: 0, ease: "none" },
+          { yPercent: 0, opacity: 1 },
+          { yPercent: (i: number) => -14 - i * 12, opacity: 0, ...held },
           0,
         )
-        .to(
+        .fromTo(
           ".bl-tally-row dd",
-          { yPercent: (i: number) => -5 - i * 8, opacity: 0, ease: "none" },
+          { yPercent: 0, opacity: 1 },
+          { yPercent: (i: number) => -5 - i * 8, opacity: 0, ...held },
           0,
         );
     }, node);
@@ -591,6 +627,7 @@ export function LogSection() {
         label="01 / Experience"
         title="Where it happened"
         lead="Four companies and a research lab, from June 2025 to now. The shortest ran two months; in one of them he was handed four developers and a deadline."
+        note={`${logEntries.length} rooms`}
       />
 
       <Route onOpen={setOpen} />
@@ -826,7 +863,7 @@ export function ContactSection() {
             because half of the people who read this will want to paste it
             somewhere and not open a mail client.
           */}
-          <a className="bl-close-way" href={`mailto:${profile.email}`}>
+          <a className="bl-close-way" data-guide="way:email" href={`mailto:${profile.email}`}>
             <span className="bl-close-mark" aria-hidden="true">
               <MarkMail size={16} />
             </span>
@@ -847,6 +884,7 @@ export function ContactSection() {
 
           <a
             className="bl-close-way"
+            data-guide="way:linkedin"
             href={profile.linkedin}
             target="_blank"
             rel="noreferrer"
@@ -863,6 +901,27 @@ export function ContactSection() {
             </span>
           </a>
         </div>
+      </Reveal>
+
+      {/*
+        One line, and the only furniture this act gets.
+
+        Where, what, and how long an answer takes are the three things
+        anyone writing to a stranger wants settled before they write,
+        and they were stated once, in a ticker, under the fold of the
+        colophon. A reader who has got this far should not have to
+        scroll past the end of the page to find out whether he is in
+        their city. One line of small caps under the two addresses is
+        not a form and not a brief; it is the three facts.
+      */}
+      <Reveal delay={340}>
+        <p className="bl-close-facts">
+          <span>Hyderabad, or remote</span>
+          <i aria-hidden="true" />
+          <span>Full-stack and applied AI</span>
+          <i aria-hidden="true" />
+          <span>Replies within a day</span>
+        </p>
       </Reveal>
     </section>
   );

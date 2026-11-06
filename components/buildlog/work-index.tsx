@@ -44,7 +44,8 @@ function initials(name: string) {
 
 /** The figure a card is filed under, or what kind of build it was. */
 function filedUnder(file: CaseFile) {
-  const figure = file.metrics.find((metric) => /\d/.test(metric.value));
+  const figure =
+    file.metrics.find((metric) => /\d/.test(metric.value)) ?? file.metrics[0];
   return figure ? `${figure.value} ${figure.label}` : file.kind;
 }
 
@@ -103,7 +104,7 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
       <SectionHeader
         label="02 / Selected work"
         title="What got built"
-        lead="Six that went live and two that never left the bench. Each one keeps its own file: what it was for, what broke, and what it cost to put right."
+        lead="Eight builds, six with a file behind them. Three are live and one tap away; the files say what each was for, what broke, and what it cost to put right."
         note={`${rows.length} on the wall`}
       />
 
@@ -124,6 +125,8 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
               <button
                 type="button"
                 className="bl-wk-media"
+                /* the guide in the corner has a line about this one */
+                data-guide={`work:${row.id}`}
                 data-plate={row.image ? "shot" : "set"}
                 onClick={open}
                 disabled={!open}
@@ -142,7 +145,6 @@ export function WorkIndex({ onOpen }: { onOpen: (file: CaseFile) => void }) {
                   <ProjectBanner
                     id={row.id}
                     name={row.name}
-                    kind={row.kind}
                     stack={row.stack}
                     logo={LOGOS[row.id]}
                     monogram={initials(row.name)}

@@ -58,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
       template: "%s · S. Dhruv Reddy",
     },
     description:
-      "The build log of S. Dhruv Reddy, a full-stack engineer and applied AI builder. Five internships, six platforms, two competitions won.",
+      "The build log of S. Dhruv Reddy, a full-stack engineer and applied AI builder. Five internships, eight builds, two competitions won.",
     icons: {
       icon: "/favicon.svg",
       shortcut: "/favicon.svg",
@@ -67,13 +67,22 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       title: "S. Dhruv Reddy, The Build Log",
       description: "Full-stack engineering and applied AI, logged entry by entry.",
-      images: [{ url: new URL("/og.png", metadataBase), width: 1200, height: 630 }],
+      /*
+       * The card is the cover.
+       *
+       * It used to be a separate picture entirely: lime green, a
+       * keyboard, and a line that appears nowhere on this site. On a
+       * feed the card is the whole first impression, and one that is
+       * not the page it opens spends its one chance introducing
+       * somebody else.
+       */
+      images: [{ url: new URL("/og.jpg", metadataBase), width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: "S. Dhruv Reddy, The Build Log",
       description: "Full-stack engineering and applied AI, logged entry by entry.",
-      images: [new URL("/og.png", metadataBase)],
+      images: [new URL("/og.jpg", metadataBase)],
     },
   };
 }

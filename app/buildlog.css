@@ -10494,7 +10494,9 @@ body,
 .bl-banner {
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  /* the mark, the name, the stack. There was a fourth row above these
+     printing the kind, which the card's own pill prints over the top of. */
+  grid-template-rows: 1fr auto auto;
   gap: 0.5rem;
   width: 100%;
   height: 100%;
@@ -11946,11 +11948,23 @@ body,
 }
 
 .bl-bfu-count span {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-family: var(--bl-mono);
   font-size: 0.56rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--bl-ink-dim);
+}
+
+/* the dot between the two figures, so "shipped" and "delivered" read as
+   two counts rather than one long label */
+.bl-bfu-count span i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bl-accent) 70%, transparent);
 }
 
 .bl-bfu-ways {
@@ -12024,6 +12038,17 @@ body,
   /* the row has to be allowed to be wider than the rack, or the rack has
      nothing to scroll and the last two books are simply cut off */
   .bl-books { width: max-content; min-width: auto; }
+
+  /*
+   * And the right-hand edge is faded rather than guillotined, because a
+   * shelf cut off square at the screen edge reads as a bug and a shelf
+   * that fades off it reads as a shelf that carries on. It is the only
+   * thing telling a thumb there is anything over there.
+   */
+  .bl-shelf-rack {
+    -webkit-mask-image: linear-gradient(90deg, #000 0 88%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0 88%, transparent 100%);
+  }
 
   .bl-shelf-say { min-height: 5.4rem; }
 }
@@ -12592,6 +12617,40 @@ body,
   .bl-close-go { margin-left: auto; }
 }
 
+/* ---- and the three facts, on one line ---------------------------------
+   Where, what and how long a reply takes. They were stated once, in the
+   colophon's ticker, under the end of the page; a reader who has decided
+   should not have to scroll past the decision to find out whether he is
+   in their city.                                                       */
+
+.bl-close-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.75rem;
+  margin: clamp(1.1rem, 2.6vh, 1.6rem) auto 0;
+  font-family: var(--bl-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+  text-align: center;
+}
+
+.bl-close-facts i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bl-accent) 70%, transparent);
+}
+
+@media (max-width: 520px) {
+  /* three short lines beat one line broken in the wrong places */
+  .bl-close-facts { flex-direction: column; gap: 0.45rem; }
+  .bl-close-facts i { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bl-close-way,
   .bl-close-way:hover,
@@ -13105,6 +13164,26 @@ body,
   .bl-plan-run { height: clamp(3.6rem, 16vw, 4.4rem); }
 }
 
+/*
+ * The shortest stage on the narrowest phone.
+ *
+ * Foundation is two weeks of a seven-week lane, so its box is about
+ * seventy pixels across and its own name is one word that will not
+ * break. At the size above, the word measured a few pixels wider than
+ * the box it was in and came out as "Foundat…", which is the one thing
+ * a label on a timetable may not do. The padding comes in, the type
+ * steps down, and a word with nowhere left to go breaks rather than
+ * being cut off.
+ */
+@media (max-width: 480px) {
+  .bl-plan-stage { padding-inline: 0.38rem; }
+
+  .bl-plan-stage b {
+    font-size: 0.62rem;
+    overflow-wrap: anywhere;
+  }
+}
+
 .bl-study-notes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -13582,21 +13661,42 @@ body,
  * shown for, and then it is not there any more.
  */
 .bl-bot-puff {
-  max-width: min(17rem, calc(100vw - 2 * var(--bl-gutter)));
+  max-width: min(18rem, calc(100vw - 2 * var(--bl-gutter)));
   margin: 0;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--bl-rule);
+  padding: 0.62rem 0.82rem;
+  border: 1px solid color-mix(in srgb, var(--bl-accent) 30%, var(--bl-rule));
   border-radius: 12px 12px 4px 12px;
-  background: color-mix(in srgb, var(--bl-surface-2) 94%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 0.9rem 2.2rem rgba(0, 0, 0, 0.5);
+  /*
+   * Opaque, not frosted.
+   *
+   * It was a blurred pane at 94%, which is a window onto whatever it
+   * had landed on. It lands on body text about half the time, and a
+   * paragraph read through a guide's remark is a paragraph with a
+   * smear across it. A solid sheet with a shadow under it is an object
+   * sitting in front of the page, which is what it is.
+   */
+  background: var(--bl-surface-2);
+  box-shadow:
+    0 1rem 2.4rem rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(0, 0, 0, 0.35);
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--bl-ink-soft);
   text-align: left;
   animation: bl-bot-puff 0.4s cubic-bezier(0.2, 0.9, 0.25, 1);
   pointer-events: none;
+}
+
+/* and the face warms up while it has something to say, so the line and
+   the thing saying it read as one object rather than two */
+.bl-bot:not([data-quiet]) .bl-bot-ring-track {
+  stroke: color-mix(in srgb, var(--bl-accent) 38%, transparent);
+}
+
+.bl-bot:not([data-quiet]) .bl-bot-dock {
+  box-shadow:
+    0 0.75rem 2rem rgba(0, 0, 0, 0.5),
+    0 0 1.6rem -0.5rem color-mix(in srgb, var(--bl-accent) 70%, transparent);
 }
 
 @keyframes bl-bot-puff {

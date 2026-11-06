@@ -533,8 +533,8 @@ export const caseFiles: CaseFile[] = [
       },
     ],
     metrics: [
-      { value: "Auto", label: "quiz evaluation" },
-      { value: "Full", label: "results analytics" },
+      { value: "4", label: "levels, subject to question" },
+      { value: "Auto", label: "grading and analytics" },
     ],
     visual: "quiz",
   },
@@ -591,7 +591,7 @@ export const awards: Award[] = [
     place: "President",
     year: "25+ members",
     headline: "Twenty-five members, and a room that kept filling up.",
-    mark: "their first lines",
+    mark: "kept filling up",
     body: "Led the technical club: coordinating student teams, organising technical events and coding competitions, running development workshops and mentoring members, including spearheading the DEVloop web-development bootcamp.",
     facts: [
       "Led 25+ club members",
