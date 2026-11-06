@@ -60,6 +60,50 @@ export function swingStep(
   return [clamp(a + nw * dt, -0.6, 0.6), nw];
 }
 
+/**
+ * The height the prints have, once the caption under them is taken off.
+ * `gap` is the air left between the lowest print and the rule above the
+ * caption, so the two never touch even at the bottom of the sag.
+ */
+export function roomFor(height: number, foot: number, gap = 14): number {
+  return Math.max(160, height - foot - gap);
+}
+
+/** Where the string hangs, inside that room. */
+export function stringTop(room: number): number {
+  return Math.max(18, room * 0.1);
+}
+
+/** How far it sags. A short room gets a shallower curve, not a deeper one. */
+export function sagIn(room: number, sag: number): number {
+  return Math.min(sag, room * 0.09);
+}
+
+/**
+ * The widest a print can be and still hang clear.
+ *
+ * A print is its own width of photograph plus the sheet around it: 22px
+ * of padding either side of the window, 11 above it and the 46 of the
+ * hand-written band below. Add the string, the sag and the 6px the peg
+ * lifts it by, and this is what is left.
+ */
+export function widest(room: number, sag: number): number {
+  return room - stringTop(room) - 2 * sagIn(room, sag) - 40;
+}
+
+/**
+ * How much of the line one print is allowed.
+ *
+ * A bit over two fit across a desk, which is what makes the row read as
+ * a row. A phone cannot hold two at a size worth looking at, so it gets
+ * one and the edges of its neighbours, which is also what fills the
+ * room under the string: at the desk share a phone's prints came out
+ * small enough to leave half the line hanging empty below them.
+ */
+export function share(width: number): number {
+  return width < 520 ? 0.56 : 0.44;
+}
+
 /** Index of the print nearest the centre for a given line offset. */
 export function nearestAt(off: number, spacing: number, n: number): number {
   return clamp(Math.round(off / spacing), 0, Math.max(0, n - 1));
@@ -127,9 +171,11 @@ export function PolaroidLine({
   const n = prints.length;
   const [active, setActive] = React.useState(0);
   const [dragging, setDragging] = React.useState(false);
-  const [size, setSize] = React.useState({ w: 1200, h: 520, cw: cardWidth });
+  /** `foot` is the height of the bar under the line, measured. */
+  const [size, setSize] = React.useState({ w: 1200, h: 520, cw: cardWidth, foot: 0 });
 
   const root = React.useRef<HTMLDivElement>(null);
+  const bar = React.useRef<HTMLDivElement>(null);
   const line = React.useRef<SVGPathElement>(null);
   const cards = React.useRef<(HTMLDivElement | null)[]>([]);
   const sim = React.useRef({ off: 0, vel: 0, target: 0, a: [] as number[], w: [] as number[] });
@@ -157,22 +203,76 @@ export function PolaroidLine({
     [n, spacing],
   );
 
+  /*
+   * How big a print can be is a question about the room above the bar,
+   * not about the box.
+   *
+   * It used to be a share of the whole height, and the bar under the
+   * line is absolutely positioned at the foot of that same box: the
+   * prints were sized as though the caption were not there, so the one
+   * hanging lowest — the one in the middle, on the sag, at full size —
+   * came down across the title of the very win it is a picture of. At
+   * a laptop width it covered the middle of a long title; at a tablet
+   * width, where the line is half as wide and the blurb takes three
+   * lines instead of two, it covered most of it.
+   *
+   * So the bar is measured and taken off first, and everything else is
+   * worked out inside what is left: the string's height, how far it
+   * sags, and how big a print can be and still hang clear of the
+   * caption at the bottom of the sag.
+   */
   React.useEffect(() => {
     const node = root.current;
-    if (!node || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(() => {
+    if (!node) return;
+
+    const measure = () => {
       const box = node.getBoundingClientRect();
+      if (!box.width || !box.height) return;
+      const foot = bar.current?.offsetHeight ?? 0;
+      const room = roomFor(box.height, foot);
       const cw = Math.round(
-        Math.max(150, Math.min(cardWidth, box.width * 0.44, box.height * 0.52)),
+        Math.max(
+          120,
+          Math.min(cardWidth, box.width * share(box.width), widest(room, opts.current.sag)),
+        ),
       );
       setSize((prev) =>
-        prev.cw === cw && Math.abs(prev.w - box.width) < 2 && Math.abs(prev.h - box.height) < 2
+        prev.cw === cw &&
+        prev.foot === foot &&
+        Math.abs(prev.w - box.width) < 2 &&
+        Math.abs(prev.h - box.height) < 2
           ? prev
-          : { w: box.width, h: box.height, cw },
+          : { w: box.width, h: box.height, cw, foot },
       );
-    });
-    observer.observe(node);
-    return () => observer.disconnect();
+    };
+
+    /*
+     * Measured more than once, on purpose.
+     *
+     * The caption's height is the whole of this sum, and the caption is
+     * set in a face that arrives after the markup does: measured once,
+     * on the first observation, the bar is whatever height it is before
+     * the webfont lands and the prints are cut to a room that is not
+     * the room they end up in. It only corrected itself when the line
+     * moved on to the next win and the bar changed height under it,
+     * which is a second or two of the wrong answer and, on a set of
+     * wins whose captions all wrap the same way, for ever.
+     */
+    measure();
+    const frame = requestAnimationFrame(measure);
+    document.fonts?.ready.then(measure).catch(() => {});
+
+    const observer =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(node);
+    if (bar.current) observer?.observe(bar.current);
+    window.addEventListener("resize", measure);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
   }, [cardWidth]);
 
   // keep the line on the active print when the spacing changes under it
@@ -200,8 +300,8 @@ export function PolaroidLine({
       if (!onScreen) return;
       const dt = Math.min(0.033, (now - prev) / 1000);
       prev = now;
-      const { w, h, cw } = size;
-      const y0 = Math.max(36, h * 0.17);
+      const { w, h, cw, foot } = size;
+      const room = roomFor(h, foot);
       const held = drag.current;
 
       let lineVel: number;
@@ -214,6 +314,8 @@ export function PolaroidLine({
       }
 
       const o = opts.current;
+      const y0 = stringTop(room);
+      const sg = sagIn(room, o.sag);
       const gain = reduced ? 0 : o.swing;
       const near = nearestAt(S.off, spacing, n);
 
@@ -232,7 +334,7 @@ export function PolaroidLine({
         if (gain) a += Math.sin(now / 1300 + i * 1.7) * 0.0009 * gain;
         S.a[i] = a;
         S.w[i] = av;
-        const y = stringY(x, w, y0, o.sag) - 6;
+        const y = stringY(x, w, y0, sg) - 6;
         el.style.transform =
           `translate(${(x - cw / 2).toFixed(1)}px,${y.toFixed(1)}px) rotate(${a.toFixed(4)}rad)`;
         el.style.zIndex = String(i === near ? n + 1 : n - Math.abs(i - near));
@@ -240,7 +342,7 @@ export function PolaroidLine({
 
       line.current?.setAttribute(
         "d",
-        `M0 ${y0} Q${w / 2} ${y0 + 2 * o.sag} ${w} ${y0}`,
+        `M0 ${y0} Q${w / 2} ${y0 + 2 * sg} ${w} ${y0}`,
       );
 
       if (near !== current.current) {
@@ -386,7 +488,7 @@ export function PolaroidLine({
         </div>
       ))}
 
-      <div className="bl-line-bar">
+      <div className="bl-line-bar" ref={bar}>
         <div className="bl-line-cap" key={active}>
           {showing.title && <span className="bl-line-title">{showing.title}</span>}
           {showing.caption && <span className="bl-line-sub">{showing.caption}</span>}

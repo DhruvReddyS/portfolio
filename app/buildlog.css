@@ -8246,6 +8246,35 @@ body,
 @media (max-width: 640px) {
   .bl-line-cap { flex-basis: 100%; }
   .bl-line-count, .bl-line-open { display: none; }
+
+  /*
+   * Shorter on a phone.
+   *
+   * The line is set at 35rem because that is the room four prints and
+   * a caption want across a desk. A phone shows one print and a bit,
+   * and that print can only be as wide as the screen, so at the same
+   * height a quarter of the viewport was string with nothing on it.
+   * The prints are sized to whatever room this leaves, so this is the
+   * only number that has to change.
+   */
+  .bl-line.bl-wall { height: 28rem !important; }
+
+  /*
+   * "President of ASTRA Tech Club" came out as "PRESIDENT OF ASTRA
+   * TECH C…" in a column this narrow, which loses the one word that
+   * says what it was. Two lines, and the blurb gives one back so the
+   * bar does not grow by a line doing it.
+   */
+  .bl-line-title {
+    white-space: normal;
+    text-overflow: clip;
+    line-height: 1.15;
+  }
+
+  .bl-line-blurb {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
