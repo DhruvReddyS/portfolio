@@ -31,6 +31,8 @@ import {
   MarkGithub,
   MarkLinkedin,
   MarkMail,
+  MarkCopy,
+  MarkTick,
   MarkPaper,
   MarkRosette,
 } from "./marks";
@@ -793,6 +795,287 @@ export function WinsSection() {
 
 /* --------------------------------------------------------------- contact */
 
+/**
+ * The second sentence of the close, drawn hollow and then filled in.
+ *
+ * The line is "Everything above already exists. The next one needs two
+ * of us." The first half is finished work and is set as finished work:
+ * solid, in the ink, already there when you arrive. The second half is
+ * the thing that does not exist yet, so it arrives as an outline, the
+ * letterforms drawn and nothing inside them, and the colour runs into
+ * it as you scroll, from the first word to the last.
+ *
+ * That is the one metaphor this act had available that was not another
+ * picture of a handshake. A page that has spent seven acts showing
+ * finished things ends on an unfinished one being filled in, and the
+ * thing filling it in is the reader arriving at it.
+ *
+ * It is one element rather than an outline copy sitting under a solid
+ * copy: the fill is a gradient clipped to the glyphs and the outline is
+ * the text stroke over it, so there is no second copy of the sentence to
+ * wrap differently from the first at some width nobody tested. Behind
+ * @supports, because a browser that cannot clip a background to text
+ * would otherwise be handed a transparent headline; that one gets the
+ * sentence in solid accent and misses only the filling.
+ *
+ * The fill is written in steps of two per cent rather than continuously.
+ * Two per cent of this line is about a dozen pixels and the soft edge of
+ * the wash is four times that, so the step cannot be seen; what it saves
+ * is a repaint of two lines of poster type on most of the frames of the
+ * scroll. The same arithmetic, and the same reason, as the statement act
+ * at the top of the page.
+ */
+function Filling({ children }: { children: string }) {
+  const host = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const node = host.current;
+    if (!node) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const context = gsap.context(() => {
+      const at = { pc: 0 };
+      let shown = -1;
+
+      const paint = () => {
+        const step = Math.round(at.pc / 2) * 2;
+        if (step === shown) return;
+        shown = step;
+        node.style.setProperty("--bl-fill", `${step}%`);
+      };
+
+      paint();
+
+      gsap.fromTo(
+        at,
+        { pc: 0 },
+        {
+          /* past the end, so the last letter is solid before the line
+             leaves rather than exactly as it does */
+          pc: 118,
+          ease: "none",
+          onUpdate: paint,
+          scrollTrigger: {
+            trigger: node,
+            start: "top 90%",
+            end: "bottom 55%",
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        },
+      );
+    }, node);
+
+    return () => context.revert();
+  }, [children]);
+
+  return (
+    <em className="bl-close-next" ref={host as React.Ref<HTMLElement>}>
+      {children}
+    </em>
+  );
+}
+
+/**
+ * The clipboard, the way it was done before there was a clipboard API:
+ * a field nobody can see, selected, and the browser's own copy command
+ * run over it. Kept because the API throws rather than falls back, and
+ * it throws on plain http, on a document that has lost focus, and
+ * inside an embedded view.
+ *
+ * It raises a real `copy` event on the way past, which is what the
+ * guide in the corner has been listening for since it was built.
+ */
+function oldWay(text: string) {
+  try {
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.cssText =
+      "position:fixed;top:0;left:0;width:1px;height:1px;padding:0;border:0;opacity:0;pointer-events:none";
+    document.body.appendChild(field);
+    field.select();
+    field.setSelectionRange(0, text.length);
+    const done = document.execCommand("copy");
+    field.remove();
+    return done;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * One of the two doors out of the page.
+ *
+ * These were two pills the size of a form field, sitting under a
+ * headline four inches tall: the last thing the page asks for, set
+ * smaller than anything it had already said. They are cards now, with
+ * the address at a size you can read across a desk, and each one carries
+ * its own foot: what the card does, and an arrow that grows a tail
+ * towards it.
+ *
+ * Two things are live rather than drawn. The light under the pointer is
+ * a single soft disc that is *moved* by a transform rather than redrawn
+ * as a gradient under the cursor, so it costs the compositor a translate
+ * and the main thread nothing. And the address can be taken: half the
+ * people who get this far want to paste it somewhere rather than open a
+ * mail client, which is why it was written out in full in the first
+ * place, and a button is the honest version of that.
+ *
+ * The copy fires a real `copy` event afterwards. The guide in the corner
+ * has been listening for one since it was built, and it has a line for
+ * it; writing to the clipboard through the API does not raise one, so
+ * this says so explicitly rather than leaving the guide with nothing to
+ * notice at the one moment on the page it was waiting for.
+ */
+function ContactWay({
+  guide,
+  label,
+  hint,
+  href,
+  external,
+  mark,
+  take,
+  children,
+}: {
+  guide: string;
+  label: string;
+  /** Three or four words on what this one is for. */
+  hint: string;
+  href: string;
+  external?: boolean;
+  mark: React.ReactNode;
+  /** The text the copy button puts on the clipboard, where there is one. */
+  take?: string;
+  children: React.ReactNode;
+}) {
+  const card = useRef<HTMLDivElement>(null);
+  const frame = useRef(0);
+  const clear = useRef(0);
+  const [took, setTook] = useState(false);
+
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(frame.current);
+      window.clearTimeout(clear.current);
+    },
+    [],
+  );
+
+  /* the light follows on the next frame, not on the event */
+  const follow = (event: React.PointerEvent<HTMLDivElement>) => {
+    const node = card.current;
+    if (!node) return;
+    const box = node.getBoundingClientRect();
+    const x = event.clientX - box.left;
+    const y = event.clientY - box.top;
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      node.style.setProperty("--bl-way-x", `${Math.round(x)}px`);
+      node.style.setProperty("--bl-way-y", `${Math.round(y)}px`);
+    });
+  };
+
+  const copy = async () => {
+    if (!take) return;
+
+    /*
+     * The modern way first, and the old way after it.
+     *
+     * `navigator.clipboard` is refused more often than its support
+     * tables suggest: without a secure context, without focus on the
+     * document, and inside an embedded view it simply throws, and a
+     * button that quietly does nothing is worse than no button. The
+     * 2010 way, a hidden field selected and copied, still works in
+     * every one of those cases, because it is the browser's own copy
+     * command rather than a permission.
+     */
+    let done = false;
+
+    try {
+      await navigator.clipboard.writeText(take);
+      done = true;
+      /* execCommand raises a real copy event and this does not, so the
+         guide in the corner is told by hand on this path only */
+      document.dispatchEvent(new Event("copy"));
+    } catch {
+      done = oldWay(take);
+    }
+
+    if (!done) {
+      /* neither worked: put the address under a selection so the
+         reader's own keyboard can finish the job, and do not claim to
+         have copied anything */
+      const said = card.current?.querySelector(".bl-close-val");
+      if (said) {
+        const range = document.createRange();
+        range.selectNodeContents(said);
+        const chosen = window.getSelection();
+        chosen?.removeAllRanges();
+        chosen?.addRange(range);
+      }
+      return;
+    }
+
+    setTook(true);
+    window.clearTimeout(clear.current);
+    clear.current = window.setTimeout(() => setTook(false), 2400);
+  };
+
+  return (
+    <div
+      className="bl-close-way"
+      data-guide={guide}
+      ref={card}
+      onPointerMove={follow}
+    >
+      <span className="bl-close-lamp" aria-hidden="true" />
+
+      <span className="bl-close-mark" aria-hidden="true">
+        {mark}
+      </span>
+
+      <div className="bl-close-say">
+        <p className="bl-close-lab">
+          <b>{label}</b>
+          <i aria-hidden="true" />
+          <em>{hint}</em>
+        </p>
+
+        {/* the whole card is the link; the copy button sits over it */}
+        <a
+          className="bl-close-hit"
+          href={href}
+          {...(external ? { target: "_blank", rel: "noreferrer" } : null)}
+        >
+          <span className="bl-close-val">{children}</span>
+        </a>
+      </div>
+
+      <div className="bl-close-foot">
+        {take ? (
+          <button
+            type="button"
+            className="bl-close-take"
+            data-took={took ? "true" : undefined}
+            onClick={copy}
+          >
+            {took ? <MarkTick size={12} /> : <MarkCopy size={12} />}
+            <span>{took ? "Copied" : "Copy address"}</span>
+          </button>
+        ) : (
+          <span className="bl-close-note">Opens in a new tab</span>
+        )}
+
+        <span className="bl-close-go" aria-hidden="true">
+          <i />
+          <MarkArrow size={15} />
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export function ContactSection() {
   return (
     <section className="bl-section bl-contact" id="contact">
@@ -848,11 +1131,15 @@ export function ContactSection() {
         not need illustrating, and the figures walking along the foot of
         the act are already a picture of the same idea with nothing
         drawn on purpose.
+
+        What it does now is the thing it says: the half about work that
+        exists is set solid, and the half about the work that does not is
+        hollow until the reader gets to it. See <Filling /> above.
       */}
       <Reveal delay={120}>
         <h2 className="bl-close-line">
-          Everything above already exists.
-          <em>The next one needs two of us.</em>
+          <span>Everything above already exists.</span>
+          <Filling>The next one needs two of us.</Filling>
         </h2>
       </Reveal>
 
@@ -861,45 +1148,34 @@ export function ContactSection() {
           {/*
             The address is written out rather than hidden behind a word,
             because half of the people who read this will want to paste it
-            somewhere and not open a mail client.
+            somewhere and not open a mail client, and now they can take
+            it without selecting it by hand.
           */}
-          <a className="bl-close-way" data-guide="way:email" href={`mailto:${profile.email}`}>
-            <span className="bl-close-mark" aria-hidden="true">
-              <MarkMail size={16} />
-            </span>
-            <span className="bl-close-text">
-              <b>Email</b>
-              {/* broken at the at-sign rather than wherever the column
-                  runs out, which on a phone was mid-domain */}
-              <span>
-                {profile.email.split("@")[0]}
-                <wbr />
-                {`@${profile.email.split("@")[1]}`}
-              </span>
-            </span>
-            <span className="bl-close-go" aria-hidden="true">
-              <MarkArrow size={14} />
-            </span>
-          </a>
-
-          <a
-            className="bl-close-way"
-            data-guide="way:linkedin"
-            href={profile.linkedin}
-            target="_blank"
-            rel="noreferrer"
+          <ContactWay
+            guide="way:email"
+            label="Email"
+            hint="the direct one"
+            href={`mailto:${profile.email}`}
+            mark={<MarkMail size={17} />}
+            take={profile.email}
           >
-            <span className="bl-close-mark" aria-hidden="true">
-              <MarkLinkedin size={16} />
-            </span>
-            <span className="bl-close-text">
-              <b>LinkedIn</b>
-              <span>{profile.linkedinHandle}</span>
-            </span>
-            <span className="bl-close-go" aria-hidden="true">
-              <MarkArrow size={14} />
-            </span>
-          </a>
+            {/* broken at the at-sign rather than wherever the column
+                runs out, which on a phone was mid-domain */}
+            {profile.email.split("@")[0]}
+            <wbr />
+            {`@${profile.email.split("@")[1]}`}
+          </ContactWay>
+
+          <ContactWay
+            guide="way:linkedin"
+            label="LinkedIn"
+            hint="the public one"
+            href={profile.linkedin}
+            external
+            mark={<MarkLinkedin size={17} />}
+          >
+            {profile.linkedinHandle}
+          </ContactWay>
         </div>
       </Reveal>
 

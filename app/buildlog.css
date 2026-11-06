@@ -12295,10 +12295,18 @@ body,
  */
 .bl-settle-word { display: inline; }
 
+/*
+ * The layer is asked for by the script while the band is crossing and
+ * given back afterwards, rather than being declared here for the whole
+ * life of the page. Seven words of display type held permanently in
+ * their own compositor layers is a standing cost for three seconds of
+ * scroll, and `will-change: filter` in particular made the browser keep
+ * a surface ready for a blur that is only ever four whole pixels wide
+ * and only ever written on four frames.
+ */
 .bl-settle-word > span {
   display: inline-block;
   transform-origin: 50% 65%;
-  will-change: transform, filter, color;
 }
 
 .bl-bfu-story {
@@ -12313,7 +12321,7 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bl-settle-word > span { transform: none; color: var(--bl-ink); }
+  .bl-settle-word > span { transform: none; filter: none; color: var(--bl-ink); }
 }
 
 /* ==========================================================================
@@ -12548,102 +12556,347 @@ body,
   color: var(--bl-accent);
 }
 
-/* ---- and the two addresses -------------------------------------------- */
+/*
+ * ...and the half of it that has not been built yet, drawn hollow and
+ * filled in as the reader arrives at it.
+ *
+ * The fill is a gradient clipped to the glyphs and the outline is the
+ * text stroke standing over it, so the whole effect is one element and
+ * one custom property. The alternative, an outlined copy of the
+ * sentence sitting under a solid copy, is two blocks of type that have
+ * to wrap identically at every width on earth, and the first one that
+ * does not is a headline printed twice, slightly out of register.
+ *
+ * Behind @supports, because the transparent fill is only safe where the
+ * clip is: a browser without it gets the sentence in solid accent and
+ * misses the filling, rather than getting a headline it cannot see.
+ */
+.bl-close-next {
+  display: block;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .bl-close-line .bl-close-next {
+    /* filled, until the script says otherwise: a reader with no
+       JavaScript is never handed an empty headline */
+    --bl-fill: 118%;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--bl-accent) 48%, transparent);
+    background-image: linear-gradient(
+      100deg,
+      var(--bl-accent) 0,
+      var(--bl-accent) var(--bl-fill),
+      transparent calc(var(--bl-fill) + 8%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+
+/* ---- and the two addresses --------------------------------------------
+   They were two pills the size of a form field under a headline four
+   inches tall: the last thing the page asks for, set smaller than
+   anything it had already said. Cards, now, with the address at a size
+   you can read across a desk.                                          */
 
 .bl-close-ways {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: clamp(0.7rem, 2vw, 1.1rem);
-  margin-top: clamp(2rem, 5vh, 3.25rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.7rem, 1.6vw, 1.15rem);
+  width: min(100%, 46rem);
+  margin: clamp(2rem, 5vh, 3.25rem) auto 0;
 }
 
 .bl-close-way {
+  /* where the light rests until a pointer says otherwise: about the
+     middle of a card, since the first pointermove overwrites it within
+     a frame of the hover that fades it up */
+  --bl-way-x: 9rem;
+  --bl-way-y: 4.5rem;
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.9rem;
-  padding: 0.85rem 1.1rem;
-  border: 1px solid var(--bl-rule);
-  border-radius: 14px;
-  background: var(--bl-surface);
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(0.9rem, 2.2vh, 1.5rem);
+  padding: clamp(1.1rem, 2.4vw, 1.7rem);
+  border: 1px solid transparent;
+  border-radius: 18px;
+  overflow: hidden;
   text-align: left;
+  /*
+   * A lit top-left edge going cold round the corner, rather than a box
+   * ruled evenly all the way round. Two layers: the card's own ground
+   * clipped to the padding box, and the edge drawn in the border box
+   * underneath it.
+   */
+  background:
+    linear-gradient(var(--bl-surface), var(--bl-surface)) padding-box,
+    linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--bl-accent) 55%, transparent),
+        var(--bl-rule) 38%,
+        var(--bl-rule-soft)
+      )
+      border-box;
   transition:
-    border-color 0.35s var(--bl-ease),
-    background 0.35s var(--bl-ease),
-    transform 0.35s var(--bl-ease);
+    transform 0.5s var(--bl-ease),
+    background 0.5s var(--bl-ease);
 }
 
-.bl-close-way:hover {
-  border-color: color-mix(in srgb, var(--bl-accent) 65%, transparent);
-  transform: translateY(-3px);
+/*
+ * The light under the pointer.
+ *
+ * One soft disc, drawn once, moved by a transform. The usual way to do
+ * this is a radial-gradient positioned at the cursor, which repaints the
+ * whole card on every pointer event; this costs a translate on a layer
+ * the compositor already has and nothing on the main thread.
+ */
+.bl-close-lamp {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 22rem;
+  height: 22rem;
+  margin: -11rem 0 0 -11rem;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--bl-accent) 24%, transparent),
+    transparent 66%
+  );
+  opacity: 0;
+  transform: translate3d(var(--bl-way-x), var(--bl-way-y), 0);
+  transition: opacity 0.45s var(--bl-ease);
+  pointer-events: none;
+}
+
+/* there is no pointer to follow on a touch screen */
+@media (hover: none) {
+  .bl-close-lamp { display: none; }
+}
+
+@media (hover: hover) {
+  .bl-close-way:hover {
+    transform: translateY(-4px);
+    background:
+      linear-gradient(var(--bl-surface-2), var(--bl-surface-2)) padding-box,
+      linear-gradient(
+          145deg,
+          var(--bl-accent),
+          color-mix(in srgb, var(--bl-accent) 30%, transparent) 46%,
+          var(--bl-rule)
+        )
+        border-box;
+  }
+
+  .bl-close-way:hover .bl-close-lamp { opacity: 1; }
+}
+
+/* the card keeps its focus ring, since the link inside it is stretched
+   over the whole thing and has nothing of its own to draw one round */
+.bl-close-way:focus-within {
+  border-color: transparent;
+  outline: 2px solid color-mix(in srgb, var(--bl-accent) 70%, transparent);
+  outline-offset: 3px;
 }
 
 .bl-close-mark {
   display: grid;
   place-items: center;
-  flex: none;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--bl-accent) 14%, transparent);
+  width: 2.9rem;
+  height: 2.9rem;
+  border: 1px solid var(--bl-rule);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--bl-accent) 9%, transparent);
   color: var(--bl-accent);
-  transition: background 0.35s var(--bl-ease), color 0.35s var(--bl-ease);
+  transition:
+    background 0.45s var(--bl-ease),
+    border-color 0.45s var(--bl-ease),
+    color 0.45s var(--bl-ease),
+    transform 0.45s var(--bl-ease);
 }
 
-.bl-close-way:hover .bl-close-mark {
-  background: var(--bl-accent);
-  color: var(--bl-accent-ink);
+/*
+ * Behind the hover query, all of it. A phone has no hover and reports
+ * one anyway after a tap: without the guard the card you last touched
+ * keeps its mark lit and its arrow out for as long as the page is open,
+ * which reads as a card stuck in a state rather than a card that was
+ * touched.
+ */
+@media (hover: hover) {
+  .bl-close-way:hover .bl-close-mark {
+    border-color: transparent;
+    background: var(--bl-accent);
+    color: var(--bl-accent-ink);
+    transform: rotate(-5deg);
+  }
 }
 
-.bl-close-text {
+.bl-close-say {
   display: grid;
-  gap: 0.12rem;
+  align-content: end;
+  gap: 0.4rem;
   min-width: 0;
 }
 
-.bl-close-text b {
+.bl-close-lab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
   font-family: var(--bl-mono);
   font-size: 0.52rem;
-  font-weight: 500;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--bl-ink-dim);
 }
 
-.bl-close-text > span {
-  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
-  line-height: 1.3;
+.bl-close-lab b {
+  font-weight: 500;
+  color: var(--bl-ink-soft);
+}
+
+.bl-close-lab i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bl-accent) 70%, transparent);
+}
+
+.bl-close-lab em { font-style: normal; }
+
+/* the link is stretched over the whole card, so the one thing on it that
+   is not the link, the copy button, has to be lifted back over it */
+.bl-close-hit {
+  display: block;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.bl-close-hit::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.bl-close-val {
+  display: block;
+  font-family: var(--bl-sans);
+  font-size: clamp(0.95rem, 1.5vw, 1.18rem);
+  line-height: 1.25;
+  letter-spacing: -0.012em;
   color: var(--bl-ink);
   overflow-wrap: break-word;
 }
 
+.bl-close-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: clamp(0.75rem, 1.8vh, 1.05rem);
+  border-top: 1px solid var(--bl-rule-soft);
+}
+
+/*
+ * One of these is a button and the other is a sentence, and they are
+ * given the same vertical metrics anyway: the two cards stand side by
+ * side, and a pill in one foot and a bare line of type in the other
+ * makes the two arrows sit at different heights, which is the kind of
+ * half-inch nobody can name and everybody can see.
+ */
+.bl-close-take,
+.bl-close-note {
+  padding: 0.42rem 0.72rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: var(--bl-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bl-ink-dim);
+}
+
+.bl-close-note { padding-inline: 0; }
+
+.bl-close-take {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-color: var(--bl-rule);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color 0.35s var(--bl-ease),
+    color 0.35s var(--bl-ease),
+    background 0.35s var(--bl-ease);
+}
+
+@media (hover: hover) {
+  .bl-close-take:hover {
+    border-color: color-mix(in srgb, var(--bl-accent) 70%, transparent);
+    color: var(--bl-accent);
+  }
+}
+
+/* taken: the one green on the page, the same one the live dot uses */
+.bl-close-take[data-took] {
+  border-color: color-mix(in srgb, var(--bl-stamp) 70%, transparent);
+  background: var(--bl-stamp-soft);
+  color: var(--bl-stamp);
+}
+
+/*
+ * The arrow, which grows a tail towards whatever it is pointing at
+ * rather than sliding out of a circle. A ruled line that is not there
+ * until you ask for it is the quietest way a card can say it goes
+ * somewhere.
+ */
 .bl-close-go {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 1.9rem;
-  height: 1.9rem;
-  margin-left: 0.4rem;
-  border-radius: 50%;
-  border: 1px solid var(--bl-rule);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--bl-ink-dim);
   transition:
-    transform 0.35s var(--bl-ease),
-    border-color 0.35s var(--bl-ease),
-    color 0.35s var(--bl-ease);
+    color 0.45s var(--bl-ease),
+    transform 0.45s var(--bl-ease);
 }
 
-.bl-close-way:hover .bl-close-go {
-  border-color: var(--bl-accent);
-  color: var(--bl-accent);
-  transform: translate(3px, -3px);
+.bl-close-go i {
+  display: block;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.45s var(--bl-ease);
 }
 
-@media (max-width: 520px) {
-  .bl-close-ways { flex-direction: column; align-items: stretch; width: 100%; }
-  .bl-close-way { justify-content: flex-start; }
-  .bl-close-go { margin-left: auto; }
+@media (hover: hover) {
+  .bl-close-way:hover .bl-close-go {
+    color: var(--bl-accent);
+    transform: translateX(3px);
+  }
+
+  .bl-close-way:hover .bl-close-go i { width: 1.7rem; }
+}
+
+@media (max-width: 640px) {
+  /* one over the other: two of these side by side on a phone is two
+     columns of broken address */
+  .bl-close-ways { grid-template-columns: minmax(0, 1fr); }
+  .bl-close-way { gap: 0.85rem; }
+  .bl-close-mark { width: 2.5rem; height: 2.5rem; }
+}
+
+@media (max-width: 380px) {
+  /* the longer of the two labels and the arrow stop fitting on one line
+     before the card does */
+  .bl-close-take span { display: none; }
+  .bl-close-take { padding: 0.42rem 0.52rem; }
 }
 
 /* ---- and the three facts, on one line ---------------------------------
@@ -12683,7 +12936,12 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .bl-close-way,
   .bl-close-way:hover,
+  .bl-close-mark,
+  .bl-close-way:hover .bl-close-mark,
   .bl-close-way:hover .bl-close-go { transform: none; }
+
+  /* the lamp is a moving object; without motion it is just a smear */
+  .bl-close-lamp { display: none; }
 }
 
 /* ==========================================================================

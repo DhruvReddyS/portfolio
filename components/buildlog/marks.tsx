@@ -137,6 +137,25 @@ export function MarkClose(props: MarkProps) {
   );
 }
 
+/** Two sheets, one sitting behind the other: taking a copy of something. */
+export function MarkCopy(props: MarkProps) {
+  return (
+    <Mark mark="copy" {...props}>
+      <path d="M9 8.3c-.2 3.9-.2 7.8 0 11.7 3.3.2 6.6.2 9.9 0 .2-3.9.2-7.8 0-11.7-3.3-.2-6.6-.2-9.9 0Z" />
+      <path d="M6.1 15.8c-1 .1-1.6-.4-1.7-1.4-.2-3.2-.2-6.3 0-9.5 2.9-.2 5.8-.2 8.7 0 .1.9.1 1.5 0 2.1" />
+    </Mark>
+  );
+}
+
+/** A tick, drawn in one go and slightly overrun, the way a pen does it. */
+export function MarkTick(props: MarkProps) {
+  return (
+    <Mark mark="tick" {...props}>
+      <path d="M4.6 12.4c1.9 1.5 3.5 3.3 4.9 5.3 2.9-4.8 6.1-9.1 9.6-13.1" />
+    </Mark>
+  );
+}
+
 /** Three strokes of unequal length, like a jotted list. */
 export function MarkLines(props: MarkProps) {
   return (
