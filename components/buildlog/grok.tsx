@@ -94,6 +94,8 @@ export function GrokCompanion({ section }: { section: string }) {
   /** How many times it has been clicked. */
   const [pokes, setPokes] = useState(0);
   const [poking, setPoking] = useState(false);
+  /** How far down the page the reader has got, 0 to 1. */
+  const [through, setThrough] = useState(0);
 
   const hush = useRef<number | undefined>(undefined);
   const reacting = useRef<number | undefined>(undefined);
@@ -158,14 +160,26 @@ export function GrokCompanion({ section }: { section: string }) {
     };
   }, []);
 
-  /* and it notices being thrown down the page, which is the one thing a
-     reader does that a face in the corner could plausibly react to */
+  /*
+   * How far down it is, and how fast it is going.
+   *
+   * Both come off the same listener because they are the same
+   * question asked twice: the ring round the face is where the reader
+   * has got to, and the startled look is how quickly they got there.
+   * Read on an animation frame rather than on every scroll event,
+   * which on a page this long is a great many of them.
+   */
   useEffect(() => {
     let was = window.scrollY;
     let when = performance.now();
     let calm = 0;
+    let frame = 0;
 
-    const onScroll = () => {
+    const read = () => {
+      frame = 0;
+      const run = document.documentElement.scrollHeight - window.innerHeight;
+      setThrough(run > 0 ? Math.min(1, Math.max(0, window.scrollY / run)) : 0);
+
       const now = performance.now();
       const gap = now - when;
       if (gap < 40) return;
@@ -179,10 +193,19 @@ export function GrokCompanion({ section }: { section: string }) {
       calm = window.setTimeout(() => setRushing(false), 900);
     };
 
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(read);
+    };
+
+    read();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       window.clearTimeout(calm);
+      if (frame) cancelAnimationFrame(frame);
     };
   }, []);
 
@@ -244,16 +267,32 @@ export function GrokCompanion({ section }: { section: string }) {
       <button
         className="bl-bot-dock"
         type="button"
-        aria-label="The guide. Click it."
+        aria-label={`The guide, ${Math.round(through * 100)}% down the page. Click it.`}
         onClick={prod}
         onPointerEnter={() => setNear(true)}
         onPointerLeave={() => setNear(false)}
         data-poked={poking || undefined}
       >
+        {/* the rim is how far down the page the reader has got */}
+        <svg className="bl-bot-ring" viewBox="0 0 44 44" aria-hidden="true">
+          <circle className="bl-bot-ring-track" cx="22" cy="22" r="20" />
+          <circle
+            className="bl-bot-ring-fill"
+            cx="22"
+            cy="22"
+            r="20"
+            style={{ strokeDashoffset: 125.6 * (1 - through) }}
+          />
+        </svg>
+
         <span className="bl-bot-body" data-asleep={still === 2 || undefined}>
           {avatar}
         </span>
       </button>
+
+      <span className="bl-bot-read" aria-hidden="true">
+        {Math.round(through * 100)}%
+      </span>
     </div>
   );
 }

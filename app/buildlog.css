@@ -13610,3 +13610,39 @@ body,
   .bl-bot-dock:hover,
   .bl-bot-dock:active { transform: none; }
 }
+
+/* ---- the rim, and how far down it says the reader has got -------------
+   The ring is the dock's edge now rather than a second circle drawn
+   inside one: the border and the gauge were two rims a hair apart and
+   the thing read as a washer. And it follows the scroll frame by
+   frame, so the long easing it had when it counted acts would now show
+   up as the gauge lagging the page.                                   */
+
+.bl-bot-dock {
+  border-color: transparent;
+}
+
+.bl-bot-dock:hover {
+  border-color: transparent;
+}
+
+.bl-bot-ring-track {
+  stroke: var(--bl-rule);
+  transition: stroke 0.3s var(--bl-ease);
+}
+
+.bl-bot-dock:hover .bl-bot-ring-track {
+  stroke: color-mix(in srgb, var(--bl-accent) 45%, transparent);
+}
+
+.bl-bot-ring-fill {
+  transition: none;
+}
+
+.bl-bot-read {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+  transition: opacity 0.3s var(--bl-ease);
+}
+
+.bl-bot:hover .bl-bot-read { opacity: 1; color: var(--bl-accent); }
